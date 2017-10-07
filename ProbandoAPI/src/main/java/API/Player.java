@@ -14,6 +14,7 @@ public class Player {
 	private double tarjetasAmarillas;
 	private double tarjetasRojas;
 	private boolean nacionalidadEspañola;
+	private Player mejorAmigo;
 	
 	public Player() {};
 	
@@ -79,6 +80,16 @@ public class Player {
 	public void setNacionalidadEspañola(boolean nacionalidadEspañola) {
 		this.nacionalidadEspañola = nacionalidadEspañola;
 	}
+
+	public Player getMejorAmigo() {
+		return mejorAmigo;
+	}
+
+
+	public void setMejorAmigo(Player mejorAmigo) {
+		this.mejorAmigo = mejorAmigo;
+	}
+
 
 	@Override
 	public String toString() {
