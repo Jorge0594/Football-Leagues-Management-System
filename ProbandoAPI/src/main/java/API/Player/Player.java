@@ -24,7 +24,7 @@ public class Player {
 	private String apellidos;
 	
 	@JsonView(ProfileAtt.class)
-	private String DNI;
+	private String dni;
 	
 	@JsonView(ProfileAtt.class)
 	private String nombreUsuario;
@@ -72,12 +72,14 @@ public class Player {
 	public Player() {};
 	
 	
-	public Player(String nombre, String apellidos, String equipo, String posicion, String fechaSancion, String estado,
+	public Player(String nombre, String apellidos, String nombreUsuario, String contraseña, String equipo, String posicion, String fechaSancion, String estado,
 			int faltas, int dorsal, int goles, int tarjetasAmarillas, int tarjetasRojas, String nacionalidad,
 			boolean capitan) {
 		super();
 		this.nombre = nombre;
 		this.apellidos = apellidos;
+		this.nombreUsuario = nombreUsuario;
+		this.contraseña = contraseña;
 		this.equipo = equipo;
 		this.posicion = posicion;
 		this.fechaSancion = fechaSancion;
@@ -89,7 +91,6 @@ public class Player {
 		this.tarjetasRojas = tarjetasRojas;
 		this.nacionalidad = nacionalidad;
 		this.capitan = capitan;
-		this.fotoJugador = "defaultImage.png";
 	}
 
 
@@ -253,13 +254,13 @@ public class Player {
 	}
 
 
-	public String getDNI() {
-		return DNI;
+	public String getdni() {
+		return dni;
 	}
 
 
-	public void setDNI(String dNI) {
-		DNI = dNI;
+	public void setdni(String dni) {
+		this.dni = dni;
 	}
 	
 	
@@ -276,7 +277,7 @@ public class Player {
 
 	@Override
 	public String toString() {
-		return "Player [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", DNI=" + DNI
+		return "Player [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", dni=" + dni
 				+ ", nombreUsuario=" + nombreUsuario + ", contraseña=" + contraseña + ", fotoJugador=" + fotoJugador
 				+ ", equipo=" + equipo + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado="
 				+ estado + ", nacionalidad=" + nacionalidad + ", faltas=" + faltas + ", dorsal=" + dorsal + ", goles="
