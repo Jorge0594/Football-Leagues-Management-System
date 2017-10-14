@@ -10,6 +10,8 @@ public class Match {
 	private String liga;
 	private String equipoLocal;
 	private String equipoVisitante;
+	private int golesLocal;
+	private int golesVisitante;
 	private String arbitro;
 	private String fechaPartido;
 	private String horaPartido;
@@ -18,20 +20,24 @@ public class Match {
 	private String jornada;
 	private String equipacionLocal;
 	private String equipacionVisitante;
-	private String resultado;
 	// private Incidencia[] incidencias;
+	// private Acta acta;
 
 	public Match() {
 	};
 
-	public Match(String id, String liga, String equipoLocal, String equipoVisitante, String arbitro,
-			String fechaPartido, String horaPartido, String estado, String jornada, String equipacionLocal,
-			String equipacionVisitante, String resultado) {
+	
+
+	public Match(String id, String liga, String equipoLocal, String equipoVisitante, int golesLocal, int golesVisitante,
+			String arbitro, String fechaPartido, String horaPartido, String estado, String jornada,
+			String equipacionLocal, String equipacionVisitante) {
 		super();
 		this.id = id;
 		this.liga = liga;
 		this.equipoLocal = equipoLocal;
 		this.equipoVisitante = equipoVisitante;
+		this.golesLocal = golesLocal;
+		this.golesVisitante = golesVisitante;
 		this.arbitro = arbitro;
 		this.fechaPartido = fechaPartido;
 		this.horaPartido = horaPartido;
@@ -39,8 +45,9 @@ public class Match {
 		this.jornada = jornada;
 		this.equipacionLocal = equipacionLocal;
 		this.equipacionVisitante = equipacionVisitante;
-		this.resultado = resultado;
-	}
+		}
+
+
 
 	public String getId() {
 		return id;
@@ -71,6 +78,22 @@ public class Match {
 
 	public void setEquipoVisitante(String equipoVisitante) {
 		this.equipoVisitante = equipoVisitante;
+	}
+
+	public int getGolesLocal() {
+		return golesLocal;
+	}
+
+	public void setGolesLocal(int golesLocal) {
+		this.golesLocal = golesLocal;
+	}
+
+	public int getGolesVisitante() {
+		return golesVisitante;
+	}
+
+	public void setGolesVisitante(int golesVisitante) {
+		this.golesVisitante = golesVisitante;
 	}
 
 	public String getArbitro() {
@@ -129,12 +152,5 @@ public class Match {
 		this.equipacionVisitante = equipacionVisitante;
 	}
 
-	public String getResultado() {
-		return resultado;
-	}
-
-	public void setResultado(String resultado) {
-		this.resultado = resultado;
-	}
 
 }
