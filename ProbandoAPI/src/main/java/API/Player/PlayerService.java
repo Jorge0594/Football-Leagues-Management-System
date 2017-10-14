@@ -1,5 +1,6 @@
 package API.Player;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,16 +43,6 @@ public class PlayerService {
 		return new ResponseEntity<Player>(jugador, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Player> insertarJugador(@RequestBody Player entrada) {
-		Player diegoPrueba=repositorio.findByNombreAndApellidosAllIgnoreCase("Diego", "Godín");
-		entrada.setMejorAmigo(diegoPrueba);
-		repositorio.save(entrada);
-		//diegoPrueba.setMejorAmigo(entrada);
-		//repositorio.save(diegoPrueba);
-		return new ResponseEntity<Player>(entrada, HttpStatus.CREATED);
-
-	}
 
 	@RequestMapping(value = "/{nombre}/{apellidos}", method = RequestMethod.PUT)
 	public ResponseEntity<Player> actualizaJugador(@PathVariable(value = "nombre") String nombre,
@@ -66,7 +57,7 @@ public class PlayerService {
 		jugador.setDorsal(entrada.getDorsal());
 		jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
 		jugador.setTarjetasRojas(entrada.getTarjetasRojas());
-		jugador.setNacionalidadEspañola(entrada.isNacionalidadEspañola());
+		jugador.setNacionalidad(entrada.getNacionalidad());
 		repositorio.save(jugador);
 		return new ResponseEntity<Player>(jugador, HttpStatus.ACCEPTED);
 	}
