@@ -1,4 +1,4 @@
-package API;
+package API.Player;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/players")
+@RequestMapping("/jugadores")
 public class PlayerService {
 
 	@Autowired
@@ -25,7 +25,7 @@ public class PlayerService {
 
 	@RequestMapping(value = "/{nombre}", method = RequestMethod.GET)
 	public ResponseEntity<List<Player>> verJugador(@PathVariable(value = "nombre") String nombre) {
-		List<Player> jugadores = repositorio.findByNombre(nombre);
+		List<Player> jugadores = repositorio.findByNombreIgnoreCase(nombre);
 		if (jugadores.isEmpty()) {
 			return new ResponseEntity<List<Player>>(HttpStatus.NOT_FOUND);
 		}
@@ -35,7 +35,7 @@ public class PlayerService {
 	@RequestMapping(value = "/{nombre}/{apellidos}", method = RequestMethod.GET)
 	public ResponseEntity<Player> verJugadorApellidos(@PathVariable(value = "nombre") String nombre,
 			@PathVariable(value = "apellidos") String apellidos) {
-		Player jugador = repositorio.findByNombreAndApellidos(nombre, apellidos);
+		Player jugador = repositorio.findByNombreAndApellidosAllIgnoreCase(nombre, apellidos);
 		if (jugador == null) {
 			return new ResponseEntity<Player>(HttpStatus.NOT_FOUND);
 		}
@@ -44,7 +44,7 @@ public class PlayerService {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Player> insertarJugador(@RequestBody Player entrada) {
-		Player diegoPrueba=repositorio.findByNombreAndApellidos("Diego", "Godín");
+		Player diegoPrueba=repositorio.findByNombreAndApellidosAllIgnoreCase("Diego", "Godín");
 		entrada.setMejorAmigo(diegoPrueba);
 		repositorio.save(entrada);
 		//diegoPrueba.setMejorAmigo(entrada);
@@ -56,7 +56,7 @@ public class PlayerService {
 	@RequestMapping(value = "/{nombre}/{apellidos}", method = RequestMethod.PUT)
 	public ResponseEntity<Player> actualizaJugador(@PathVariable(value = "nombre") String nombre,
 			@PathVariable(value = "apellidos") String apellidos, @RequestBody Player entrada) {
-		Player jugador = repositorio.findByNombreAndApellidos(nombre, apellidos);
+		Player jugador = repositorio.findByNombreAndApellidosAllIgnoreCase(nombre, apellidos);
 		if (jugador == null) {
 			return new ResponseEntity<Player>(HttpStatus.NOT_FOUND);
 		}
@@ -73,7 +73,7 @@ public class PlayerService {
 
 	@RequestMapping(value="/{nombre}/{apellidos}", method= RequestMethod.DELETE)
 	public ResponseEntity<Player> eliminarJugador (@PathVariable (value="nombre") String nombre,@PathVariable(value="apellidos") String apellidos){
-	Player jugador= repositorio.findByNombreAndApellidos(nombre, apellidos);
+	Player jugador= repositorio.findByNombreAndApellidosAllIgnoreCase(nombre, apellidos);
 	if (jugador==null) {
 		return new ResponseEntity<Player>(HttpStatus.NOT_FOUND);
 	}

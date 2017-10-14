@@ -1,4 +1,4 @@
-package API;
+package API.Match;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
