@@ -29,6 +29,7 @@ public class PlayerController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Player>crearJugador(@RequestBody Player jugador){
 		jugador.setFotoJugador("defaultImage.png");
+		jugador.setEquipo("");
 		playerRepository.save(jugador);
 		return new ResponseEntity<Player>(jugador,HttpStatus.OK);
 	}

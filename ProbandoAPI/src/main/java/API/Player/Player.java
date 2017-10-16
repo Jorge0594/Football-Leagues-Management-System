@@ -50,9 +50,6 @@ public class Player {
 	@JsonView(ProfileAtt.class)
 	private String nacionalidad;
 	
-	@JsonView(ProfileAtt.class)
-	private int faltas;
-	
 	@JsonView(TeamAtt.class)
 	private int dorsal;
 	
@@ -73,7 +70,7 @@ public class Player {
 	
 	
 	public Player(String nombre, String apellidos, String nombreUsuario, String contraseña, String equipo, String posicion, String fechaSancion, String estado,
-			int faltas, int dorsal, int goles, int tarjetasAmarillas, int tarjetasRojas, String nacionalidad,
+			int dorsal, int goles, int tarjetasAmarillas, int tarjetasRojas, String nacionalidad,
 			boolean capitan) {
 		super();
 		this.nombre = nombre;
@@ -84,7 +81,6 @@ public class Player {
 		this.posicion = posicion;
 		this.fechaSancion = fechaSancion;
 		this.estado = estado;
-		this.faltas = faltas;
 		this.dorsal = dorsal;
 		this.goles = goles;
 		this.tarjetasAmarillas = tarjetasAmarillas;
@@ -183,17 +179,6 @@ public class Player {
 		this.estado = estado;
 	}
 
-
-	public int getFaltas() {
-		return faltas;
-	}
-
-
-	public void setFaltas(int faltas) {
-		this.faltas = faltas;
-	}
-
-
 	public int getDorsal() {
 		return dorsal;
 	}
@@ -280,11 +265,93 @@ public class Player {
 		return "Player [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", dni=" + dni
 				+ ", nombreUsuario=" + nombreUsuario + ", contraseña=" + contraseña + ", fotoJugador=" + fotoJugador
 				+ ", equipo=" + equipo + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado="
-				+ estado + ", nacionalidad=" + nacionalidad + ", faltas=" + faltas + ", dorsal=" + dorsal + ", goles="
+				+ estado + ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles="
 				+ goles + ", tarjetasAmarillas=" + tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", capitan="
 				+ capitan + "]";
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Player other = (Player) obj;
+		if (apellidos == null) {
+			if (other.apellidos != null)
+				return false;
+		} else if (!apellidos.equals(other.apellidos))
+			return false;
+		if (capitan != other.capitan)
+			return false;
+		if (contraseña == null) {
+			if (other.contraseña != null)
+				return false;
+		} else if (!contraseña.equals(other.contraseña))
+			return false;
+		if (dni == null) {
+			if (other.dni != null)
+				return false;
+		} else if (!dni.equals(other.dni))
+			return false;
+		if (dorsal != other.dorsal)
+			return false;
+		if (equipo == null) {
+			if (other.equipo != null)
+				return false;
+		} else if (!equipo.equals(other.equipo))
+			return false;
+		if (estado == null) {
+			if (other.estado != null)
+				return false;
+		} else if (!estado.equals(other.estado))
+			return false;
+		if (fechaSancion == null) {
+			if (other.fechaSancion != null)
+				return false;
+		} else if (!fechaSancion.equals(other.fechaSancion))
+			return false;
+		if (fotoJugador == null) {
+			if (other.fotoJugador != null)
+				return false;
+		} else if (!fotoJugador.equals(other.fotoJugador))
+			return false;
+		if (goles != other.goles)
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (nacionalidad == null) {
+			if (other.nacionalidad != null)
+				return false;
+		} else if (!nacionalidad.equals(other.nacionalidad))
+			return false;
+		if (nombre == null) {
+			if (other.nombre != null)
+				return false;
+		} else if (!nombre.equals(other.nombre))
+			return false;
+		if (nombreUsuario == null) {
+			if (other.nombreUsuario != null)
+				return false;
+		} else if (!nombreUsuario.equals(other.nombreUsuario))
+			return false;
+		if (posicion == null) {
+			if (other.posicion != null)
+				return false;
+		} else if (!posicion.equals(other.posicion))
+			return false;
+		if (tarjetasAmarillas != other.tarjetasAmarillas)
+			return false;
+		if (tarjetasRojas != other.tarjetasRojas)
+			return false;
+		return true;
+	}
 
+	
 
 }
