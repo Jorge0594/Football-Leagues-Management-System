@@ -155,8 +155,6 @@ public class Partido {
 	public Estadio getEstadio() {
 		return estadio;
 	}
-
-
 	public void setEstadio(Estadio estadio) {
 		this.estadio = estadio;
 	}
