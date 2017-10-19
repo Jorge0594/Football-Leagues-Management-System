@@ -15,8 +15,9 @@ public class Estadio {
 	private int cp;
 	private String localizacion;
 	private String dimensiones;
-	
-	public Estadio() {}
+
+	public Estadio() {
+	}
 
 	public Estadio(String id, String nombre, int capacidad, String pais, String provincia, String poblacion, int cp,
 			String localizacion, String dimensiones) {
@@ -103,6 +104,5 @@ public class Estadio {
 	public void setDimensiones(String dimensiones) {
 		this.dimensiones = dimensiones;
 	};
-	
 
 }

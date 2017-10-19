@@ -1,5 +1,7 @@
 package API.Acta;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,18 +15,19 @@ public class Acta {
 	private String equipoLocal;
 	private String equipoVisitante;
 	private String arbitro;
-	private String[] convocadosLocal;
-	private String[] convocadosVisitante;
+	private List<String> convocadosLocal;
+	private List<String> convocadosVisitante;
 	private int golesLocal;
 	private int golesVisitante;
-	// private Incidencia[] incidencias;
+	// private List<Incidencia> incidencias;
 	private String observaciones;
 
-	public Acta() {}
+	public Acta() {
+	}
 
 	public Acta(String id, String idPartido, String fecha, String hora, String equipoLocal, String equipoVisitante,
-			String arbitro, String[] convocadosLocal, String[] convocadosVisitante, int golesLocal, int golesVisitante,
-			String observaciones) {
+			String arbitro, List<String> convocadosLocal, List<String> convocadosVisitante, int golesLocal,
+			int golesVisitante, String observaciones) {
 		super();
 		this.id = id;
 		this.idPartido = idPartido;
@@ -38,6 +41,22 @@ public class Acta {
 		this.golesLocal = golesLocal;
 		this.golesVisitante = golesVisitante;
 		this.observaciones = observaciones;
+	}
+
+	public void setConvocadosLocal(List<String> convocadosLocal) {
+		this.convocadosLocal = convocadosLocal;
+	}
+
+	public void setConvocadosVisitante(List<String> convocadosVisitante) {
+		this.convocadosVisitante = convocadosVisitante;
+	}
+
+	public List<String> getConvocadosLocal() {
+		return convocadosLocal;
+	}
+
+	public List<String> getConvocadosVisitante() {
+		return convocadosVisitante;
 	}
 
 	public String getId() {
@@ -94,22 +113,6 @@ public class Acta {
 
 	public void setArbitro(String arbitro) {
 		this.arbitro = arbitro;
-	}
-
-	public String[] getConvocadosLocal() {
-		return convocadosLocal;
-	}
-
-	public void setConvocadosLocal(String[] convocadosLocal) {
-		this.convocadosLocal = convocadosLocal;
-	}
-
-	public String[] getConvocadosVisitante() {
-		return convocadosVisitante;
-	}
-
-	public void setConvocadosVisitante(String[] convocadosVisitante) {
-		this.convocadosVisitante = convocadosVisitante;
 	}
 
 	public int getGolesLocal() {

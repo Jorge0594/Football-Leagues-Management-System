@@ -1,7 +1,11 @@
 package API.Arbitro;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import API.Partido.Partido;
 
 @Document(collection = "Arbitros")
 public class Arbitro {
@@ -10,9 +14,10 @@ public class Arbitro {
 	private String nombre;
 	private String nombreUsuario;
 	private String clave;
+	private List<Partido> partidosArbitrados;
 	private String fechaNacimiento;
 	private int edad;
-	private String lugarNacimient;
+	private String lugarNacimiento;
 	private String comite;
 	private String categoria;
 	private String email;
@@ -63,12 +68,12 @@ public class Arbitro {
 		this.edad = edad;
 	}
 
-	public String getLugarNacimient() {
-		return lugarNacimient;
+	public String getLugarNacimiento() {
+		return lugarNacimiento;
 	}
 
-	public void setLugarNacimient(String lugarNacimient) {
-		this.lugarNacimient = lugarNacimient;
+	public void setLugarNacimiento(String lugarNacimient) {
+		this.lugarNacimiento = lugarNacimient;
 	}
 
 	public String getComite() {
@@ -127,10 +132,18 @@ public class Arbitro {
 		this.clave = clave;
 	}
 
+	public List<Partido> getPartidosArbitrados() {
+		return partidosArbitrados;
+	}
+
+	public void setPartidosArbitrados(List<Partido> partidosArbitrados) {
+		this.partidosArbitrados = partidosArbitrados;
+	}
+
 	@Override
 	public String toString() {
 		return "Refree [id=" + id + ", nombre=" + nombre + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave
-				+ ", fechaNacimiento=" + fechaNacimiento + ", edad=" + edad + ", lugarNacimient=" + lugarNacimient
+				+ ", fechaNacimiento=" + fechaNacimiento + ", edad=" + edad + ", lugarNacimient=" + lugarNacimiento
 				+ ", comite=" + comite + ", categoria=" + categoria + ", email=" + email + ", tlf=" + tlf
 				+ ", internacional=" + internacional + ", estado=" + estado + "]";
 	}

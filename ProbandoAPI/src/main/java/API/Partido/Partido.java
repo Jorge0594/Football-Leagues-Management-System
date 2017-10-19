@@ -3,6 +3,7 @@ package API.Partido;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import API.Acta.Acta;
 import API.Estadio.Estadio;
 
 @Document(collection = "Partidos")
@@ -22,15 +23,15 @@ public class Partido {
 	private String jornada;
 	private String equipacionLocal;
 	private String equipacionVisitante;
-	// private Incidencia[] incidencias;
-	// private Acta acta;
+	// private List<Incidencia> incidencias;
+	private Acta acta;
 
 	public Partido() {
 	}
 
 	public Partido(String id, String liga, String equipoLocal, String equipoVisitante, int golesLocal,
-			int golesVisitante, String arbitro, String fechaPartido, String horaPartido,Estadio estadio, String estado, String jornada,
-			String equipacionLocal, String equipacionVisitante) {
+			int golesVisitante, String arbitro, String fechaPartido, String horaPartido, Estadio estadio, String estado,
+			String jornada, String equipacionLocal, String equipacionVisitante) {
 		super();
 		this.id = id;
 		this.liga = liga;
@@ -155,7 +156,17 @@ public class Partido {
 	public Estadio getEstadio() {
 		return estadio;
 	}
+
 	public void setEstadio(Estadio estadio) {
 		this.estadio = estadio;
 	}
+
+	public Acta getActa() {
+		return acta;
+	}
+
+	public void setActa(Acta acta) {
+		this.acta = acta;
+	}
+
 }
