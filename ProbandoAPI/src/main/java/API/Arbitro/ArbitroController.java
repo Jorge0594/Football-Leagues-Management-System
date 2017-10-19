@@ -1,4 +1,4 @@
-package API.Refree;
+package API.Arbitro;
 
 import java.util.List;
 
@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/refrees")
-public class RefreeService {
+@RequestMapping("/arbitros")
+public class ArbitroController {
 	
 	@Autowired
-	RefreeRepository repositorio;
+	ArbitroRepository arbitroRepository;
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<Refree>> verArbitros(){
-		return new ResponseEntity<List<Refree>>(repositorio.findAll(), HttpStatus.OK);
+	public ResponseEntity<List<Arbitro>> verArbitros(){
+		return new ResponseEntity<List<Arbitro>>(arbitroRepository.findAll(), HttpStatus.OK);
 		
 	}
 

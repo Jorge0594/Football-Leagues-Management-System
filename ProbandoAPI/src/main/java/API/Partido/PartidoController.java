@@ -1,4 +1,4 @@
-package API.Match;
+package API.Partido;
 
 import java.util.List;
 
@@ -12,19 +12,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/partidos")
-public class MatchService {
+public class PartidoController {
 	@Autowired
-	private MatchRepository repositorio;
+	private PartidoRepository partidoRepository;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<Match>> verPartidos() {
-		return new ResponseEntity<List<Match>>(repositorio.findAll(), HttpStatus.OK);
+	public ResponseEntity<List<Partido>> verPartidos() {
+		return new ResponseEntity<List<Partido>>(partidoRepository.findAll(), HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Match> crearPartido(@RequestBody Match partido) {
-		repositorio.save(partido);
-		return new ResponseEntity<Match>(partido, HttpStatus.CREATED);
+	public ResponseEntity<Partido> crearPartido(@RequestBody Partido partido) {
+		partidoRepository.save(partido);
+		return new ResponseEntity<Partido>(partido, HttpStatus.CREATED);
 
 	}
 }

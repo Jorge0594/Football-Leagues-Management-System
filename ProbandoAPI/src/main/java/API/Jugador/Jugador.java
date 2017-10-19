@@ -1,4 +1,4 @@
-package API.Player;
+package API.Jugador;
 
 
 import org.springframework.data.annotation.Id;
@@ -7,76 +7,76 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Document(collection="Jugadores")
-public class Player {
+public class Jugador {
 	
-	public interface TeamAtt{}
-	public interface ProfileAtt {}
-	public interface PasswordAtt{}
+	public interface EquipoAtt{}
+	public interface PerfilAtt {}
+	public interface ClaveAtt{}
 	
-	@JsonView(TeamAtt.class)
+	@JsonView(EquipoAtt.class)
 	@Id
 	private String id;
 	
-	@JsonView(TeamAtt.class)
+	@JsonView(EquipoAtt.class)
 	private String nombre;
 	
-	@JsonView(TeamAtt.class)
+	@JsonView(EquipoAtt.class)
 	private String apellidos;
 	
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	private String dni;
 	
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	private String nombreUsuario;
 	
-	@JsonView(PasswordAtt.class)
-	private String contraseña;
+	@JsonView(ClaveAtt.class)
+	private String clave;
 	
-	@JsonView(TeamAtt.class)
+	@JsonView(EquipoAtt.class)
 	private String fotoJugador;
 	
-	@JsonView(TeamAtt.class)
+	@JsonView(EquipoAtt.class)
 	private String equipo;
 	
-	@JsonView(TeamAtt.class)
+	@JsonView(EquipoAtt.class)
 	private String posicion;
 	
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	private String fechaSancion;
 	
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	private String estado;
 	
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	private String nacionalidad;
 	
-	@JsonView(TeamAtt.class)
+	@JsonView(EquipoAtt.class)
 	private int dorsal;
 	
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	private int goles;
 	
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	private int tarjetasAmarillas;
 	
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	private int tarjetasRojas;
 	
-	@JsonView(TeamAtt.class)
+	@JsonView(EquipoAtt.class)
 	private boolean capitan;
 	
 	
-	public Player() {};
+	public Jugador() {};
 	
 	
-	public Player(String nombre, String apellidos, String nombreUsuario, String contraseña, String equipo, String posicion, String fechaSancion, String estado,
+	public Jugador(String nombre, String apellidos, String nombreUsuario, String clave, String equipo, String posicion, String fechaSancion, String estado,
 			int dorsal, int goles, int tarjetasAmarillas, int tarjetasRojas, String nacionalidad,
 			boolean capitan) {
 		super();
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.nombreUsuario = nombreUsuario;
-		this.contraseña = contraseña;
+		this.clave = clave;
 		this.equipo = equipo;
 		this.posicion = posicion;
 		this.fechaSancion = fechaSancion;
@@ -130,13 +130,13 @@ public class Player {
 	}
 
 
-	public String getContraseña() {
-		return contraseña;
+	public String getClave() {
+		return clave;
 	}
 
 
-	public void setContraseña(String contraseña) {
-		this.contraseña = contraseña;
+	public void setClave(String clave) {
+		this.clave = clave;
 	}
 
 
@@ -239,12 +239,12 @@ public class Player {
 	}
 
 
-	public String getdni() {
+	public String getDni() {
 		return dni;
 	}
 
 
-	public void setdni(String dni) {
+	public void setDni(String dni) {
 		this.dni = dni;
 	}
 	
@@ -263,7 +263,7 @@ public class Player {
 	@Override
 	public String toString() {
 		return "Player [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", dni=" + dni
-				+ ", nombreUsuario=" + nombreUsuario + ", contraseña=" + contraseña + ", fotoJugador=" + fotoJugador
+				+ ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", fotoJugador=" + fotoJugador
 				+ ", equipo=" + equipo + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado="
 				+ estado + ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles="
 				+ goles + ", tarjetasAmarillas=" + tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", capitan="
@@ -278,7 +278,7 @@ public class Player {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Player other = (Player) obj;
+		Jugador other = (Jugador) obj;
 		if (apellidos == null) {
 			if (other.apellidos != null)
 				return false;
@@ -286,10 +286,10 @@ public class Player {
 			return false;
 		if (capitan != other.capitan)
 			return false;
-		if (contraseña == null) {
-			if (other.contraseña != null)
+		if (clave == null) {
+			if (other.clave != null)
 				return false;
-		} else if (!contraseña.equals(other.contraseña))
+		} else if (!clave.equals(other.clave))
 			return false;
 		if (dni == null) {
 			if (other.dni != null)

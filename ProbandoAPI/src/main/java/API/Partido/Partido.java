@@ -1,10 +1,10 @@
-package API.Match;
+package API.Partido;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "Partidos")
-public class Match {
+public class Partido {
 	@Id
 	private String id;
 	private String liga;
@@ -23,13 +23,11 @@ public class Match {
 	// private Incidencia[] incidencias;
 	// private Acta acta;
 
-	public Match() {
-	};
+	public Partido() {
+	}
 
-	
-
-	public Match(String id, String liga, String equipoLocal, String equipoVisitante, int golesLocal, int golesVisitante,
-			String arbitro, String fechaPartido, String horaPartido, String estado, String jornada,
+	public Partido(String id, String liga, String equipoLocal, String equipoVisitante, int golesLocal,
+			int golesVisitante, String arbitro, String fechaPartido, String horaPartido, String estado, String jornada,
 			String equipacionLocal, String equipacionVisitante) {
 		super();
 		this.id = id;
@@ -45,13 +43,12 @@ public class Match {
 		this.jornada = jornada;
 		this.equipacionLocal = equipacionLocal;
 		this.equipacionVisitante = equipacionVisitante;
-		}
-
-
+	}
 
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -151,6 +148,5 @@ public class Match {
 	public void setEquipacionVisitante(String equipacionVisitante) {
 		this.equipacionVisitante = equipacionVisitante;
 	}
-
 
 }

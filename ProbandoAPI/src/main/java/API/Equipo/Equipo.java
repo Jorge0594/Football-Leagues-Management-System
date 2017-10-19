@@ -1,4 +1,4 @@
-package API.Team;
+package API.Equipo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,22 +9,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import API.Player.Player;
+import API.Jugador.Jugador;
 
 @Document(collection = "Equipo")
-public class Team {
+public class Equipo {
 	
 	public interface RankAtt{}
-	public interface ProfileAtt{}
+	public interface PerfilAtt{}
 	
 	@JsonView(RankAtt.class)
 	@Id
 	private String id;
 	@JsonView(RankAtt.class)
 	private String nombre;
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	private String liga;
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	private String ciudad;
 	@JsonView(RankAtt.class)
 	private String imagenEquipo;
@@ -44,17 +44,17 @@ public class Team {
 	private int partidosEmpatados;
 	@JsonView(RankAtt.class)
 	private int partidosJugados;
-	@JsonView(ProfileAtt.class)
+	@JsonView(PerfilAtt.class)
 	@DBRef
-	private List<Player>plantillaEquipo = new ArrayList<>();
+	private List<Jugador>plantillaEquipo = new ArrayList<>();
 	/*@DBRef
 	private List<Sancion>sanciones = new ArrayList<>();*/
 	
-	public Team () {}
+	public Equipo () {}
 
-	public Team(String id, String nombre, String liga, String ciudad, int posicion, int puntos, int golesEncajados,
+	public Equipo(String id, String nombre, String liga, String ciudad, int posicion, int puntos, int golesEncajados,
 			int goles, int partidosGanados, int partidosPerdidos, int partidosEmpatados, int partidosJugados,
-			List<Player> plantillaEquipo) {
+			List<Jugador> plantillaEquipo) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -175,11 +175,11 @@ public class Team {
 		this.partidosJugados = partidosJugados;
 	}
 
-	public List<Player> getPlantillaEquipo() {
+	public List<Jugador> getPlantillaEquipo() {
 		return plantillaEquipo;
 	}
 
-	public void setPlantillaEquipo(List<Player> plantillaEquipo) {
+	public void setPlantillaEquipo(List<Jugador> plantillaEquipo) {
 		this.plantillaEquipo = plantillaEquipo;
 	}
 
@@ -200,7 +200,7 @@ public class Team {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Team other = (Team) obj;
+		Equipo other = (Equipo) obj;
 		if (ciudad == null) {
 			if (other.ciudad != null)
 				return false;
@@ -249,7 +249,6 @@ public class Team {
 			return false;
 		return true;
 	}
-	
 	
 	
 }
