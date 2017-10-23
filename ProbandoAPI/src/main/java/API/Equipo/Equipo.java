@@ -13,44 +13,62 @@ import API.Jugador.Jugador;
 
 @Document(collection = "Equipo")
 public class Equipo {
-	
-	public interface RankAtt{}
-	public interface PerfilAtt{}
-	
+
+	public interface RankAtt {
+	}
+
+	public interface PerfilAtt {
+	}
+
 	@JsonView(RankAtt.class)
 	@Id
 	private String id;
+	
 	@JsonView(RankAtt.class)
 	private String nombre;
+	
 	@JsonView(PerfilAtt.class)
 	private String liga;
+	
 	@JsonView(PerfilAtt.class)
 	private String ciudad;
+	
 	@JsonView(RankAtt.class)
 	private String imagenEquipo;
+	
 	@JsonView(RankAtt.class)
 	private int posicion;
+	
 	@JsonView(RankAtt.class)
 	private int puntos;
+	
 	@JsonView(RankAtt.class)
 	private int goles;
+	
 	@JsonView(RankAtt.class)
 	private int golesEncajados;
+	
 	@JsonView(RankAtt.class)
 	private int partidosGanados;
+	
 	@JsonView(RankAtt.class)
 	private int partidosPerdidos;
+	
 	@JsonView(RankAtt.class)
 	private int partidosEmpatados;
+	
 	@JsonView(RankAtt.class)
 	private int partidosJugados;
+	
 	@JsonView(PerfilAtt.class)
 	@DBRef
-	private List<Jugador>plantillaEquipo = new ArrayList<>();
-	/*@DBRef
-	private List<Sancion>sanciones = new ArrayList<>();*/
-	
-	public Equipo () {}
+	private List<Jugador> plantillaEquipo = new ArrayList<>();
+	/*
+	 * @DBRef private List<Sancion>sanciones = new ArrayList<>();
+	 */
+
+	public Equipo() {
+	}
 
 	public Equipo(String id, String nombre, String liga, String ciudad, int posicion, int puntos, int golesEncajados,
 			int goles, int partidosGanados, int partidosPerdidos, int partidosEmpatados, int partidosJugados,
@@ -249,6 +267,5 @@ public class Equipo {
 			return false;
 		return true;
 	}
-	
-	
+
 }

@@ -39,6 +39,13 @@ public class EquipoController {
 		equipoRepository.save(equipo);
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);
 	}
+	
+	@JsonView(PerfilView.class)
+	@RequestMapping(value ="/jugador/{id}",method = RequestMethod.GET)
+	public ResponseEntity<Equipo> crearEquipo(@PathVariable String id) {
+		
+		return new ResponseEntity<Equipo>(equipoRepository.findByPlantillaEquipo(id), HttpStatus.OK);
+	}
 
 	@JsonView(RankView.class)
 	@RequestMapping(method = RequestMethod.GET)
