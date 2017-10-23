@@ -39,6 +39,8 @@ public class EquipoController {
 		equipoRepository.save(equipo);
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);
 	}
+	
+	
 
 	@JsonView(RankView.class)
 	@RequestMapping(method = RequestMethod.GET)
