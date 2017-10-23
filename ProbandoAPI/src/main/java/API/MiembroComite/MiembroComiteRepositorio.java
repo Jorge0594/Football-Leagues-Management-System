@@ -7,7 +7,7 @@ public interface MiembroComiteRepositorio {
 
 	List<MiembroComite> findAll();
 
-   MiembroComite findById(String id);
+    MiembroComite findById(String id);
 
   
 	
