@@ -9,6 +9,5 @@ public interface EquipoRepository extends MongoRepository<Equipo, String> {
 	Equipo findByPosicion(int posicion);
 	Equipo findByNombreIgnoreCase(String nombre);
 	Equipo findById (String id);
-	@Query(value="{'plantillaEquipo.$id':?0}")
-	Equipo findByPlantillaEquipo(String id);
+	
 }
