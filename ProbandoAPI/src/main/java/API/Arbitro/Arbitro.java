@@ -11,6 +11,7 @@ import API.Partido.Partido;
 public class Arbitro {
 	@Id
 	private String id;
+	private String dni;
 	private String nombre;
 	private String nombreUsuario;
 	private String clave;
@@ -34,6 +35,14 @@ public class Arbitro {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getDni() {
+		return dni;
+	}
+
+	public void setDni(String dni) {
+		this.dni = dni;
 	}
 
 	public String getNombre() {

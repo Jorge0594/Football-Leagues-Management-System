@@ -9,4 +9,6 @@ public interface ActaRepository extends MongoRepository<Acta,String>{
 	Acta findByIdPartidoIgnoreCase(String idPartido);
 	List<Acta> findByEquipoLocalIgnoreCase (String equipoLocal);
 	List<Acta> findByEquipoVisitanteIgnoreCase (String equipoVisitante);
+	List<Acta> findByArbitro(String arbitro);
+	List<Acta> findByFecha(String fecha);	
 }
