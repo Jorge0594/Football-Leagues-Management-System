@@ -2,7 +2,9 @@ package API.Incidencia;
 
 import java.util.List;
 
-public interface IncidenciaRepository {
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface IncidenciaRepository extends MongoRepository<Incidencia, String> {
 
 	List<Incidencia> findAll();
 

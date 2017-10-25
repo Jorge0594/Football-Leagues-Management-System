@@ -9,7 +9,7 @@ public class Incidencia {
 private String id;
 private String tipo;
 private String jugador;
-private String partido;
+private String idPartido;
 
 
 public Incidencia() {}
@@ -19,7 +19,7 @@ public Incidencia(String id, String tipo, String jugador, String partido) {
 	this.id = id;
 	this.tipo = tipo;
 	this.jugador = jugador;
-	this.partido = partido;
+	this.idPartido = partido;
 }
 
 public String getId() {
@@ -52,11 +52,11 @@ public void setJugador(String jugador) {
 }
 
 public String getPartido() {
-	return partido;
+	return idPartido;
 }
 
 public void setPartido(String partido) {
-	this.partido = partido;
+	this.idPartido = partido;
 }
 
 
