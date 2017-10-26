@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.Equipo.Equipo;
+import API.Equipo.EquipoRepository;
+import API.Liga.Liga;
+import API.Liga.LigaRepository;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/jugadores")
@@ -23,10 +28,17 @@ public class JugadorController {
 
 	@Autowired
 	JugadorRepository jugadorRepository;
+	@Autowired
+	EquipoRepository equipoRepository;
+	@Autowired
+	LigaRepository ligaRepository;
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Jugador> crearJugador(@RequestBody Jugador jugador) {
+		if(jugadorRepository.findByDniIgnoreCase(jugador.getDni())!=null){
+			return new ResponseEntity<Jugador>(HttpStatus.CONFLICT);
+		}
 		jugador.setFotoJugador("defaultImage.png");
 		jugador.setEquipo("");
 		jugadorRepository.save(jugador);
@@ -125,7 +137,7 @@ public class JugadorController {
 		jugador.setTarjetasRojas(entrada.getTarjetasRojas());
 		jugador.setNacionalidad(entrada.getNacionalidad());
 		jugadorRepository.save(jugador);
-		return new ResponseEntity<Jugador>(jugador, HttpStatus.ACCEPTED);
+		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
 
 	@JsonView(ProfileView.class)
@@ -146,10 +158,21 @@ public class JugadorController {
 	public ResponseEntity<Jugador> eliminarJugador(@PathVariable String id) {
 		Jugador jugador = jugadorRepository.findById(id);
 		if (jugador == null) {
-			return new ResponseEntity<Jugador>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
+		Equipo equipo = equipoRepository.findByNombreIgnoreCase(jugador.getEquipo());
+		if(equipo == null){
+			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
+		}
+		Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
+		liga.getGoleadores().remove(jugador);
+		equipo.getPlantillaEquipo().remove(jugador);
+		
+		ligaRepository.save(liga);
+		equipoRepository.save(equipo);
 		jugadorRepository.delete(jugador);
-		return new ResponseEntity<Jugador>(jugador, HttpStatus.ACCEPTED);
+		
+		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
 
 }

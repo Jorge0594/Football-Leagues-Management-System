@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Document(collection = "Jugadores")
-public class Jugador {
+public class Jugador implements Comparable<Jugador>{
 
 	public interface EquipoAtt {
 	}
@@ -57,7 +57,7 @@ public class Jugador {
 	@JsonView(EquipoAtt.class)
 	private int dorsal;
 
-	@JsonView(PerfilAtt.class)
+	@JsonView(EquipoAtt.class)
 	private int goles;
 
 	@JsonView(PerfilAtt.class)
@@ -237,6 +237,9 @@ public class Jugador {
 				+ tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", capitan=" + capitan + "]";
 	}
 
+	
+	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -317,6 +320,16 @@ public class Jugador {
 		if (tarjetasRojas != other.tarjetasRojas)
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Jugador o) {
+		if(this.goles > o.goles){
+			return -1;
+		}else if (this.goles < o.goles){
+			return 1;
+		}
+		return 0;
 	}
 
 }

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import API.Jugador.Jugador;
 
 @Document(collection = "Equipo")
-public class Equipo {
+public class Equipo implements Comparable<Equipo> {
 
 	public interface RankAtt {
 	}
@@ -266,6 +266,33 @@ public class Equipo {
 		if (puntos != other.puntos)
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Equipo o) {
+		if (this.puntos > o.puntos){
+			return -1;
+		}else if(this.puntos < o.puntos){
+			return 1;
+		}
+		
+		if(this.puntos == o.puntos){
+			if(this.goles != o.goles){
+				if(this.goles > o.goles){
+					return -1;
+				}else{
+					return 1;
+				}
+			}else{
+				if(this.golesEncajados<o.golesEncajados){
+					return -1;
+				}else{
+					return 1;
+				}
+			}
+			
+		}
+		return 0;
 	}
 
 }

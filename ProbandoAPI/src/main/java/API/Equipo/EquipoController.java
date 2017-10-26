@@ -16,6 +16,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
+import API.Liga.Liga;
+import API.Liga.LigaRepository;
 
 @RestController
 @CrossOrigin
@@ -23,28 +25,35 @@ import API.Jugador.JugadorRepository;
 
 public class EquipoController {
 
-	public interface RankView extends Equipo.RankAtt {}
+	public interface RankView extends Equipo.RankAtt {
+	}
 
-	public interface PerfilView extends Equipo.RankAtt, Equipo.PerfilAtt, Jugador.EquipoAtt {}
+	public interface PerfilView extends Equipo.RankAtt, Equipo.PerfilAtt, Jugador.EquipoAtt {
+	}
 
-	public interface JugadorView extends Jugador.PerfilAtt, Jugador.EquipoAtt {}
+	public interface JugadorView extends Jugador.PerfilAtt, Jugador.EquipoAtt {
+	}
 
 	@Autowired
 	private EquipoRepository equipoRepository;
 	@Autowired
 	private JugadorRepository jugadorRepository;
+	@Autowired
+	private LigaRepository ligaRepository;
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Equipo> crearEquipo(@RequestBody Equipo equipo) {
+		if (equipoRepository.findByNombreIgnoreCase(equipo.getNombre()) != null) {
+			return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
+		}
 		equipo.setImagenEquipo("imageTeamDafault.png");
+		equipo.setLiga("");
 		equipoRepository.save(equipo);
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);
 	}
-	
-	
 
-	@JsonView(RankView.class)
+	@JsonView(PerfilView.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Equipo>> verEquipos() {
 		return new ResponseEntity<List<Equipo>>(equipoRepository.findAll(), HttpStatus.OK);
@@ -82,14 +91,13 @@ public class EquipoController {
 	}
 
 	@JsonView(PerfilView.class)
-	@RequestMapping(value = "/{nombre}", method = RequestMethod.PUT)
-	public ResponseEntity<Equipo> modificarPerfilEquipo(@PathVariable String nombre, @RequestBody Equipo auxEquipo) {
-		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombre);
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Equipo> modificarPerfilEquipo(@PathVariable String id, @RequestBody Equipo auxEquipo) {
+		Equipo equipo = equipoRepository.findById(id);
 		if (equipo == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 		equipo.setNombre(auxEquipo.getNombre());
-		equipo.setLiga(auxEquipo.getLiga());
 		equipo.setCiudad(auxEquipo.getCiudad());
 
 		for (Jugador jugador : equipo.getPlantillaEquipo()) {
@@ -102,8 +110,23 @@ public class EquipoController {
 	}
 
 	@JsonView(PerfilView.class)
+	@RequestMapping(value = "/{nombre}/liga", method = RequestMethod.PUT)
+	public ResponseEntity<Equipo> modificarLigaEquipo(@PathVariable String nombre, @RequestBody Equipo auxEquipo) {
+		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombre);
+		if (equipo == null) {
+			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
+		}
+		equipo.setLiga(auxEquipo.getLiga());
+
+		equipoRepository.save(equipo);
+
+		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
+	}
+
+	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/{nombre}/resultado", method = RequestMethod.PUT)
-	public ResponseEntity<Equipo> modificarEquipoPostPartido(@PathVariable String nombre, @RequestBody Equipo auxEquipo) {
+	public ResponseEntity<Equipo> modificarEquipoPostPartido(@PathVariable String nombre,
+			@RequestBody Equipo auxEquipo) {
 		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombre);
 		if (equipo == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
@@ -137,59 +160,63 @@ public class EquipoController {
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/{nombre}/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Equipo> añadirJugadorEquipo(@PathVariable String id, @PathVariable String nombre) {
+	public ResponseEntity<Equipo> añadirJugadorEquipo(@PathVariable(value = "id") String id, @PathVariable(value = "nombre") String nombre) {
 		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombre);
 		Jugador jugador = jugadorRepository.findById(id);
 		if (equipo == null || jugador == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
-		if (!jugador.getEquipo().equals("")) {
-			if (!equipo.getPlantillaEquipo().contains(jugador)) {
+		if(!equipo.getLiga().equals("")){
+			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
+			liga.getGoleadores().add(jugador);
+			ligaRepository.save(liga);
+		}
+		 if (!jugador.getEquipo().equals("")) {
+			if (!equipo.getPlantillaEquipo().contains(jugador)) {//testear
 				Equipo aux = equipoRepository.findByNombreIgnoreCase(jugador.getEquipo());
+				if(!aux.getLiga().equals(equipo.getLiga())&& (!aux.getLiga().equals(""))){
+					Liga ligaAux = ligaRepository.findByNombreIgnoreCase(aux.getLiga());
+					ligaAux.getGoleadores().remove(jugador);
+					ligaRepository.save(ligaAux);
+				}
 				aux.getPlantillaEquipo().remove(jugador);
 				equipoRepository.save(aux);
-				
-				jugador.setEquipo(equipo.getNombre());
-				equipo.getPlantillaEquipo().add(jugador);
-
-				jugadorRepository.save(jugador);
-				equipoRepository.save(equipo);
-			} else {
+			}else{
 				return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
 			}
-		} else {
-			jugador.setEquipo(equipo.getNombre());
-			equipo.getPlantillaEquipo().add(jugador);
-
-			jugadorRepository.save(jugador);
-			equipoRepository.save(equipo);
 		}
+		jugador.setEquipo(equipo.getNombre());
+		equipo.getPlantillaEquipo().add(jugador);
+
+		jugadorRepository.save(jugador);
+		equipoRepository.save(equipo);
+
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 	}
-	
+
 	@JsonView(JugadorView.class)
 	@RequestMapping(value = "/{id}/dorsal/{dorsal}", method = RequestMethod.PUT)
-	public ResponseEntity<Jugador>asignarDorsalJugador(@PathVariable(value = "id")String id, @PathVariable (value = "dorsal")int dorsal){
+	public ResponseEntity<Jugador> asignarDorsalJugador(@PathVariable(value = "id") String id,
+			@PathVariable(value = "dorsal") int dorsal) {
 		Jugador jugador = jugadorRepository.findById(id);
-		
-		if(jugador == null){
+
+		if (jugador == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
-		
+
 		Equipo equipo = equipoRepository.findByNombreIgnoreCase(jugador.getEquipo());
 		Jugador aux = jugadorRepository.findByDorsalAndEquipoIgnoreCase(dorsal, equipo.getNombre());
-		
-		if(aux != null && !jugador.equals(aux)){
+
+		if (aux != null && !jugador.equals(aux)) {
 			return new ResponseEntity<Jugador>(HttpStatus.CONFLICT);
-		}else{
+		} else {
 			jugador.setDorsal(dorsal);
 			jugadorRepository.save(jugador);
-			
+
 			return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 		}
-		
+
 	}
-	
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/{nombre}/{id}", method = RequestMethod.DELETE)
@@ -200,8 +227,9 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 		if (equipo.getPlantillaEquipo().contains(jugador)) {
-			jugador.setEquipo("");
+			
 			equipo.getPlantillaEquipo().remove(jugador);
+			jugador.setEquipo("");
 
 			jugadorRepository.save(jugador);
 			equipoRepository.save(equipo);
@@ -218,11 +246,17 @@ public class EquipoController {
 		if (equipo == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
+		
+		Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
+		liga.getGoleadores().removeAll(equipo.getPlantillaEquipo());
+		liga.getClasificacion().remove(equipo);
+		
+		ligaRepository.save(liga);
+		
 		for (Jugador j : equipo.getPlantillaEquipo()) {
 			j.setEquipo("");
 			jugadorRepository.save(j);
 		}
-
 		equipoRepository.delete(equipo);
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 	}
