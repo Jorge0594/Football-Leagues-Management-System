@@ -83,7 +83,6 @@ public class LigaController {
 		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombreEquipo);
 		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
 		if(liga == null || equipo == null){
-			System.out.println("Entra aqui 1");
 			return new ResponseEntity<Liga>(HttpStatus.NO_CONTENT);
 		}
 		

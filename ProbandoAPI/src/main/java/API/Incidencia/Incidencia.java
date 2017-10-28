@@ -51,11 +51,11 @@ public void setJugador(String jugador) {
 	this.jugador = jugador;
 }
 
-public String getPartido() {
+public String getIdPartido() {
 	return idPartido;
 }
 
-public void setPartido(String partido) {
+public void setIdPartido(String partido) {
 	this.idPartido = partido;
 }
 
