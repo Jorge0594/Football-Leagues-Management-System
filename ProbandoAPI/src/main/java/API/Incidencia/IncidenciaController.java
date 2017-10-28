@@ -5,11 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import API.Jugador.JugadorRepository;
+import API.MiembroComite.MiembroComite;
 
 @RestController
 @CrossOrigin
@@ -22,6 +24,8 @@ public class IncidenciaController {
 		@Autowired
 		JugadorRepository jugadoresRepository;
 
+		//GET
+		
 		@RequestMapping(method = RequestMethod.GET)
 		public ResponseEntity<List<Incidencia>> verIncidencias() {
 			return new ResponseEntity<List<Incidencia>>(incidenciasRepository.findAll(), HttpStatus.OK);
@@ -53,5 +57,14 @@ public class IncidenciaController {
 			Jugador jugador= jugadoresRepository.findById(idJugador);
 
 		}*/
+		//PUT
+		
+		//POST
+		@RequestMapping(method = RequestMethod.POST)
+		public ResponseEntity<Incidencia> crearIncidencia(@RequestBody Incidencia incidencia) {
+			incidenciasRepository.save(incidencia);
+			return new ResponseEntity<Incidencia>(incidencia, HttpStatus.CREATED);
+
+		}
 
 }
