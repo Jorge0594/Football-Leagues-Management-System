@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import API.Jugador.JugadorRepository;
-import API.MiembroComite.MiembroComite;
+
 
 @RestController
 @CrossOrigin
@@ -41,29 +41,44 @@ public class IncidenciaController {
 			return new ResponseEntity<Incidencia>(incidencia, HttpStatus.OK);
 		}
 
-		@RequestMapping(value = "incidencias/partido/{partido}")
-		public ResponseEntity<Incidencia> verIncidenciasPartido(@PathVariable String idPartido) {
-			Incidencia incidencia = incidenciasRepository.findByIdPartidoIgnoreCase(idPartido);
-			if (incidencia == null) {
-				return new ResponseEntity<Incidencia>(HttpStatus.NOT_FOUND);
+		@RequestMapping(value = "incidencias/partido/{idPartido}", method = RequestMethod.GET)
+		public ResponseEntity<List<Incidencia>> verIncidenciasPartido(@PathVariable String idPartido) {	
+			List<Incidencia> incidencias = incidenciasRepository.findByIdPartidoIgnoreCase(idPartido);
+			if (incidencias.isEmpty()) {
+				return new ResponseEntity<List<Incidencia>>(HttpStatus.NOT_FOUND);
 			}
-			return new ResponseEntity<Incidencia>(incidencia, HttpStatus.OK);
+			return new ResponseEntity<List<Incidencia>>(incidencias, HttpStatus.OK);
 		}
 
+		@RequestMapping(value = "incidencias/jugador/{idJugador}", method = RequestMethod.GET)
+		public ResponseEntity<List<Incidencia>> verIncidenciasJugador(@PathVariable String idJugador) {
+			List<Incidencia> incidencias = incidenciasRepository.findByIdJugadorIgnoreCase(idJugador);
+			if (incidencias.isEmpty()) {
+				return new ResponseEntity<List<Incidencia>>(HttpStatus.NOT_FOUND);
+			}
+			return new ResponseEntity<List<Incidencia>>(incidencias, HttpStatus.OK);
+		}
+		
+		@RequestMapping(value = "incidencias/tipo/{tipoIncidencia}", method = RequestMethod.GET)
+		public ResponseEntity<List<Incidencia>> verIncidenciasTipo(@PathVariable String tipoIncidencia) {
+			List<Incidencia> incidencias = incidenciasRepository.findByTipoIgnoreCase(tipoIncidencia);
+			if (incidencias.isEmpty()) {
+				return new ResponseEntity<List<Incidencia>>(HttpStatus.NOT_FOUND);
+			}
+			return new ResponseEntity<List<Incidencia>>(incidencias, HttpStatus.OK);
+		}
 		
 		
-		/*@RequestMapping(value="/incidencias/jugador/{idJugador}", method= RequestMethod.GET)
-		public List<Incidencia> incidenciasJugador(@PathVariable String idJugador){
-			Jugador jugador= jugadoresRepository.findById(idJugador);
-
-		}*/
 		//PUT
 		
 		//POST
 		@RequestMapping(method = RequestMethod.POST)
 		public ResponseEntity<Incidencia> crearIncidencia(@RequestBody Incidencia incidencia) {
-			incidenciasRepository.save(incidencia);
-			return new ResponseEntity<Incidencia>(incidencia, HttpStatus.CREATED);
+			if( incidencia.getTipo().equalsIgnoreCase("ROJA") || incidencia.getTipo().equalsIgnoreCase("AMARILLA") || incidencia.getTipo().equalsIgnoreCase("GOL")) {
+				incidenciasRepository.save(incidencia);
+				return new ResponseEntity<Incidencia>(incidencia, HttpStatus.CREATED);
+			}
+			return new ResponseEntity<Incidencia>(HttpStatus.NOT_ACCEPTABLE);
 
 		}
 
