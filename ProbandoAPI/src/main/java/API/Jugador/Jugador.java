@@ -2,6 +2,7 @@ package API.Jugador;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -72,25 +73,32 @@ public class Jugador implements Comparable<Jugador>{
 	public Jugador() {
 	};
 
-	public Jugador(String nombre, String apellidos, String nombreUsuario, String clave, String equipo, String posicion,
-			String fechaSancion, String estado, int dorsal, int goles, int tarjetasAmarillas, int tarjetasRojas,
-			String nacionalidad, boolean capitan) {
+	
+
+	public Jugador(String id, String nombre, String apellidos, String dni, String nombreUsuario, String clave,
+			String fotoJugador, String equipo, String posicion, String fechaSancion, String estado, String nacionalidad,
+			int dorsal, int goles, int tarjetasAmarillas, int tarjetasRojas, boolean capitan) {
 		super();
+		this.id = id;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
+		this.dni = dni;
 		this.nombreUsuario = nombreUsuario;
-		this.clave = clave;
+		this.clave = new BCryptPasswordEncoder().encode(clave);
+		this.fotoJugador = fotoJugador;
 		this.equipo = equipo;
 		this.posicion = posicion;
 		this.fechaSancion = fechaSancion;
 		this.estado = estado;
+		this.nacionalidad = nacionalidad;
 		this.dorsal = dorsal;
 		this.goles = goles;
 		this.tarjetasAmarillas = tarjetasAmarillas;
 		this.tarjetasRojas = tarjetasRojas;
-		this.nacionalidad = nacionalidad;
 		this.capitan = capitan;
 	}
+
+
 
 	public String getId() {
 		return id;
@@ -129,7 +137,7 @@ public class Jugador implements Comparable<Jugador>{
 	}
 
 	public void setClave(String clave) {
-		this.clave = clave;
+		this.clave = new BCryptPasswordEncoder().encode(clave);
 	}
 
 	public String getEquipo() {

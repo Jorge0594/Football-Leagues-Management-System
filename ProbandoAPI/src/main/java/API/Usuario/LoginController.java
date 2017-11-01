@@ -19,7 +19,7 @@ public class LoginController {
 	@Autowired
 	private UsuarioComponent usuarioComponent;
 	
-	@RequestMapping("/login")
+	@RequestMapping("/iniciarSesion")
 	public ResponseEntity<Usuario> logIn() {
 
 		if (!usuarioComponent.isLoggedUser()) {
@@ -32,9 +32,8 @@ public class LoginController {
 		}
 	}
 
-	@RequestMapping("/logout")
+	@RequestMapping("/cerrarSesion")
 	public ResponseEntity<Boolean> logOut(HttpSession session) {
-
 		if (!usuarioComponent.isLoggedUser()) {
 			log.info("No user logged");
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
