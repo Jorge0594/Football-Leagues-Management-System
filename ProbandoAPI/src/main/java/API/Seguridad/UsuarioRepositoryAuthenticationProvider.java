@@ -1,4 +1,4 @@
-package API.Security;
+package API.Seguridad;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,30 +20,29 @@ import API.Usuario.UsuarioRepository;
 
 @Component
 public class UsuarioRepositoryAuthenticationProvider implements AuthenticationProvider {
-	
-	
+
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	
+
 	@Autowired
 	private UsuarioComponent userComponent;
+
 	@Override
 	public Authentication authenticate(Authentication auth) throws AuthenticationException {
 		String nombreUsuario = auth.getName();
 		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(nombreUsuario);
 
 		if (usuario == null) {
-			throw new BadCredentialsException("User not found");
+			throw new BadCredentialsException("El usuario no existe");
 		}
 		String password = (String) auth.getCredentials();
 		if (!new BCryptPasswordEncoder().matches(password, usuario.getClave())) {
-			throw new BadCredentialsException("Wrong password");
+			throw new BadCredentialsException("Contraseña incorrecta");
 		}
 		userComponent.setLoggedUser(usuario);
-		
+
 		List<GrantedAuthority> roles = new ArrayList<>();
 		roles.add(new SimpleGrantedAuthority(usuario.getRol()));
-		
 
 		return new UsernamePasswordAuthenticationToken(nombreUsuario, password, roles);
 	}

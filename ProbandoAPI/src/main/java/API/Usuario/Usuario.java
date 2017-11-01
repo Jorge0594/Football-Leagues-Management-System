@@ -2,7 +2,6 @@ package API.Usuario;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Document(collection = "Usuario")
 public class Usuario {
@@ -16,11 +15,10 @@ public class Usuario {
 	public Usuario() {
 	}
 
-	public Usuario(String id, String nombreUsuario, String clave, String rol) {
+	public Usuario(String nombreUsuario, String clave, String rol) {
 		super();
-		this.id = id;
 		this.nombreUsuario = nombreUsuario;
-		this.clave = new BCryptPasswordEncoder().encode(clave);
+		this.clave = clave;
 		this.rol = rol;
 	}
 
@@ -45,7 +43,7 @@ public class Usuario {
 	}
 
 	public void setClave(String clave) {
-		this.clave = new BCryptPasswordEncoder().encode(clave);
+		this.clave = clave;
 	}
 
 	public String getRol() {
