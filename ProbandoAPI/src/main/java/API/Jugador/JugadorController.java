@@ -42,7 +42,7 @@ public class JugadorController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Jugador> crearJugador(@RequestBody Jugador jugador) {
 		if (jugadorRepository.findByDniIgnoreCase(jugador.getDni()) != null
-				|| jugadorRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario()) != null) {
+				|| usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario()) != null) {
 			return new ResponseEntity<Jugador>(HttpStatus.CONFLICT);
 		}
 		jugador.setFotoJugador("defaultImage.png");
