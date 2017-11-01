@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import API.Partido.Partido;
 
@@ -27,6 +28,26 @@ public class Arbitro {
 	private String estado;
 
 	public Arbitro() {
+	}
+
+	public Arbitro(String dni, String nombre, String nombreUsuario, String clave, List<Partido> partidosArbitrados,
+			String fechaNacimiento, int edad, String lugarNacimiento, String comite, String categoria, String email,
+			String tlf, boolean internacional, String estado) {
+		super();
+		this.dni = dni;
+		this.nombre = nombre;
+		this.nombreUsuario = nombreUsuario;
+		this.clave = new BCryptPasswordEncoder().encode(clave);
+		this.partidosArbitrados = partidosArbitrados;
+		this.fechaNacimiento = fechaNacimiento;
+		this.edad = edad;
+		this.lugarNacimiento = lugarNacimiento;
+		this.comite = comite;
+		this.categoria = categoria;
+		this.email = email;
+		this.tlf = tlf;
+		this.internacional = internacional;
+		this.estado = estado;
 	}
 
 	public String getId() {
@@ -138,7 +159,7 @@ public class Arbitro {
 	}
 
 	public void setClave(String clave) {
-		this.clave = clave;
+		this.clave = new BCryptPasswordEncoder().encode(clave);
 	}
 
 	public List<Partido> getPartidosArbitrados() {
