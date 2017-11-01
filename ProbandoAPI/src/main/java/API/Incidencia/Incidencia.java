@@ -8,7 +8,7 @@ public class Incidencia {
 @Id
 private String id;
 private String tipo;
-private String jugador;
+private String idJugador;
 private String idPartido;
 
 
@@ -18,7 +18,7 @@ public Incidencia(String id, String tipo, String jugador, String partido) {
 	super();
 	this.id = id;
 	this.tipo = tipo;
-	this.jugador = jugador;
+	this.idJugador = jugador;
 	this.idPartido = partido;
 }
 
@@ -42,20 +42,20 @@ public void setTipo(String tipo) {
 }
 
 
-public String getJugador() {
-	return jugador;
+public String getIdJugador() {
+	return idJugador;
 }
 
 
-public void setJugador(String jugador) {
-	this.jugador = jugador;
+public void setIdJugador(String jugador) {
+	this.idJugador = jugador;
 }
 
-public String getPartido() {
+public String getIdPartido() {
 	return idPartido;
 }
 
-public void setPartido(String partido) {
+public void setIdPartido(String partido) {
 	this.idPartido = partido;
 }
 

@@ -139,6 +139,24 @@ public class JugadorController {
 		jugadorRepository.save(jugador);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
+	@JsonView(ProfileView.class)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Jugador> actualizaJugadorId(@PathVariable(value = "id") String id,
+			@RequestBody Jugador entrada) {
+		Jugador jugador = jugadorRepository.findById(id);
+		if (jugador == null) {
+			return new ResponseEntity<Jugador>(HttpStatus.NOT_MODIFIED);
+		}
+		jugador.setNombre(entrada.getNombre());
+		jugador.setApellidos(entrada.getApellidos());
+		jugador.setGoles(entrada.getGoles());
+		// jugador.setDorsal(entrada.getDorsal());
+		jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
+		jugador.setTarjetasRojas(entrada.getTarjetasRojas());
+		jugador.setNacionalidad(entrada.getNacionalidad());
+		jugadorRepository.save(jugador);
+		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
+	}
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}/credenciales", method = RequestMethod.PUT)

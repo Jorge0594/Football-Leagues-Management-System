@@ -12,10 +12,11 @@ private String apellidos;
 private String usuario;
 private String clave; 
 private String comite;
+private String email;
 
 public MiembroComite() {}
 
-public MiembroComite(String id, String nombre, String apellidos, String usuario, String clave, String comite) {
+public MiembroComite(String id, String nombre, String apellidos, String usuario, String clave, String comite, String email) {
 	super();
 	this.id = id;
 	this.nombre = nombre;
@@ -23,8 +24,17 @@ public MiembroComite(String id, String nombre, String apellidos, String usuario,
 	this.usuario = usuario;
 	this.clave = clave;
 	this.comite = comite;
+	this.email = email;
 }
 
+
+public String getEmail() {
+	return email;
+}
+
+public void setEmail(String email) {
+	this.email = email;
+}
 
 public String getId() {
 	return id;
