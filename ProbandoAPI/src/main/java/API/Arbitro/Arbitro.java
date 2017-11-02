@@ -161,6 +161,9 @@ public class Arbitro {
 	public void setClave(String clave) {
 		this.clave = new BCryptPasswordEncoder().encode(clave);
 	}
+	public void setClaveSinEncriptar(String clave) {
+		this.clave =clave;
+	}
 
 	public List<Partido> getPartidosArbitrados() {
 		return partidosArbitrados;

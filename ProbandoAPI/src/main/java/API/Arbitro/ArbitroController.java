@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import API.Usuario.Usuario;
+import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
 
 @RestController
@@ -25,6 +26,8 @@ public class ArbitroController {
 	ArbitroRepository arbitroRepository;
 	@Autowired
 	UsuarioRepository usuarioRepository;
+	@Autowired
+	UsuarioComponent usuarioComponent;
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Arbitro> creaArbitro(@RequestBody Arbitro arbitro) {
@@ -33,7 +36,7 @@ public class ArbitroController {
 		for (Usuario us : usuarios) {
 			nombresUsuarios.add(us.getNombreUsuario());
 		}
-		//Comprueba si el nombre de usuario no se encuentra ya en el sistema.
+		// Comprueba si el nombre de usuario no se encuentra ya en el sistema.
 		if (!nombresUsuarios.contains(arbitro.getNombreUsuario())) {
 			arbitroRepository.save(arbitro);
 			Usuario nuevo = new Usuario(arbitro.getNombreUsuario(), arbitro.getClave(), "ROLE_ARBITRO");
@@ -42,6 +45,54 @@ public class ArbitroController {
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		}
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Arbitro> modificaArbitro(@PathVariable String id, @RequestBody Arbitro arbitroModificado) {
+		Arbitro entrada = arbitroRepository.findById(id);
+		if (entrada == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} else {
+			Usuario modificado = usuarioRepository
+					.findByNombreUsuarioIgnoreCase(entrada.getNombreUsuario());
+			// Si el usuario conectado es un árbitro
+			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
+				// Si el árbitro está realizando una modificación a su propio usuario.
+				if (entrada.getNombreUsuario().equals(usuarioComponent.getLoggedUser().getNombreUsuario())) {
+					entrada.setNombre(arbitroModificado.getNombre());
+					entrada.setNombreUsuario(arbitroModificado.getNombreUsuario());
+					entrada.setClaveSinEncriptar(arbitroModificado.getClave());
+					entrada.setFechaNacimiento(arbitroModificado.getFechaNacimiento());
+					entrada.setEdad(arbitroModificado.getEdad());
+					entrada.setLugarNacimiento(arbitroModificado.getLugarNacimiento());
+					entrada.setEmail(arbitroModificado.getEmail());
+					entrada.setTlf(arbitroModificado.getTlf());
+					arbitroRepository.save(entrada);
+					// Se realizan los cambios en el listado de Usuarios de la API.
+					modificado.setClave(arbitroModificado.getClave());
+					modificado.setNombreUsuario(arbitroModificado.getNombreUsuario());
+					usuarioRepository.save(modificado);
+					return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
+				} else {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+			}
+			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE")) {
+				arbitroModificado.setId(entrada.getId());
+				arbitroRepository.save(arbitroModificado);
+				// Se realizan los cambios en el listado de Usuarios de la API.
+				modificado.setClave(arbitroModificado.getClave());
+				modificado.setNombreUsuario(arbitroModificado.getNombreUsuario());
+				usuarioRepository.save(modificado);
+				return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
+			}
+			//No debería entrar aquí nunca, por los permisos de Roles.
+			else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+
+		}
+
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
