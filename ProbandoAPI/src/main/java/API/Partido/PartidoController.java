@@ -1,5 +1,6 @@
 package API.Partido;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,9 @@ public class PartidoController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidos() {
-		return new ResponseEntity<List<Partido>>(partidoRepository.findAll(), HttpStatus.OK);
+		List<Partido> partidos = partidoRepository.findAll();
+		Collections.sort(partidos);
+		return new ResponseEntity<List<Partido>>(partidos, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -51,27 +54,27 @@ public class PartidoController {
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/equipoLocal/{equipoLocal}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> verPartidosEquipoLocal(@PathVariable String equipoLocal) {
-		List<Partido> entrada = partidoRepository.findByEquipoLocal(equipoLocal);
+	@RequestMapping(value = "/equipoLocal/{equipoLocalId}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> verPartidosEquipoLocal(@PathVariable String equipoLocalId) {
+		List<Partido> entrada = partidoRepository.findByEquipoLocalNombreIgnoreCase(equipoLocalId);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/equipoVisitante/{equipoVisitante}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> verPartidosEquipoVisitante(@PathVariable String equipoVisitante) {
-		List<Partido> entrada = partidoRepository.findByEquipoVisitante(equipoVisitante);
+	@RequestMapping(value = "/equipoVisitante/{equipoVisitanteId}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> verPartidosEquipoVisitante(@PathVariable String equipoVisitanteId) {
+		List<Partido> entrada = partidoRepository.findByEquipoVisitanteId(equipoVisitanteId);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/arbitro/{arbitro}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> verPartidosArbitro(@PathVariable String arbitro) {
-		List<Partido> entrada = partidoRepository.findByArbitro(arbitro);
+	@RequestMapping(value = "/arbitro/{idArbitro}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> verPartidosArbitro(@PathVariable String idArbitro) {
+		List<Partido> entrada = partidoRepository.findByIdArbitro(idArbitro);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}
