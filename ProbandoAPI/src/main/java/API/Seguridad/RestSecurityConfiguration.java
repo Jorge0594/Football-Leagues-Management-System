@@ -23,10 +23,20 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.httpBasic();
 
 		// URLs that need authentication to access to it
-		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores").hasAnyRole("JUGADOR");
-		http.authorizeRequests().antMatchers(HttpMethod.GET, "/arbitros").hasAnyRole("ARBITRO");
+		//Jugadores
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores").hasAnyRole("JUGADOR", "MIEMBROCOMITE");
+		
+		
+		//Arbitros
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/arbitros").hasAnyRole("ARBITRO", "MIEMBROCOMITE");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/arbitros/**").hasAnyRole("ARBITRO","MIEMBROCOMITE");
-
+		
+		//MiembrosComite
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/miembrosComite/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/miembrosComite/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		//http.authorizeRequests().antMatchers(HttpMethod.POST, "/miembrosComite/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/miembrosComite/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		
 		http.authorizeRequests().anyRequest().permitAll();
 
 		http.logout().logoutSuccessHandler((rq, rs, a) -> {
