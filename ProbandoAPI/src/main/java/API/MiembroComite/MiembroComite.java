@@ -2,6 +2,7 @@ package API.MiembroComite;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Document(collection="MiembrosComite")		
 public class MiembroComite {
@@ -22,7 +23,7 @@ public MiembroComite(String id, String nombre, String apellidos, String usuario,
 	this.nombre = nombre;
 	this.apellidos = apellidos;
 	this.usuario = usuario;
-	this.clave = clave;
+	this.clave = new BCryptPasswordEncoder().encode(clave);
 	this.comite = comite;
 	this.email = email;
 }
@@ -81,8 +82,12 @@ public String getClave() {
 }
 
 
-public void setClave(String clave) {
+public void setClaveSinEncriptar(String clave) {
 	this.clave = clave;
+}
+
+public void setClave(String clave) {
+	this.clave = new BCryptPasswordEncoder().encode(clave);
 }
 
 

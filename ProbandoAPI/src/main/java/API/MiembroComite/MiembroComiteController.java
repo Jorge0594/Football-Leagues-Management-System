@@ -1,5 +1,6 @@
 package API.MiembroComite;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import API.Usuario.Usuario;
+import API.Usuario.UsuarioRepository;
+
 
 @RestController
 @CrossOrigin
@@ -20,14 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class MiembroComiteController {
 	
 	@Autowired
-	private MiembroComiteRepositorio miembroComiteRepository;
+	private MiembroComiteRepository miembroComiteRepository;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 	
 	//GET
-	
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<MiembroComite>> verTodosMiembrosComite() {
 		return new ResponseEntity<List<MiembroComite>>(miembroComiteRepository.findAll(), HttpStatus.OK);
-
 	}
 	
 
@@ -60,6 +64,7 @@ public class MiembroComiteController {
 	//Buscar todos los miembros de un comite en concreto si al final creamos la colección comite
 	
 	//PUT
+	
 	//Modificar información del miembro del comite
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<MiembroComite> modificarMiembroComiteInfo(@PathVariable String id, @RequestBody MiembroComite miembroModificado) {
@@ -81,17 +86,43 @@ public class MiembroComiteController {
 		if (miembro == null) {
 			return new ResponseEntity<MiembroComite>(HttpStatus.NO_CONTENT);
 		}
-		miembro.setUsuario(miembroModificado.getUsuario());
-		miembro.setClave(miembroModificado.getClave());
-		miembroComiteRepository.save(miembro);
-		return new ResponseEntity<MiembroComite>(miembro, HttpStatus.OK);
+		else {
+			List<Usuario> usuarios = usuarioRepository.findAll();
+			List<String> nombresUsuarios = new ArrayList<>();
+			for(Usuario us : usuarios){
+				nombresUsuarios.add(us.getNombreUsuario());
+			}
+			if(!nombresUsuarios.contains(miembro.getUsuario())) {
+				miembro.setUsuario(miembroModificado.getUsuario());
+				miembroComiteRepository.save(miembro);
+			}
+			else {
+				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+			}
+			miembro.setClaveSinEncriptar(miembroModificado.getClave());
+			return new ResponseEntity<MiembroComite>(miembro, HttpStatus.OK);
+		}
 	}
 	
 	//POST
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<MiembroComite> crearMiembroComite(@RequestBody MiembroComite miembro) {
-		miembroComiteRepository.save(miembro);
-		return new ResponseEntity<MiembroComite>(miembro, HttpStatus.CREATED);
+		List<Usuario> usuarios = usuarioRepository.findAll();
+		List<String> nombresUsuarios = new ArrayList<>();
+		for(Usuario us : usuarios) {
+			nombresUsuarios.add(us.getNombreUsuario());
+		}
+		if(!nombresUsuarios.contains(miembro.getUsuario())) {
+			miembroComiteRepository.save(miembro);
+			Usuario usuarioNuevo = new Usuario(miembro.getUsuario(), miembro.getClave(), "ROLE_MIEMBROCOMITE");
+			usuarioRepository.save(usuarioNuevo);
+			return new ResponseEntity<MiembroComite>(miembro, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		
+		
 
 	}
 	
