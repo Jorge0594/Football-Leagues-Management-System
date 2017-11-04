@@ -84,7 +84,7 @@ public class ArbitroController {
 				modificado.setClave(arbitroModificado.getClave());
 				modificado.setNombreUsuario(arbitroModificado.getNombreUsuario());
 				usuarioRepository.save(modificado);
-				return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
+				return new ResponseEntity<Arbitro>(arbitroModificado, HttpStatus.OK);
 			}
 			//No debería entrar aquí nunca, por los permisos de Roles.
 			else {
