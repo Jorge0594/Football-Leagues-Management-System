@@ -23,43 +23,43 @@ public class Equipo implements Comparable<Equipo> {
 	@JsonView(RankAtt.class)
 	@Id
 	private String id;
-	
+
 	@JsonView(RankAtt.class)
 	private String nombre;
-	
+
 	@JsonView(PerfilAtt.class)
 	private String liga;
-	
+
 	@JsonView(PerfilAtt.class)
 	private String ciudad;
-	
+
 	@JsonView(RankAtt.class)
 	private String imagenEquipo;
-	
+
 	@JsonView(RankAtt.class)
 	private int posicion;
-	
+
 	@JsonView(RankAtt.class)
 	private int puntos;
-	
+
 	@JsonView(RankAtt.class)
 	private int goles;
-	
+
 	@JsonView(RankAtt.class)
 	private int golesEncajados;
-	
+
 	@JsonView(RankAtt.class)
 	private int partidosGanados;
-	
+
 	@JsonView(RankAtt.class)
 	private int partidosPerdidos;
-	
+
 	@JsonView(RankAtt.class)
 	private int partidosEmpatados;
-	
+
 	@JsonView(RankAtt.class)
 	private int partidosJugados;
-	
+
 	@JsonView(PerfilAtt.class)
 	@DBRef
 	private List<Jugador> plantillaEquipo = new ArrayList<>();
@@ -70,22 +70,18 @@ public class Equipo implements Comparable<Equipo> {
 	public Equipo() {
 	}
 
-	public Equipo(String id, String nombre, String liga, String ciudad, int posicion, int puntos, int golesEncajados,
-			int goles, int partidosGanados, int partidosPerdidos, int partidosEmpatados, int partidosJugados,
-			List<Jugador> plantillaEquipo) {
+	public Equipo(String id, String nombre, String liga, String ciudad, int posicion, int golesEncajados,
+			int goles, List<Jugador> plantillaEquipo) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.liga = liga;
 		this.ciudad = ciudad;
 		this.posicion = posicion;
-		this.puntos = puntos;
+		this.puntos = partidosGanados*3 + partidosEmpatados;
 		this.golesEncajados = golesEncajados;
 		this.goles = goles;
-		this.partidosGanados = partidosGanados;
-		this.partidosPerdidos = partidosPerdidos;
-		this.partidosEmpatados = partidosEmpatados;
-		this.partidosJugados = partidosJugados;
+		this.partidosJugados = partidosGanados + partidosPerdidos + partidosEmpatados;
 		this.plantillaEquipo = plantillaEquipo;
 	}
 
@@ -142,7 +138,7 @@ public class Equipo implements Comparable<Equipo> {
 	}
 
 	public void setPuntos(int puntos) {
-		this.puntos = puntos;
+		this.puntos = partidosGanados*3 + partidosEmpatados;;
 	}
 
 	public int getGolesEncajados() {
@@ -166,6 +162,7 @@ public class Equipo implements Comparable<Equipo> {
 	}
 
 	public void setPartidosGanados(int partidosGanados) {
+		this.puntos = this.puntos + 3*(partidosGanados-this.partidosGanados);
 		this.partidosGanados = partidosGanados;
 	}
 
@@ -182,6 +179,7 @@ public class Equipo implements Comparable<Equipo> {
 	}
 
 	public void setPartidosEmpatados(int partidosEmpatados) {
+		this.puntos = this.puntos + (partidosEmpatados-this.partidosEmpatados);
 		this.partidosEmpatados = partidosEmpatados;
 	}
 
@@ -190,7 +188,7 @@ public class Equipo implements Comparable<Equipo> {
 	}
 
 	public void setPartidosJugados(int partidosJugados) {
-		this.partidosJugados = partidosJugados;
+		this.partidosJugados = partidosGanados + partidosPerdidos + partidosEmpatados;
 	}
 
 	public List<Jugador> getPlantillaEquipo() {
@@ -270,27 +268,26 @@ public class Equipo implements Comparable<Equipo> {
 
 	@Override
 	public int compareTo(Equipo o) {
-		if (this.puntos > o.puntos){
+		if (this.puntos > o.puntos) {
 			return -1;
-		}else if(this.puntos < o.puntos){
+		} else if (this.puntos < o.puntos) {
 			return 1;
 		}
-		
-		if(this.puntos == o.puntos){
-			if(this.goles != o.goles){
-				if(this.goles > o.goles){
+
+		if (this.puntos == o.puntos) {
+			if (this.goles != o.goles) {
+				if (this.goles > o.goles) {
 					return -1;
-				}else{
+				} else {
 					return 1;
 				}
-			}else{
-				if(this.golesEncajados<o.golesEncajados){
+			} else {
+				if (this.golesEncajados < o.golesEncajados) {
 					return -1;
-				}else{
+				} else {
 					return 1;
 				}
 			}
-			
 		}
 		return 0;
 	}

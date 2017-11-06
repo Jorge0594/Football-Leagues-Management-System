@@ -48,6 +48,12 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
 		}
 		equipo.setImagenEquipo("imageTeamDafault.png");
+		// COMENTADO PARA FACILTAR EL TESTING BOPRRAR CUANDO SE PASE A
+		// PRODUCCION
+		/*
+		 * equipo.setPartidosEmpatados(0); equipo.setPartidosGanados(0);
+		 * equipo.setPartidosPerdidos(0);
+		 */
 		equipo.setLiga("");
 		equipoRepository.save(equipo);
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);
@@ -135,7 +141,6 @@ public class EquipoController {
 		equipo.setGolesEncajados(auxEquipo.getGolesEncajados());
 		equipo.setPartidosEmpatados(auxEquipo.getPartidosEmpatados());
 		equipo.setPartidosGanados(auxEquipo.getPartidosGanados());
-		equipo.setPartidosJugados(auxEquipo.getPartidosJugados());
 		equipo.setPartidosPerdidos(auxEquipo.getPartidosPerdidos());
 		equipo.setPuntos(auxEquipo.getPuntos());
 
@@ -160,28 +165,29 @@ public class EquipoController {
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/{nombre}/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Equipo> añadirJugadorEquipo(@PathVariable(value = "id") String id, @PathVariable(value = "nombre") String nombre) {
+	public ResponseEntity<Equipo> añadirJugadorEquipo(@PathVariable(value = "id") String id,
+			@PathVariable(value = "nombre") String nombre) {
 		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombre);
 		Jugador jugador = jugadorRepository.findById(id);
 		if (equipo == null || jugador == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
-		if(!equipo.getLiga().equals("")){
+		if (!equipo.getLiga().equals("")) {
 			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
 			liga.getGoleadores().add(jugador);
 			ligaRepository.save(liga);
 		}
-		 if (!jugador.getEquipo().equals("")) {
-			if (!equipo.getPlantillaEquipo().contains(jugador)) {//testear
+		if (!jugador.getEquipo().equals("")) {
+			if (!equipo.getPlantillaEquipo().contains(jugador)) {
 				Equipo aux = equipoRepository.findByNombreIgnoreCase(jugador.getEquipo());
-				if(!aux.getLiga().equals(equipo.getLiga())&& (!aux.getLiga().equals(""))){
+				if (!aux.getLiga().equals(equipo.getLiga()) && (!aux.getLiga().equals(""))) {
 					Liga ligaAux = ligaRepository.findByNombreIgnoreCase(aux.getLiga());
 					ligaAux.getGoleadores().remove(jugador);
 					ligaRepository.save(ligaAux);
 				}
 				aux.getPlantillaEquipo().remove(jugador);
 				equipoRepository.save(aux);
-			}else{
+			} else {
 				return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
 			}
 		}
@@ -227,7 +233,7 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 		if (equipo.getPlantillaEquipo().contains(jugador)) {
-			
+
 			equipo.getPlantillaEquipo().remove(jugador);
 			jugador.setEquipo("");
 
@@ -246,13 +252,14 @@ public class EquipoController {
 		if (equipo == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
-		
-		Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-		liga.getGoleadores().removeAll(equipo.getPlantillaEquipo());
-		liga.getClasificacion().remove(equipo);
-		
-		ligaRepository.save(liga);
-		
+
+		if (!equipo.getLiga().equals("")) {
+			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
+			liga.getGoleadores().removeAll(equipo.getPlantillaEquipo());
+			liga.getClasificacion().remove(equipo);
+			ligaRepository.save(liga);
+		}
+
 		for (Jugador j : equipo.getPlantillaEquipo()) {
 			j.setEquipo("");
 			jugadorRepository.save(j);
