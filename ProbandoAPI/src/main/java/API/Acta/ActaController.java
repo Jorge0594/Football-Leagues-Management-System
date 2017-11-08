@@ -2,6 +2,7 @@ package API.Acta;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class ActaController {
 	
 	@RequestMapping(value = "/arbitro/{arbitro}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaArbitro(@PathVariable String arbitro) {
-		List<Acta> entrada = actaRepository.findByArbitro(arbitro);
+		List<Acta> entrada = actaRepository.findByArbitroId(new ObjectId(arbitro));
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
 		}
@@ -62,18 +63,18 @@ public class ActaController {
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/local/{equipoLocal}", method = RequestMethod.GET)
+	@RequestMapping(value = "/equipoLocal/{equipoLocal}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaEquipoLocal(@PathVariable String equipoLocal) {
-		List<Acta> entrada = actaRepository.findByEquipoLocalIgnoreCase(equipoLocal);
+		List<Acta> entrada = actaRepository.findByEquipoLocalId(new ObjectId(equipoLocal));
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/visitante/{equipoVisitante}", method = RequestMethod.GET)
+	@RequestMapping(value = "/equipoVisitante/{equipoVisitante}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaEquipoVisitante(@PathVariable String equipoVisitante) {
-		List<Acta> entrada = actaRepository.findByEquipoVisitanteIgnoreCase(equipoVisitante);
+		List<Acta> entrada = actaRepository.findByEquipoVisitanteId(new ObjectId(equipoVisitante));
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
 		}
