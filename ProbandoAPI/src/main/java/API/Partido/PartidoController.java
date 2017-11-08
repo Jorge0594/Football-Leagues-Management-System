@@ -3,6 +3,7 @@ package API.Partido;
 import java.util.Collections;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class PartidoController {
 
 	@RequestMapping(value = "/equipoLocal/{equipoLocalId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosEquipoLocal(@PathVariable String equipoLocalId) {
-		List<Partido> entrada = partidoRepository.findByEquipoLocalNombreIgnoreCase(equipoLocalId);
+		List<Partido> entrada = partidoRepository.findByEquipoLocalId(new ObjectId(equipoLocalId));
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}
@@ -65,7 +66,7 @@ public class PartidoController {
 
 	@RequestMapping(value = "/equipoVisitante/{equipoVisitanteId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosEquipoVisitante(@PathVariable String equipoVisitanteId) {
-		List<Partido> entrada = partidoRepository.findByEquipoVisitanteId(equipoVisitanteId);
+		List<Partido> entrada = partidoRepository.findByEquipoVisitanteId(new ObjectId(equipoVisitanteId));
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}
