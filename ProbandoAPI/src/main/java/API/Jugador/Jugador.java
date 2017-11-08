@@ -139,6 +139,10 @@ public class Jugador implements Comparable<Jugador>{
 	public void setClave(String clave) {
 		this.clave = new BCryptPasswordEncoder().encode(clave);
 	}
+	
+	public void setClaveSinEncriptar (String clave){
+		this.clave = clave;
+	}
 
 	public String getEquipo() {
 		return equipo;
@@ -215,7 +219,6 @@ public class Jugador implements Comparable<Jugador>{
 	public boolean isCapitan() {
 		return capitan;
 	}
-
 	public void setCapitan(boolean capitan) {
 		this.capitan = capitan;
 	}

@@ -37,7 +37,7 @@ public class LigaController {
 	@RequestMapping (method = RequestMethod.POST)
 	public ResponseEntity<Liga>crearLiga (@RequestBody Liga liga){
 		if(ligaRepository.findByNombreIgnoreCase(liga.getNombre())!= null){
-			return new ResponseEntity<Liga>(HttpStatus.CONFLICT);
+			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		ligaRepository.save(liga);
 		return new ResponseEntity<Liga>(liga,HttpStatus.CREATED);
@@ -105,7 +105,7 @@ public class LigaController {
 			ligaRepository.save(liga);
 			return new ResponseEntity<Liga>(liga, HttpStatus.OK);
 		}else{
-			return new ResponseEntity<Liga>(HttpStatus.CONFLICT);
+			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 	

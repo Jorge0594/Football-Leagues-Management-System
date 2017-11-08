@@ -45,7 +45,7 @@ public class EquipoController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Equipo> crearEquipo(@RequestBody Equipo equipo) {
 		if (equipoRepository.findByNombreIgnoreCase(equipo.getNombre()) != null) {
-			return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
+			return new ResponseEntity<Equipo>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		equipo.setImagenEquipo("imageTeamDafault.png");
 		// COMENTADO PARA FACILTAR EL TESTING BOPRRAR CUANDO SE PASE A
@@ -188,7 +188,7 @@ public class EquipoController {
 				aux.getPlantillaEquipo().remove(jugador);
 				equipoRepository.save(aux);
 			} else {
-				return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
+				return new ResponseEntity<Equipo>(HttpStatus.NOT_ACCEPTABLE);
 			}
 		}
 		jugador.setEquipo(equipo.getNombre());
@@ -214,7 +214,7 @@ public class EquipoController {
 		Jugador aux = jugadorRepository.findByDorsalAndEquipoIgnoreCase(dorsal, equipo.getNombre());
 
 		if (aux != null && !jugador.equals(aux)) {
-			return new ResponseEntity<Jugador>(HttpStatus.CONFLICT);
+			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 		} else {
 			jugador.setDorsal(dorsal);
 			jugadorRepository.save(jugador);

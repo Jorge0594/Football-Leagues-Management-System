@@ -19,6 +19,7 @@ import API.Equipo.EquipoRepository;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
 import API.Usuario.Usuario;
+import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
 
 @RestController
@@ -37,13 +38,15 @@ public class JugadorController {
 	LigaRepository ligaRepository;
 	@Autowired
 	UsuarioRepository usuarioRepository;
+	@Autowired
+	UsuarioComponent usuarioComponent;
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Jugador> crearJugador(@RequestBody Jugador jugador) {
 		if (jugadorRepository.findByDniIgnoreCase(jugador.getDni()) != null
 				|| usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario()) != null) {
-			return new ResponseEntity<Jugador>(HttpStatus.CONFLICT);
+			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		jugador.setFotoJugador("defaultImage.png");
 		jugador.setEquipo("");
@@ -51,7 +54,7 @@ public class JugadorController {
 
 		usuarioRepository.save(usuario);
 		jugadorRepository.save(jugador);
-		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
+		return new ResponseEntity<Jugador>(jugador, HttpStatus.CREATED);
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -132,43 +135,62 @@ public class JugadorController {
 	}
 
 	@JsonView(ProfileView.class)
-	@RequestMapping(value = "/{nombre}/{apellidos}", method = RequestMethod.PUT)
-	public ResponseEntity<Jugador> actualizaJugador(@PathVariable(value = "nombre") String nombre,
-			@PathVariable(value = "apellidos") String apellidos, @RequestBody Jugador entrada) {
-		Jugador jugador = jugadorRepository.findByNombreAndApellidosAllIgnoreCase(nombre, apellidos);
-		if (jugador == null) {
-			return new ResponseEntity<Jugador>(HttpStatus.NOT_MODIFIED);
-		}
-		jugador.setNombre(entrada.getNombre());
-		jugador.setApellidos(entrada.getApellidos());
-		jugador.setGoles(entrada.getGoles());
-		// jugador.setDorsal(entrada.getDorsal());
-		jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
-		jugador.setTarjetasRojas(entrada.getTarjetasRojas());
-		jugador.setNacionalidad(entrada.getNacionalidad());
-		jugadorRepository.save(jugador);
-		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
-	}
-
-	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Jugador> actualizaJugadorId(@PathVariable(value = "id") String id,
 			@RequestBody Jugador entrada) {
 		Jugador jugador = jugadorRepository.findById(id);
 		if (jugador == null) {
-			return new ResponseEntity<Jugador>(HttpStatus.NOT_MODIFIED);
+			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
-		jugador.setNombre(entrada.getNombre());
-		jugador.setApellidos(entrada.getApellidos());
-		jugador.setGoles(entrada.getGoles());
-		// jugador.setDorsal(entrada.getDorsal());
-		jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
-		jugador.setTarjetasRojas(entrada.getTarjetasRojas());
-		jugador.setNacionalidad(entrada.getNacionalidad());
+		
+		switch (usuarioComponent.getLoggedUser().getRol()){
+		case "ROLE_JUGADOR":
+			Jugador jugadorRegistrado = jugadorRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario());
+			if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())||
+					(jugadorRegistrado.isCapitan() && jugadorRegistrado.getEquipo().equals(jugador.getEquipo()))) {
+				Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario());
+				
+				jugador.setNombre(entrada.getNombre());
+				jugador.setApellidos(entrada.getApellidos());
+				jugador.setClaveSinEncriptar(entrada.getClave());
+				
+				
+				usuario.setClave(jugador.getClave());
+				
+				usuarioRepository.save(usuario);
+				break;
+			}else{
+				return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
+			}
+		case "ROLE_ARBITRO":
+			jugador.setGoles(entrada.getGoles());
+			jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
+			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
+			break;
+		case "ROLE_MIEMBROCOMITE":
+			jugador.setNombre(entrada.getNombre());
+			jugador.setApellidos(entrada.getApellidos());
+			jugador.setCapitan(entrada.isCapitan());
+			jugador.setDni(entrada.getDni());
+			jugador.setNombreUsuario(entrada.getNombreUsuario());
+			jugador.setClaveSinEncriptar(entrada.getClave());
+			jugador.setDorsal(entrada.getDorsal());
+			jugador.setGoles(entrada.getGoles());
+			jugador.setFechaSancion(entrada.getFechaSancion());
+			jugador.setNacionalidad(entrada.getNacionalidad());
+			jugador.setEstado(entrada.getEstado());
+			jugador.setPosicion(entrada.getPosicion());
+			jugador.setGoles(entrada.getGoles());
+			jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
+			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
+			break;
+		default:
+			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
+		}
+		
 		jugadorRepository.save(jugador);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
-
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -182,15 +204,14 @@ public class JugadorController {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
 		Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-		
+
 		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario());
-		if(usuario != null){
+		if (usuario != null) {
 			usuarioRepository.delete(usuario);
 		}
-		
+
 		liga.getGoleadores().remove(jugador);
 		equipo.getPlantillaEquipo().remove(jugador);
-		
 
 		ligaRepository.save(liga);
 		equipoRepository.save(equipo);
