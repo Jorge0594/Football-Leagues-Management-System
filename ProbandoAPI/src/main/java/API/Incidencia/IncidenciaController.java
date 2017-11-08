@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import API.Jugador.JugadorRepository;
+import API.MiembroComite.MiembroComite;
+import API.Usuario.Usuario;
 
 
 @RestController
@@ -81,5 +83,18 @@ public class IncidenciaController {
 			return new ResponseEntity<Incidencia>(HttpStatus.NOT_ACCEPTABLE);
 
 		}
-
+		
+		//DELETE
+		@RequestMapping(value="/{id}", method= RequestMethod.DELETE)
+		public ResponseEntity<Incidencia> eliminarIncidencia(@PathVariable String id){
+			Incidencia incidencia= incidenciasRepository.findById(id);
+			if (incidencia != null) {                                                                                                                                                     
+					incidenciasRepository.delete(incidencia);
+					return new ResponseEntity<>(null, HttpStatus.OK);
+				
+			}
+				else {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+		}                                            
 }

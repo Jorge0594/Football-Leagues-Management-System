@@ -5,6 +5,11 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import API.Arbitro.Arbitro;
+import API.Equipo.Equipo;
+import API.Incidencia.Incidencia;
+import API.Jugador.Jugador;
+
 @Document(collection = "Acta")
 public class Acta {
 	@Id
@@ -12,22 +17,22 @@ public class Acta {
 	private String idPartido;
 	private String fecha;
 	private String hora;
-	private String equipoLocal;
-	private String equipoVisitante;
-	private String arbitro;
-	private List<String> convocadosLocal;
-	private List<String> convocadosVisitante;
+	private Equipo equipoLocal;
+	private Equipo equipoVisitante;
+	private Arbitro arbitro;
+	private List<Jugador> convocadosLocal;
+	private List<Jugador> convocadosVisitante;
 	private int golesLocal;
 	private int golesVisitante;
-	// private List<Incidencia> incidencias;
+	private List<Incidencia> incidencias;
 	private String observaciones;
 
 	public Acta() {
 	}
 
-	public Acta(String id, String idPartido, String fecha, String hora, String equipoLocal, String equipoVisitante,
-			String arbitro, List<String> convocadosLocal, List<String> convocadosVisitante, int golesLocal,
-			int golesVisitante, String observaciones) {
+	public Acta(String id, String idPartido, String fecha, String hora, Equipo equipoLocal, Equipo equipoVisitante,
+			Arbitro arbitro, List<Jugador> convocadosLocal, List<Jugador> convocadosVisitante, int golesLocal,
+			int golesVisitante, List<Incidencia> incidencias, String observaciones) {
 		super();
 		this.id = id;
 		this.idPartido = idPartido;
@@ -40,22 +45,23 @@ public class Acta {
 		this.convocadosVisitante = convocadosVisitante;
 		this.golesLocal = golesLocal;
 		this.golesVisitante = golesVisitante;
+		this.incidencias = incidencias;
 		this.observaciones = observaciones;
 	}
 
-	public void setConvocadosLocal(List<String> convocadosLocal) {
+	public void setConvocadosLocal(List<Jugador> convocadosLocal) {
 		this.convocadosLocal = convocadosLocal;
 	}
 
-	public void setConvocadosVisitante(List<String> convocadosVisitante) {
+	public void setConvocadosVisitante(List<Jugador> convocadosVisitante) {
 		this.convocadosVisitante = convocadosVisitante;
 	}
 
-	public List<String> getConvocadosLocal() {
+	public List<Jugador> getConvocadosLocal() {
 		return convocadosLocal;
 	}
 
-	public List<String> getConvocadosVisitante() {
+	public List<Jugador> getConvocadosVisitante() {
 		return convocadosVisitante;
 	}
 
@@ -91,27 +97,27 @@ public class Acta {
 		this.hora = hora;
 	}
 
-	public String getEquipoLocal() {
+	public Equipo getEquipoLocal() {
 		return equipoLocal;
 	}
 
-	public void setEquipoLocal(String equipoLocal) {
+	public void setEquipoLocal(Equipo equipoLocal) {
 		this.equipoLocal = equipoLocal;
 	}
 
-	public String getEquipoVisitante() {
+	public Equipo getEquipoVisitante() {
 		return equipoVisitante;
 	}
 
-	public void setEquipoVisitante(String equipoVisitante) {
+	public void setEquipoVisitante(Equipo equipoVisitante) {
 		this.equipoVisitante = equipoVisitante;
 	}
 
-	public String getArbitro() {
+	public Arbitro getArbitro() {
 		return arbitro;
 	}
 
-	public void setArbitro(String arbitro) {
+	public void setArbitro(Arbitro arbitro) {
 		this.arbitro = arbitro;
 	}
 
@@ -129,6 +135,15 @@ public class Acta {
 
 	public void setGolesVisitante(int golesVisitante) {
 		this.golesVisitante = golesVisitante;
+	}
+	
+
+	public List<Incidencia> getIncidencias() {
+		return incidencias;
+	}
+
+	public void setIncidencias(List<Incidencia> incidencias) {
+		this.incidencias = incidencias;
 	}
 
 	public String getObservaciones() {

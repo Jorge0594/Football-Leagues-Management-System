@@ -10,4 +10,5 @@ public interface MiembroComiteRepository extends MongoRepository<MiembroComite, 
     MiembroComite findById(String id);
 	MiembroComite findByUsuarioIgnoreCase(String usuario);
 	MiembroComite findByEmailIgnoreCase(String email);
+
 }
