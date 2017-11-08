@@ -179,7 +179,8 @@ public class EquipoController {
 		}
 		if (!jugador.getEquipo().equals("")) {
 			if (!equipo.getPlantillaEquipo().contains(jugador)) {
-				Equipo aux = equipoRepository.findByNombreIgnoreCase(jugador.getEquipo());
+				//Equipo aux = equipoRepository.findByNombreIgnoreCase(jugador.getEquipo());
+				Equipo aux = equipoRepository.findById(jugador.getEquipo());
 				if (!aux.getLiga().equals(equipo.getLiga()) && (!aux.getLiga().equals(""))) {
 					Liga ligaAux = ligaRepository.findByNombreIgnoreCase(aux.getLiga());
 					ligaAux.getGoleadores().remove(jugador);
@@ -191,7 +192,7 @@ public class EquipoController {
 				return new ResponseEntity<Equipo>(HttpStatus.NOT_ACCEPTABLE);
 			}
 		}
-		jugador.setEquipo(equipo.getNombre());
+		jugador.setEquipo(equipo.getId());
 		equipo.getPlantillaEquipo().add(jugador);
 
 		jugadorRepository.save(jugador);

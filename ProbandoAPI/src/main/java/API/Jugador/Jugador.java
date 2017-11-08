@@ -41,7 +41,7 @@ public class Jugador implements Comparable<Jugador>{
 	private String fotoJugador;
 
 	@JsonView(EquipoAtt.class)
-	private String equipo;
+	private String equipoId;
 
 	@JsonView(EquipoAtt.class)
 	private String posicion;
@@ -86,7 +86,7 @@ public class Jugador implements Comparable<Jugador>{
 		this.nombreUsuario = nombreUsuario;
 		this.clave = new BCryptPasswordEncoder().encode(clave);
 		this.fotoJugador = fotoJugador;
-		this.equipo = equipo;
+		this.equipoId= equipo;
 		this.posicion = posicion;
 		this.fechaSancion = fechaSancion;
 		this.estado = estado;
@@ -145,11 +145,11 @@ public class Jugador implements Comparable<Jugador>{
 	}
 
 	public String getEquipo() {
-		return equipo;
+		return equipoId;
 	}
 
 	public void setEquipo(String equipo) {
-		this.equipo = equipo;
+		this.equipoId = equipo;
 	}
 
 	public String getPosicion() {
@@ -242,8 +242,8 @@ public class Jugador implements Comparable<Jugador>{
 	@Override
 	public String toString() {
 		return "Player [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", dni=" + dni
-				+ ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", fotoJugador=" + fotoJugador + ", equipo="
-				+ equipo + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado=" + estado
+				+ ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", fotoJugador=" + fotoJugador + ", equipoId="
+				+ equipoId + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado=" + estado
 				+ ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas="
 				+ tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", capitan=" + capitan + "]";
 	}
@@ -279,10 +279,10 @@ public class Jugador implements Comparable<Jugador>{
 			return false;
 		if (dorsal != other.dorsal)
 			return false;
-		if (equipo == null) {
-			if (other.equipo != null)
+		if (equipoId == null) {
+			if (other.equipoId != null)
 				return false;
-		} else if (!equipo.equals(other.equipo))
+		} else if (!equipoId.equals(other.equipoId))
 			return false;
 		if (estado == null) {
 			if (other.estado != null)
