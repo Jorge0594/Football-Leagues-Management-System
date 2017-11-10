@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Document(collection = "Jugadores")
-public class Jugador implements Comparable<Jugador>{
+public class Jugador implements Comparable<Jugador> {
 
 	public interface EquipoAtt {
 	}
@@ -36,6 +36,9 @@ public class Jugador implements Comparable<Jugador>{
 
 	@JsonView(ClaveAtt.class)
 	private String clave;
+
+	@JsonView(PerfilAtt.class)
+	private String email;
 
 	@JsonView(EquipoAtt.class)
 	private String fotoJugador;
@@ -73,8 +76,6 @@ public class Jugador implements Comparable<Jugador>{
 	public Jugador() {
 	};
 
-	
-
 	public Jugador(String id, String nombre, String apellidos, String dni, String nombreUsuario, String clave,
 			String fotoJugador, String equipo, String posicion, String fechaSancion, String estado, String nacionalidad,
 			int dorsal, int goles, int tarjetasAmarillas, int tarjetasRojas, boolean capitan) {
@@ -86,7 +87,7 @@ public class Jugador implements Comparable<Jugador>{
 		this.nombreUsuario = nombreUsuario;
 		this.clave = new BCryptPasswordEncoder().encode(clave);
 		this.fotoJugador = fotoJugador;
-		this.equipoId= equipo;
+		this.equipoId = equipo;
 		this.posicion = posicion;
 		this.fechaSancion = fechaSancion;
 		this.estado = estado;
@@ -97,8 +98,6 @@ public class Jugador implements Comparable<Jugador>{
 		this.tarjetasRojas = tarjetasRojas;
 		this.capitan = capitan;
 	}
-
-
 
 	public String getId() {
 		return id;
@@ -139,8 +138,8 @@ public class Jugador implements Comparable<Jugador>{
 	public void setClave(String clave) {
 		this.clave = new BCryptPasswordEncoder().encode(clave);
 	}
-	
-	public void setClaveSinEncriptar (String clave){
+
+	public void setClaveSinEncriptar(String clave) {
 		this.clave = clave;
 	}
 
@@ -219,6 +218,7 @@ public class Jugador implements Comparable<Jugador>{
 	public boolean isCapitan() {
 		return capitan;
 	}
+
 	public void setCapitan(boolean capitan) {
 		this.capitan = capitan;
 	}
@@ -239,17 +239,25 @@ public class Jugador implements Comparable<Jugador>{
 		this.fotoJugador = fotoJugador;
 	}
 
-	@Override
-	public String toString() {
-		return "Player [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", dni=" + dni
-				+ ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", fotoJugador=" + fotoJugador + ", equipoId="
-				+ equipoId + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado=" + estado
-				+ ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas="
-				+ tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", capitan=" + capitan + "]";
+	public String getEmail() {
+		return email;
 	}
 
+	public void setEmail(String email) {
+		this.email = email;
+	}
 	
 	
+
+	@Override
+	public String toString() {
+		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", dni=" + dni
+				+ ", nombreUsuario=" + nombreUsuario + ", email=" + email + ", fotoJugador=" + fotoJugador
+				+ ", equipoId=" + equipoId + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado="
+				+ estado + ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles
+				+ ", tarjetasAmarillas=" + tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", capitan="
+				+ capitan + "]";
+	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -335,9 +343,9 @@ public class Jugador implements Comparable<Jugador>{
 
 	@Override
 	public int compareTo(Jugador o) {
-		if(this.goles > o.goles){
+		if (this.goles > o.goles) {
 			return -1;
-		}else if (this.goles < o.goles){
+		} else if (this.goles < o.goles) {
 			return 1;
 		}
 		return 0;
