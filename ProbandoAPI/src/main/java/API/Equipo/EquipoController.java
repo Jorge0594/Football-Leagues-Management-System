@@ -18,8 +18,6 @@ import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
-import API.Usuario.Usuario;
-import API.Usuario.UsuarioComponent;
 
 @RestController
 @CrossOrigin
@@ -42,8 +40,6 @@ public class EquipoController {
 	private JugadorRepository jugadorRepository;
 	@Autowired
 	private LigaRepository ligaRepository;
-	@Autowired
-	private UsuarioComponent usuarioComponent;
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -101,67 +97,21 @@ public class EquipoController {
 	}
 
 	@JsonView(PerfilView.class)
-	@RequestMapping(value = "/perfil/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Equipo> modificarPerfilEquipo(@PathVariable String id, @RequestBody Equipo auxEquipo) {
 		Equipo equipo = equipoRepository.findById(id);
 		if (equipo == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
-		
-		/*equipo.setNombre(auxEquipo.getNombre());
+		//los puntos se recalculan automaticamente por el número de partidos ganados y empatados.
+		equipo.setNombre(auxEquipo.getNombre());
 		equipo.setCiudad(auxEquipo.getCiudad());
-
-		for (Jugador jugador : equipo.getPlantillaEquipo()) {
-			jugador.setEquipo(auxEquipo.getNombre());
-		}
-
-		equipoRepository.save(equipo);*/
-
-		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
-	}
-
-	@JsonView(PerfilView.class)
-	@RequestMapping(value = "/{nombre}/liga", method = RequestMethod.PUT)
-	public ResponseEntity<Equipo> modificarLigaEquipo(@PathVariable String nombre, @RequestBody Equipo auxEquipo) {
-		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombre);
-		if (equipo == null) {
-			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
-		}
-		equipo.setLiga(auxEquipo.getLiga());
-
-		equipoRepository.save(equipo);
-
-		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
-	}
-
-	@JsonView(PerfilView.class)
-	@RequestMapping(value = "/{nombre}/resultado", method = RequestMethod.PUT)
-	public ResponseEntity<Equipo> modificarEquipoPostPartido(@PathVariable String nombre,
-			@RequestBody Equipo auxEquipo) {
-		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombre);
-		if (equipo == null) {
-			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
-		}
+		equipo.setPosicion(auxEquipo.getPosicion());
 		equipo.setGoles(auxEquipo.getGoles());
 		equipo.setGolesEncajados(auxEquipo.getGolesEncajados());
-		equipo.setPartidosEmpatados(auxEquipo.getPartidosEmpatados());
 		equipo.setPartidosGanados(auxEquipo.getPartidosGanados());
 		equipo.setPartidosPerdidos(auxEquipo.getPartidosPerdidos());
-		equipo.setPuntos(auxEquipo.getPuntos());
-
-		equipoRepository.save(equipo);
-
-		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
-	}
-
-	@JsonView(PerfilView.class)
-	@RequestMapping(value = "/{nombre}/posicion", method = RequestMethod.PUT)
-	public ResponseEntity<Equipo> modificarEquipoPosicion(@PathVariable String nombre, @RequestBody Equipo auxEquipo) {
-		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombre);
-		if (equipo == null) {
-			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
-		}
-		equipo.setPosicion(auxEquipo.getPosicion());
+		equipo.setPartidosEmpatados(auxEquipo.getPartidosEmpatados());
 
 		equipoRepository.save(equipo);
 
@@ -203,30 +153,6 @@ public class EquipoController {
 		equipoRepository.save(equipo);
 
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
-	}
-
-	@JsonView(JugadorView.class)
-	@RequestMapping(value = "/{id}/dorsal/{dorsal}", method = RequestMethod.PUT)
-	public ResponseEntity<Jugador> asignarDorsalJugador(@PathVariable(value = "id") String id,
-			@PathVariable(value = "dorsal") int dorsal) {
-		Jugador jugador = jugadorRepository.findById(id);
-
-		if (jugador == null) {
-			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
-		}
-
-		Equipo equipo = equipoRepository.findByNombreIgnoreCase(jugador.getEquipo());
-		Jugador aux = jugadorRepository.findByDorsalAndEquipoIgnoreCase(dorsal, equipo.getNombre());
-
-		if (aux != null && !jugador.equals(aux)) {
-			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
-		} else {
-			jugador.setDorsal(dorsal);
-			jugadorRepository.save(jugador);
-
-			return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
-		}
-
 	}
 
 	@JsonView(PerfilView.class)
