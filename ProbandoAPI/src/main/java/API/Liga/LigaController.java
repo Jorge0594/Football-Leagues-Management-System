@@ -110,10 +110,10 @@ public class LigaController {
 	}
 	
 	@JsonView(InfoLigaView.class)
-	@RequestMapping(value="/{nombre}/equipo/{nombreEquipo}",method = RequestMethod.DELETE)
-	public ResponseEntity<Liga>eliminarEquipoLiga(@PathVariable (value = "nombre")String nombre, @PathVariable (value = "nombreEquipo")String nombreEquipo){
+	@RequestMapping(value="/{nombre}/equipo/{idEquipo}",method = RequestMethod.DELETE)
+	public ResponseEntity<Liga>eliminarEquipoLiga(@PathVariable (value = "nombre")String nombre, @PathVariable (value = "idEquipo")String idEquipo){
 		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
-		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombreEquipo);
+		Equipo equipo = equipoRepository.findById(idEquipo);
 		if(liga == null || equipo == null){
 			return new ResponseEntity<Liga>(HttpStatus.NO_CONTENT);
 		}
