@@ -11,7 +11,7 @@ private String tipo;
 private String idJugador;
 private String idPartido;
 
-
+			
 public Incidencia() {}
 
 public Incidencia(String id, String tipo, String jugador, String partido) {

@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import API.Jugador.*;
+import API.Partido.Partido;
+import API.Sancion.Sancion;
 import API.Equipo.*;
+import API.Arbitro.*;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -29,15 +32,19 @@ public class Liga {
 	 * @DBRef private List<Jornadas>jornadas = new ArrayList<>();
 	 */
 	@JsonView(LigaAtt.class)
-	@DBRef
 	private List<Equipo> clasificacion = new ArrayList<>();
 	@JsonView(LigaAtt.class)
-	@DBRef
 	private List<Jugador> goleadores = new ArrayList<>();
-
+	@JsonView(LigaAtt.class)
+	private List<Arbitro> arbitros = new ArrayList<>();
+	@JsonView(LigaAtt.class)
+	private List<Sancion> sancion = new ArrayList<>();
+	@JsonView(LigaAtt.class)
+	private List<Partido> partidos = new ArrayList<>();
+	
 	public Liga() {
 	}
-
+	
 	public Liga(String nombre) {
 		super();
 		this.nombre = nombre;

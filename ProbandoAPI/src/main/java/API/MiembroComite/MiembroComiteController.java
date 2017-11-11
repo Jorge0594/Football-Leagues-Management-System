@@ -81,7 +81,7 @@ public class MiembroComiteController {
 		return new ResponseEntity<MiembroComite>(miembro, HttpStatus.OK);
 	}
 	
-	
+	//Modificar datos de acceso del miembro del comite
 	@RequestMapping(value = "modificarUsuarioAcceso/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<MiembroComite> modificarMiembroComiteAcceso(@PathVariable String id, @RequestBody MiembroComite miembroModificado) {
 		Usuario usuarioConectado=usuarioRepository.findById(usuarioComponent.getLoggedUser().getId());
@@ -135,24 +135,46 @@ public class MiembroComiteController {
 		}
 		
 	}
+	@RequestMapping(value="/crearAdmin", method = RequestMethod.POST)
+	public ResponseEntity<MiembroComite> crearMiembroComiteAdmin(@RequestBody MiembroComite miembro) {
+		List<Usuario> usuarios = usuarioRepository.findAll();
+		List<String> nombresUsuarios = new ArrayList<>();
+		for(Usuario us : usuarios) {
+			nombresUsuarios.add(us.getNombreUsuario());
+		}
+		if(!nombresUsuarios.contains(miembro.getUsuario())) {
+			miembroComiteRepository.save(miembro);
+			Usuario usuarioNuevo = new Usuario(miembro.getUsuario(), miembro.getClave(), "ROLE_ADMIN");
+			usuarioRepository.save(usuarioNuevo);
+			return new ResponseEntity<MiembroComite>(miembro, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		
+	}
 	
 	//DELETE
 	@RequestMapping(value="/{id}", method= RequestMethod.DELETE)
 	public ResponseEntity<MiembroComite> eliminarMiembroComite(@PathVariable String id){
+		
 		MiembroComite miembro= miembroComiteRepository.findById(id);
+		if(miembro== null) {
+			return new ResponseEntity<MiembroComite>(HttpStatus.NOT_FOUND);
+		}
+		
+		Usuario usuarioMiembro = usuarioRepository.findByNombreUsuarioIgnoreCase(miembro.getUsuario());
+		if(usuarioMiembro == null) {
+			return new ResponseEntity<MiembroComite>(miembro,HttpStatus.NOT_FOUND);
+		}
+		
 		Usuario usuarioConectado=usuarioRepository.findById(usuarioComponent.getLoggedUser().getId());
-		if (miembro != null) {                                                                                                                                                     
-			if (miembro.getId().equals(usuarioConectado.getId()) || usuarioConectado.getRol().equals("ROLE_ADMIN")){
+		if (usuarioMiembro.getId().equals(usuarioConectado.getId()) || usuarioConectado.getRol().equals("ROLE_ADMIN")){
 				miembroComiteRepository.delete(miembro);
-				return new ResponseEntity<>(null, HttpStatus.OK);
-			}
-			else{
-				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-			}
-		}
-			else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+				usuarioRepository.delete(usuarioMiembro);
+				return new ResponseEntity<MiembroComite>(HttpStatus.OK);
+		}else {
+			return new ResponseEntity<MiembroComite>(HttpStatus.UNAUTHORIZED);
+		}	
 	}                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-	
 }
