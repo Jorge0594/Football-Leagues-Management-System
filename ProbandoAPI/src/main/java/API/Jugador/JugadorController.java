@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.Arbitro.Arbitro;
+import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
+import API.Partido.Partido;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
@@ -39,6 +42,8 @@ public class JugadorController {
 	@Autowired
 	UsuarioRepository usuarioRepository;
 	@Autowired
+	ArbitroRepository arbitroRepository;
+	@Autowired
 	UsuarioComponent usuarioComponent;
 
 	@JsonView(ProfileView.class)
@@ -48,7 +53,7 @@ public class JugadorController {
 				|| usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario()) != null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		
+
 		jugador.setFotoJugador("defaultImage.png");
 		jugador.setEquipo("");
 		jugador.setTarjetasAmarillas(0);
@@ -60,6 +65,7 @@ public class JugadorController {
 		jugadorRepository.save(jugador);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.CREATED);
 	}
+
 	@JsonView(ProfileView.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Jugador>> verJugadores() {
@@ -146,12 +152,11 @@ public class JugadorController {
 		if (jugador == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
-
+		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario());
 		switch (usuarioComponent.getLoggedUser().getRol()) {
 		case "ROLE_JUGADOR":
 
 			if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())) {
-				Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario());
 
 				jugador.setNombre(entrada.getNombre());
 				jugador.setFotoJugador(entrada.getFotoJugador());
@@ -167,9 +172,21 @@ public class JugadorController {
 				return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 			}
 		case "ROLE_ARBITRO":
+			boolean jugadorEnPartido = false ;
+			Arbitro arbitro = arbitroRepository.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+			for (Partido partidoArbitro: arbitro.getPartidosArbitrados()) {
+				if (((partidoArbitro.getEquipoLocal().getPlantillaEquipo().contains(jugador)) || (partidoArbitro.getEquipoVisitante().getPlantillaEquipo().contains(jugador))) && (jugadorEnPartido==false)){
+				jugadorEnPartido = true;
+			}
+			}
+				if(jugadorEnPartido) {
 			jugador.setGoles(entrada.getGoles());
 			jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
 			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
+				}
+				else {
+					return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
+				}
 			break;
 		case "ROLE_ADMIN":
 		case "ROLE_MIEMBROCOMITE":
@@ -189,6 +206,10 @@ public class JugadorController {
 			jugador.setGoles(entrada.getGoles());
 			jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
 			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
+			
+			usuario.setNombreUsuario(jugador.getNombreUsuario());
+			usuario.setClave(jugador.getClave());
+			usuarioRepository.save(usuario);
 			break;
 		default:
 			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
@@ -205,25 +226,26 @@ public class JugadorController {
 		if (jugador == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
-		
+
 		Equipo equipo = equipoRepository.findById(jugador.getEquipo());
-		if(equipo != null){
+		if (equipo != null) {
 			equipo.getPlantillaEquipo().remove(jugador);
 			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-			if(liga != null){
+			if (liga != null) {
 				liga.getGoleadores().remove(jugador);
 				equipo.getPlantillaEquipo().remove(jugador);
 				ligaRepository.save(liga);
 				equipoRepository.save(equipo);
 			}
-			
+
 		}
 		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario());
-		
-		if(usuario!= null ){
-			usuarioRepository.delete(usuario);;
+
+		if (usuario != null) {
+			usuarioRepository.delete(usuario);
+			;
 		}
-		
+
 		jugadorRepository.delete(jugador);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}

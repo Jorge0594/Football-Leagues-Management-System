@@ -37,7 +37,7 @@ public class Arbitro {
 		this.dni = dni;
 		this.nombre = nombre;
 		this.nombreUsuario = nombreUsuario;
-		this.clave = new BCryptPasswordEncoder().encode(clave);
+		this.clave = clave;
 		this.partidosArbitrados = partidosArbitrados;
 		this.fechaNacimiento = fechaNacimiento;
 		this.edad = edad;
@@ -159,10 +159,10 @@ public class Arbitro {
 	}
 
 	public void setClave(String clave) {
-		this.clave = new BCryptPasswordEncoder().encode(clave);
+		this.clave = clave;
 	}
-	public void setClaveSinEncriptar(String clave) {
-		this.clave =clave;
+	public void setClaveEncriptada(String clave) {
+		this.clave =new BCryptPasswordEncoder().encode(clave);
 	}
 
 	public List<Partido> getPartidosArbitrados() {

@@ -38,6 +38,8 @@ public class ArbitroController {
 		}
 		// Comprueba si el nombre de usuario no se encuentra ya en el sistema.
 		if (!nombresUsuarios.contains(arbitro.getNombreUsuario())) {
+			//Se encripta la clave
+			arbitro.setClaveEncriptada(arbitro.getClave());
 			arbitroRepository.save(arbitro);
 			Usuario nuevo = new Usuario(arbitro.getNombreUsuario(), arbitro.getClave(), "ROLE_ARBITRO");
 			usuarioRepository.save(nuevo);
@@ -61,7 +63,10 @@ public class ArbitroController {
 				if (entrada.getNombreUsuario().equals(usuarioComponent.getLoggedUser().getNombreUsuario())) {
 					entrada.setNombre(arbitroModificado.getNombre());
 					entrada.setNombreUsuario(arbitroModificado.getNombreUsuario());
-					entrada.setClaveSinEncriptar(arbitroModificado.getClave());
+					//Si se ha realizado un cambio en la contraseña se encripta y se guarda, si es la misma no se toca.
+					if(!arbitroModificado.getClave().equals(entrada.getClave())) {
+					entrada.setClaveEncriptada(arbitroModificado.getClave());
+					}
 					entrada.setFechaNacimiento(arbitroModificado.getFechaNacimiento());
 					entrada.setEdad(arbitroModificado.getEdad());
 					entrada.setLugarNacimiento(arbitroModificado.getLugarNacimiento());
@@ -69,20 +74,38 @@ public class ArbitroController {
 					entrada.setTlf(arbitroModificado.getTlf());
 					arbitroRepository.save(entrada);
 					// Se realizan los cambios en el listado de Usuarios de la API.
-					modificado.setClave(arbitroModificado.getClave());
-					modificado.setNombreUsuario(arbitroModificado.getNombreUsuario());
+					modificado.setClave(entrada.getClave());
+					modificado.setNombreUsuario(entrada.getNombreUsuario());
 					usuarioRepository.save(modificado);
 					return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 				} else {
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				}
 			}
-			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE")) {
+				//Si el usuario conectado es un miembro del comité o un administrador 
+			if ((usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE")) || (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN"))) {
 				arbitroModificado.setId(entrada.getId());
-				arbitroRepository.save(arbitroModificado);
+				entrada.setNombre(arbitroModificado.getNombre());
+				entrada.setNombreUsuario(arbitroModificado.getNombreUsuario());
+				//Si se ha realizado un cambio en la contraseña se encripta y se guarda, si es la misma no se toca.
+				if(!arbitroModificado.getClave().equals(entrada.getClave())) {
+				entrada.setClaveEncriptada(arbitroModificado.getClave());
+				}
+				entrada.setFechaNacimiento(arbitroModificado.getFechaNacimiento());
+				entrada.setEdad(arbitroModificado.getEdad());
+				entrada.setLugarNacimiento(arbitroModificado.getLugarNacimiento());
+				entrada.setEmail(arbitroModificado.getEmail());
+				entrada.setTlf(arbitroModificado.getTlf());
+				entrada.setCategoria(arbitroModificado.getCategoria());
+				entrada.setEstado(arbitroModificado.getEstado());
+				entrada.setPartidosArbitrados(arbitroModificado.getPartidosArbitrados());
+				entrada.setDni(arbitroModificado.getDni());
+				entrada.setInternacional(arbitroModificado.isInternacional());
+				entrada.setComite(arbitroModificado.getComite());
+				arbitroRepository.save(entrada);
 				// Se realizan los cambios en el listado de Usuarios de la API.
-				modificado.setClave(arbitroModificado.getClave());
-				modificado.setNombreUsuario(arbitroModificado.getNombreUsuario());
+				modificado.setClave(entrada.getClave());
+				modificado.setNombreUsuario(entrada.getNombreUsuario());
 				usuarioRepository.save(modificado);
 				return new ResponseEntity<Arbitro>(arbitroModificado, HttpStatus.OK);
 			}

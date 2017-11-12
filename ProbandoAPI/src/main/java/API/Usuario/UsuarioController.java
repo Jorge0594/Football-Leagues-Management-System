@@ -17,12 +17,6 @@ public class UsuarioController {
 	@Autowired
 	UsuarioRepository usuarioRepository;
 	
-	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Usuario>crearUsuario(@RequestBody Usuario usuario){
-		
-		usuarioRepository.save(usuario);
-		return new ResponseEntity<Usuario>(usuario,HttpStatus.CREATED);
-	}
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Usuario>>verUsuarios(){
