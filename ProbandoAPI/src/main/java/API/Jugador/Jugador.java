@@ -85,7 +85,7 @@ public class Jugador implements Comparable<Jugador> {
 		this.apellidos = apellidos;
 		this.dni = dni;
 		this.nombreUsuario = nombreUsuario;
-		this.clave = new BCryptPasswordEncoder().encode(clave);
+		this.clave = clave;
 		this.fotoJugador = fotoJugador;
 		this.equipoId = equipo;
 		this.posicion = posicion;
@@ -136,11 +136,11 @@ public class Jugador implements Comparable<Jugador> {
 	}
 
 	public void setClave(String clave) {
-		this.clave = new BCryptPasswordEncoder().encode(clave);
+		this.clave = clave;
 	}
 
-	public void setClaveSinEncriptar(String clave) {
-		this.clave = clave;
+	public void setClaveEncriptada(String clave) {
+		this.clave = new BCryptPasswordEncoder().encode(clave);
 	}
 
 	public String getEquipo() {
@@ -246,8 +246,6 @@ public class Jugador implements Comparable<Jugador> {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
-	
 
 	@Override
 	public String toString() {
