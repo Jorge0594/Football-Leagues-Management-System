@@ -84,11 +84,9 @@ public class ArbitroController {
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				}
 			}
-			// Si el usuario conectado es un miembro del comité o un
-			// administrador
+			// Si el usuario conectado es un miembro del comité o un administrador
 			if ((usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE"))
 					|| (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN"))) {
-				arbitroModificado.setId(entrada.getId());
 				entrada.setNombre(arbitroModificado.getNombre());
 				entrada.setNombreUsuario(arbitroModificado.getNombreUsuario());
 				// Si se ha realizado un cambio en la contraseña se encripta y

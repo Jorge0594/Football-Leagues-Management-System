@@ -103,6 +103,75 @@ public class Estadio {
 
 	public void setDimensiones(String dimensiones) {
 		this.dimensiones = dimensiones;
-	};
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + capacidad;
+		result = prime * result + cp;
+		result = prime * result + ((dimensiones == null) ? 0 : dimensiones.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((localizacion == null) ? 0 : localizacion.hashCode());
+		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+		result = prime * result + ((pais == null) ? 0 : pais.hashCode());
+		result = prime * result + ((poblacion == null) ? 0 : poblacion.hashCode());
+		result = prime * result + ((provincia == null) ? 0 : provincia.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Estadio other = (Estadio) obj;
+		if (capacidad != other.capacidad)
+			return false;
+		if (cp != other.cp)
+			return false;
+		if (dimensiones == null) {
+			if (other.dimensiones != null)
+				return false;
+		} else if (!dimensiones.equals(other.dimensiones))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (localizacion == null) {
+			if (other.localizacion != null)
+				return false;
+		} else if (!localizacion.equals(other.localizacion))
+			return false;
+		if (nombre == null) {
+			if (other.nombre != null)
+				return false;
+		} else if (!nombre.equals(other.nombre))
+			return false;
+		if (pais == null) {
+			if (other.pais != null)
+				return false;
+		} else if (!pais.equals(other.pais))
+			return false;
+		if (poblacion == null) {
+			if (other.poblacion != null)
+				return false;
+		} else if (!poblacion.equals(other.poblacion))
+			return false;
+		if (provincia == null) {
+			if (other.provincia != null)
+				return false;
+		} else if (!provincia.equals(other.provincia))
+			return false;
+		return true;
+	}
+	
+	
 
 }

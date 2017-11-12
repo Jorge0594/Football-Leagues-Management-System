@@ -14,12 +14,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import API.Arbitro.Arbitro;
+import API.Arbitro.ArbitroRepository;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/partidos")
 public class PartidoController {
 	@Autowired
 	private PartidoRepository partidoRepository;
+	@Autowired
+	private ArbitroRepository arbitroRepository;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidos() {
@@ -84,8 +89,30 @@ public class PartidoController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Partido> crearPartido(@RequestBody Partido partido) {
-		partidoRepository.save(partido);
-		return new ResponseEntity<Partido>(partido, HttpStatus.CREATED);
-
+		Arbitro arbitroDelPartido = arbitroRepository.findById(partido.getIdArbitro());
+		if (arbitroDelPartido == null) {
+			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+		} else {
+			partido.setId(null);
+			partidoRepository.save(partido);
+			Partido partidoConId= partidoRepository.findById(partido.getId());
+			arbitroDelPartido.getPartidosArbitrados().add(partidoConId);
+			arbitroRepository.save(arbitroDelPartido);
+			return new ResponseEntity<Partido>(partido, HttpStatus.CREATED);
+		}
+	}
+	
+	@RequestMapping(value="/{id}",method = RequestMethod.DELETE)
+	public ResponseEntity<Partido> EliminarPartidoId(@PathVariable String id) {
+		Partido entrada = partidoRepository.findById(id);
+		if (entrada == null) {
+			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+		}
+		Arbitro arbitroDelPartido = arbitroRepository.findById(entrada.getIdArbitro());
+		//Elimina el partido de los partidos arbitrados del árbitro.
+		arbitroDelPartido.getPartidosArbitrados().remove(entrada);
+		arbitroRepository.save(arbitroDelPartido);
+		partidoRepository.delete(entrada);
+		return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
 	}
 }
