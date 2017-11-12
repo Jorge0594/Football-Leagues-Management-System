@@ -18,6 +18,10 @@ public interface PartidoRepository extends MongoRepository<Partido, String> {
 
 	List<Partido> findByIdArbitro(String idArbitro);
 	
-	List<Partido> findByIdArbitroAndEquipoLocalIdAndEquipoVisitanteId(String id, ObjectId equipoLocalId, Object equipoVisitanteId);
+	List<Partido> findByIdArbitroAndEquipoLocalId(String id, ObjectId equipoLocalId);
+	
+	List<Partido> findByIdArbitroAndEquipoVisitanteId(String id, ObjectId equipoVisitanteId);
+	
+	List<Partido>findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(String id,  ObjectId equipoLocalId, ObjectId equipoVisitanteId);
 
 }

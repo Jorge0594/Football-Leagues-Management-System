@@ -2,6 +2,7 @@ package API.Jugador;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
-import API.Partido.Partido;
+import API.Partido.PartidoRepository;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
@@ -44,6 +45,8 @@ public class JugadorController {
 	@Autowired
 	ArbitroRepository arbitroRepository;
 	@Autowired
+	PartidoRepository partidoRepository;
+	@Autowired
 	UsuarioComponent usuarioComponent;
 
 	@JsonView(ProfileView.class)
@@ -53,7 +56,7 @@ public class JugadorController {
 				|| usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario()) != null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 		}
-
+		jugador.setId(null);
 		jugador.setFotoJugador("defaultImage.png");
 		jugador.setEquipo("");
 		jugador.setTarjetasAmarillas(0);
@@ -174,9 +177,7 @@ public class JugadorController {
 				return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 			}
 		case "ROLE_ARBITRO":
-			boolean jugadorEnPartido = false;
-			Arbitro arbitro = arbitroRepository
-					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+			/*boolean jugadorEnPartido = false;
 			for (Partido partidoArbitro : arbitro.getPartidosArbitrados()) {
 				if (((partidoArbitro.getEquipoLocal().getPlantillaEquipo().contains(jugador))
 						|| (partidoArbitro.getEquipoVisitante().getPlantillaEquipo().contains(jugador)))
@@ -190,8 +191,16 @@ public class JugadorController {
 				jugador.setTarjetasRojas(entrada.getTarjetasRojas());
 			} else {
 				return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
+			}*/
+			Arbitro arbitro = arbitroRepository.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+			if(!partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(arbitro.getId(), new ObjectId(jugador.getEquipo()),new ObjectId(jugador.getEquipo())).isEmpty()){
+				jugador.setGoles(entrada.getGoles());
+				jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
+				jugador.setTarjetasRojas(entrada.getTarjetasRojas());
+				break;
+			}else{
+				return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 			}
-			break;
 		case "ROLE_ADMIN":
 		case "ROLE_MIEMBROCOMITE":
 			jugador.setNombre(entrada.getNombre());
