@@ -38,7 +38,7 @@ public class ArbitroController {
 		}
 		// Comprueba si el nombre de usuario no se encuentra ya en el sistema.
 		if (!nombresUsuarios.contains(arbitro.getNombreUsuario())) {
-			//Se encripta la clave
+			// Se encripta la clave
 			arbitro.setClaveEncriptada(arbitro.getClave());
 			arbitroRepository.save(arbitro);
 			Usuario nuevo = new Usuario(arbitro.getNombreUsuario(), arbitro.getClave(), "ROLE_ARBITRO");
@@ -55,17 +55,18 @@ public class ArbitroController {
 		if (entrada == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} else {
-			Usuario modificado = usuarioRepository
-					.findByNombreUsuarioIgnoreCase(entrada.getNombreUsuario());
+			Usuario modificado = usuarioRepository.findByNombreUsuarioIgnoreCase(entrada.getNombreUsuario());
 			// Si el usuario conectado es un árbitro
 			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
-				// Si el árbitro está realizando una modificación a su propio usuario.
+				// Si el árbitro está realizando una modificación a su propio
+				// usuario.
 				if (entrada.getNombreUsuario().equals(usuarioComponent.getLoggedUser().getNombreUsuario())) {
 					entrada.setNombre(arbitroModificado.getNombre());
 					entrada.setNombreUsuario(arbitroModificado.getNombreUsuario());
-					//Si se ha realizado un cambio en la contraseña se encripta y se guarda, si es la misma no se toca.
-					if(!arbitroModificado.getClave().equals(entrada.getClave())) {
-					entrada.setClaveEncriptada(arbitroModificado.getClave());
+					// Si se ha realizado un cambio en la contraseña se encripta
+					// y se guarda, si es la misma no se toca.
+					if (!arbitroModificado.getClave().equals(entrada.getClave())) {
+						entrada.setClaveEncriptada(arbitroModificado.getClave());
 					}
 					entrada.setFechaNacimiento(arbitroModificado.getFechaNacimiento());
 					entrada.setEdad(arbitroModificado.getEdad());
@@ -73,7 +74,8 @@ public class ArbitroController {
 					entrada.setEmail(arbitroModificado.getEmail());
 					entrada.setTlf(arbitroModificado.getTlf());
 					arbitroRepository.save(entrada);
-					// Se realizan los cambios en el listado de Usuarios de la API.
+					// Se realizan los cambios en el listado de Usuarios de la
+					// API.
 					modificado.setClave(entrada.getClave());
 					modificado.setNombreUsuario(entrada.getNombreUsuario());
 					usuarioRepository.save(modificado);
@@ -82,14 +84,17 @@ public class ArbitroController {
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				}
 			}
-				//Si el usuario conectado es un miembro del comité o un administrador 
-			if ((usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE")) || (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN"))) {
+			// Si el usuario conectado es un miembro del comité o un
+			// administrador
+			if ((usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE"))
+					|| (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN"))) {
 				arbitroModificado.setId(entrada.getId());
 				entrada.setNombre(arbitroModificado.getNombre());
 				entrada.setNombreUsuario(arbitroModificado.getNombreUsuario());
-				//Si se ha realizado un cambio en la contraseña se encripta y se guarda, si es la misma no se toca.
-				if(!arbitroModificado.getClave().equals(entrada.getClave())) {
-				entrada.setClaveEncriptada(arbitroModificado.getClave());
+				// Si se ha realizado un cambio en la contraseña se encripta y
+				// se guarda, si es la misma no se toca.
+				if (!arbitroModificado.getClave().equals(entrada.getClave())) {
+					entrada.setClaveEncriptada(arbitroModificado.getClave());
 				}
 				entrada.setFechaNacimiento(arbitroModificado.getFechaNacimiento());
 				entrada.setEdad(arbitroModificado.getEdad());
@@ -109,7 +114,7 @@ public class ArbitroController {
 				usuarioRepository.save(modificado);
 				return new ResponseEntity<Arbitro>(arbitroModificado, HttpStatus.OK);
 			}
-			//No debería entrar aquí nunca, por los permisos de Roles.
+			// No debería entrar aquí nunca, por los permisos de Roles.
 			else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}

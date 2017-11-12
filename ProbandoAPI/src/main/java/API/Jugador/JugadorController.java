@@ -58,6 +58,7 @@ public class JugadorController {
 		jugador.setEquipo("");
 		jugador.setTarjetasAmarillas(0);
 		jugador.setTarjetasRojas(0);
+		jugador.setClaveEncriptada(jugador.getClave());
 
 		Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
 
@@ -161,32 +162,35 @@ public class JugadorController {
 				jugador.setNombre(entrada.getNombre());
 				jugador.setFotoJugador(entrada.getFotoJugador());
 				jugador.setApellidos(entrada.getApellidos());
-				jugador.setClaveSinEncriptar(entrada.getClave());
 				jugador.setEmail(entrada.getEmail());
 
-				usuario.setClave(jugador.getClave());
-
-				usuarioRepository.save(usuario);
+				if (!jugador.getClave().equals(entrada.getClave()) && entrada.getClave() != null) {
+					jugador.setClaveEncriptada(entrada.getClave());
+					usuario.setClave(jugador.getClave());
+					usuarioRepository.save(usuario);
+				}
 				break;
 			} else {
 				return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 			}
 		case "ROLE_ARBITRO":
-			boolean jugadorEnPartido = false ;
-			Arbitro arbitro = arbitroRepository.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
-			for (Partido partidoArbitro: arbitro.getPartidosArbitrados()) {
-				if (((partidoArbitro.getEquipoLocal().getPlantillaEquipo().contains(jugador)) || (partidoArbitro.getEquipoVisitante().getPlantillaEquipo().contains(jugador))) && (jugadorEnPartido==false)){
-				jugadorEnPartido = true;
-			}
-			}
-				if(jugadorEnPartido) {
-			jugador.setGoles(entrada.getGoles());
-			jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
-			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
+			boolean jugadorEnPartido = false;
+			Arbitro arbitro = arbitroRepository
+					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+			for (Partido partidoArbitro : arbitro.getPartidosArbitrados()) {
+				if (((partidoArbitro.getEquipoLocal().getPlantillaEquipo().contains(jugador))
+						|| (partidoArbitro.getEquipoVisitante().getPlantillaEquipo().contains(jugador)))
+						&& (jugadorEnPartido == false)) {
+					jugadorEnPartido = true;
 				}
-				else {
-					return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
-				}
+			}
+			if (jugadorEnPartido) {
+				jugador.setGoles(entrada.getGoles());
+				jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
+				jugador.setTarjetasRojas(entrada.getTarjetasRojas());
+			} else {
+				return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
+			}
 			break;
 		case "ROLE_ADMIN":
 		case "ROLE_MIEMBROCOMITE":
@@ -196,7 +200,11 @@ public class JugadorController {
 			jugador.setEmail(entrada.getEmail());
 			jugador.setDni(entrada.getDni());
 			jugador.setNombreUsuario(entrada.getNombreUsuario());
-			jugador.setClaveSinEncriptar(entrada.getClave());
+
+			if (!jugador.getClave().equals(entrada.getClave()) && entrada.getClave() != null) {
+				jugador.setClaveEncriptada(entrada.getClave());
+				usuario.setClave(jugador.getClave());
+			}
 			jugador.setDorsal(entrada.getDorsal());
 			jugador.setGoles(entrada.getGoles());
 			jugador.setFechaSancion(entrada.getFechaSancion());
@@ -206,9 +214,8 @@ public class JugadorController {
 			jugador.setGoles(entrada.getGoles());
 			jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
 			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
-			
+
 			usuario.setNombreUsuario(jugador.getNombreUsuario());
-			usuario.setClave(jugador.getClave());
 			usuarioRepository.save(usuario);
 			break;
 		default:
