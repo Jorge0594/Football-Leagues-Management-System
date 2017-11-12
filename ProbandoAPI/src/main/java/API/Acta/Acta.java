@@ -154,4 +154,97 @@ public class Acta {
 		this.observaciones = observaciones;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((arbitro == null) ? 0 : arbitro.hashCode());
+		result = prime * result + ((convocadosLocal == null) ? 0 : convocadosLocal.hashCode());
+		result = prime * result + ((convocadosVisitante == null) ? 0 : convocadosVisitante.hashCode());
+		result = prime * result + ((equipoLocal == null) ? 0 : equipoLocal.hashCode());
+		result = prime * result + ((equipoVisitante == null) ? 0 : equipoVisitante.hashCode());
+		result = prime * result + ((fecha == null) ? 0 : fecha.hashCode());
+		result = prime * result + golesLocal;
+		result = prime * result + golesVisitante;
+		result = prime * result + ((hora == null) ? 0 : hora.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((idPartido == null) ? 0 : idPartido.hashCode());
+		result = prime * result + ((incidencias == null) ? 0 : incidencias.hashCode());
+		result = prime * result + ((observaciones == null) ? 0 : observaciones.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Acta other = (Acta) obj;
+		if (arbitro == null) {
+			if (other.arbitro != null)
+				return false;
+		} else if (!arbitro.equals(other.arbitro))
+			return false;
+		if (convocadosLocal == null) {
+			if (other.convocadosLocal != null)
+				return false;
+		} else if (!convocadosLocal.equals(other.convocadosLocal))
+			return false;
+		if (convocadosVisitante == null) {
+			if (other.convocadosVisitante != null)
+				return false;
+		} else if (!convocadosVisitante.equals(other.convocadosVisitante))
+			return false;
+		if (equipoLocal == null) {
+			if (other.equipoLocal != null)
+				return false;
+		} else if (!equipoLocal.equals(other.equipoLocal))
+			return false;
+		if (equipoVisitante == null) {
+			if (other.equipoVisitante != null)
+				return false;
+		} else if (!equipoVisitante.equals(other.equipoVisitante))
+			return false;
+		if (fecha == null) {
+			if (other.fecha != null)
+				return false;
+		} else if (!fecha.equals(other.fecha))
+			return false;
+		if (golesLocal != other.golesLocal)
+			return false;
+		if (golesVisitante != other.golesVisitante)
+			return false;
+		if (hora == null) {
+			if (other.hora != null)
+				return false;
+		} else if (!hora.equals(other.hora))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (idPartido == null) {
+			if (other.idPartido != null)
+				return false;
+		} else if (!idPartido.equals(other.idPartido))
+			return false;
+		if (incidencias == null) {
+			if (other.incidencias != null)
+				return false;
+		} else if (!incidencias.equals(other.incidencias))
+			return false;
+		if (observaciones == null) {
+			if (other.observaciones != null)
+				return false;
+		} else if (!observaciones.equals(other.observaciones))
+			return false;
+		return true;
+	}
+	
+	
+
 }

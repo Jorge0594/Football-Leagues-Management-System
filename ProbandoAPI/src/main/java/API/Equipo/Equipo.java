@@ -292,4 +292,5 @@ public class Equipo implements Comparable<Equipo> {
 		return 0;
 	}
 
+	
 }

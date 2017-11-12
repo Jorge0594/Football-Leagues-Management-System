@@ -180,4 +180,109 @@ public class Arbitro {
 				+ ", comite=" + comite + ", categoria=" + categoria + ", email=" + email + ", tlf=" + tlf
 				+ ", internacional=" + internacional + ", estado=" + estado + "]";
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((categoria == null) ? 0 : categoria.hashCode());
+		result = prime * result + ((clave == null) ? 0 : clave.hashCode());
+		result = prime * result + ((comite == null) ? 0 : comite.hashCode());
+		result = prime * result + ((dni == null) ? 0 : dni.hashCode());
+		result = prime * result + edad;
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((estado == null) ? 0 : estado.hashCode());
+		result = prime * result + ((fechaNacimiento == null) ? 0 : fechaNacimiento.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + (internacional ? 1231 : 1237);
+		result = prime * result + ((lugarNacimiento == null) ? 0 : lugarNacimiento.hashCode());
+		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+		result = prime * result + ((nombreUsuario == null) ? 0 : nombreUsuario.hashCode());
+		result = prime * result + ((partidosArbitrados == null) ? 0 : partidosArbitrados.hashCode());
+		result = prime * result + ((tlf == null) ? 0 : tlf.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Arbitro other = (Arbitro) obj;
+		if (categoria == null) {
+			if (other.categoria != null)
+				return false;
+		} else if (!categoria.equals(other.categoria))
+			return false;
+		if (clave == null) {
+			if (other.clave != null)
+				return false;
+		} else if (!clave.equals(other.clave))
+			return false;
+		if (comite == null) {
+			if (other.comite != null)
+				return false;
+		} else if (!comite.equals(other.comite))
+			return false;
+		if (dni == null) {
+			if (other.dni != null)
+				return false;
+		} else if (!dni.equals(other.dni))
+			return false;
+		if (edad != other.edad)
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (estado == null) {
+			if (other.estado != null)
+				return false;
+		} else if (!estado.equals(other.estado))
+			return false;
+		if (fechaNacimiento == null) {
+			if (other.fechaNacimiento != null)
+				return false;
+		} else if (!fechaNacimiento.equals(other.fechaNacimiento))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (internacional != other.internacional)
+			return false;
+		if (lugarNacimiento == null) {
+			if (other.lugarNacimiento != null)
+				return false;
+		} else if (!lugarNacimiento.equals(other.lugarNacimiento))
+			return false;
+		if (nombre == null) {
+			if (other.nombre != null)
+				return false;
+		} else if (!nombre.equals(other.nombre))
+			return false;
+		if (nombreUsuario == null) {
+			if (other.nombreUsuario != null)
+				return false;
+		} else if (!nombreUsuario.equals(other.nombreUsuario))
+			return false;
+		if (partidosArbitrados == null) {
+			if (other.partidosArbitrados != null)
+				return false;
+		} else if (!partidosArbitrados.equals(other.partidosArbitrados))
+			return false;
+		if (tlf == null) {
+			if (other.tlf != null)
+				return false;
+		} else if (!tlf.equals(other.tlf))
+			return false;
+		return true;
+	}
+	
+	
 }

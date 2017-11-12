@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import API.Arbitro.Arbitro;
+import API.Arbitro.ArbitroRepository;
+import API.Partido.Partido;
+import API.Partido.PartidoRepository;
+import API.Usuario.UsuarioComponent;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/actas")
@@ -20,6 +26,12 @@ public class ActaController {
 
 	@Autowired
 	ActaRepository actaRepository;
+	@Autowired
+	PartidoRepository partidoRepository;
+	@Autowired
+	ArbitroRepository arbitroRepository;
+	@Autowired
+	UsuarioComponent usuarioComponent;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActas() {
@@ -44,7 +56,7 @@ public class ActaController {
 		}
 		return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/arbitro/{arbitro}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaArbitro(@PathVariable String arbitro) {
 		List<Acta> entrada = actaRepository.findByArbitroId(new ObjectId(arbitro));
@@ -53,7 +65,7 @@ public class ActaController {
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/fecha/{fecha}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaFecha(@PathVariable String fecha) {
 		List<Acta> entrada = actaRepository.findByFecha(fecha);
@@ -83,8 +95,38 @@ public class ActaController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Acta> crearActa(@RequestBody Acta entrada) {
-		actaRepository.save(entrada);
-		return new ResponseEntity<Acta>(entrada, HttpStatus.CREATED);
+		Partido partidoDelActa = partidoRepository.findById(entrada.getIdPartido());
+		// Si el partido cuyo acta estamos creando no existe.
+		if (partidoDelActa == null) {
+			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
+		} else {
+			// Si el usuario conectado es un árbitro.
+			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
+				Arbitro arbitroConectado = arbitroRepository
+						.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+				// Si un árbitro intenta crear un acta que no sea de un partido que ha
+				// arbitrado.
+				if (!arbitroConectado.getPartidosArbitrados().contains(partidoDelActa)) {
+					return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
+				} else {
+					entrada.setId(null);
+					actaRepository.save(entrada);
+					Acta actaConId = actaRepository.findById(entrada.getId());
+					partidoDelActa.setActa(actaConId);
+					partidoRepository.save(partidoDelActa);
+					return new ResponseEntity<Acta>(entrada, HttpStatus.CREATED);
+				}
+			}
+			// Si el usuario conectado es un miembro del comité o un administrador.
+			else {
 
+				entrada.setId(null);
+				actaRepository.save(entrada);
+				Acta actaConId = actaRepository.findById(entrada.getId());
+				partidoDelActa.setActa(actaConId);
+				partidoRepository.save(partidoDelActa);
+				return new ResponseEntity<Acta>(entrada, HttpStatus.CREATED);
+			}
+		}
 	}
 }
