@@ -10,6 +10,7 @@ import API.Equipo.*;
 import API.Arbitro.*;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -25,20 +26,20 @@ public class Liga {
 	private String id;
 	@JsonView(LigaAtt.class)
 	private String nombre;
-	/*
-	 * @JsonView(LigaAtt.class)
-	 * 
-	 * @DBRef private List<Jornadas>jornadas = new ArrayList<>();
-	 */
 	@JsonView(LigaAtt.class)
+	@DBRef
 	private List<Equipo> clasificacion = new ArrayList<>();
 	@JsonView(LigaAtt.class)
+	@DBRef
 	private List<Jugador> goleadores = new ArrayList<>();
 	@JsonView(LigaAtt.class)
+	@DBRef
 	private List<Arbitro> arbitros = new ArrayList<>();
 	@JsonView(LigaAtt.class)
+	@DBRef
 	private List<Sancion> sancion = new ArrayList<>();
 	@JsonView(LigaAtt.class)
+	@DBRef
 	private List<Partido> partidos = new ArrayList<>();
 	
 	public Liga() {
@@ -79,6 +80,31 @@ public class Liga {
 
 	public void setGoleadores(List<Jugador> goleadores) {
 		this.goleadores = goleadores;
+	}
+
+	
+	public List<Arbitro> getArbitros() {
+		return arbitros;
+	}
+
+	public void setArbitros(List<Arbitro> arbitros) {
+		this.arbitros = arbitros;
+	}
+
+	public List<Sancion> getSancion() {
+		return sancion;
+	}
+
+	public void setSancion(List<Sancion> sancion) {
+		this.sancion = sancion;
+	}
+
+	public List<Partido> getPartidos() {
+		return partidos;
+	}
+
+	public void setPartidos(List<Partido> partidos) {
+		this.partidos = partidos;
 	}
 
 	@Override

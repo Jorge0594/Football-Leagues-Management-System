@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-@Document(collection = "Jugadores")
+@Document(collection = "Jugador")
 public class Jugador implements Comparable<Jugador> {
 
 	public interface EquipoAtt {
@@ -45,7 +45,7 @@ public class Jugador implements Comparable<Jugador> {
 	private String fotoJugador;
 
 	@JsonView(EquipoAtt.class)
-	private String equipoId;
+	private String equipo;
 
 	@JsonView(EquipoAtt.class)
 	private String posicion;
@@ -88,7 +88,7 @@ public class Jugador implements Comparable<Jugador> {
 		this.nombreUsuario = nombreUsuario;
 		this.clave = clave;
 		this.fotoJugador = fotoJugador;
-		this.equipoId = equipo;
+		this.equipo = equipo;
 		this.posicion = posicion;
 		this.fechaSancion = fechaSancion;
 		this.estado = estado;
@@ -145,11 +145,11 @@ public class Jugador implements Comparable<Jugador> {
 	}
 
 	public String getEquipo() {
-		return equipoId;
+		return equipo;
 	}
 
 	public void setEquipo(String equipo) {
-		this.equipoId = equipo;
+		this.equipo = equipo;
 	}
 
 	public String getPosicion() {
@@ -252,7 +252,7 @@ public class Jugador implements Comparable<Jugador> {
 	public String toString() {
 		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", dni=" + dni
 				+ ", nombreUsuario=" + nombreUsuario + ", email=" + email + ", fotoJugador=" + fotoJugador
-				+ ", equipoId=" + equipoId + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado="
+				+ ", equipo=" + equipo + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado="
 				+ estado + ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles
 				+ ", tarjetasAmarillas=" + tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", capitan="
 				+ capitan + "]";
@@ -286,10 +286,10 @@ public class Jugador implements Comparable<Jugador> {
 			return false;
 		if (dorsal != other.dorsal)
 			return false;
-		if (equipoId == null) {
-			if (other.equipoId != null)
+		if (equipo == null) {
+			if (other.equipo != null)
 				return false;
-		} else if (!equipoId.equals(other.equipoId))
+		} else if (!equipo.equals(other.equipo))
 			return false;
 		if (estado == null) {
 			if (other.estado != null)

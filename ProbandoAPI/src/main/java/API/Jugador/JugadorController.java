@@ -59,6 +59,7 @@ public class JugadorController {
 		jugador.setId(null);
 		jugador.setFotoJugador("defaultImage.png");
 		jugador.setEquipo("");
+		jugador.setGoles(0);
 		jugador.setTarjetasAmarillas(0);
 		jugador.setTarjetasRojas(0);
 		jugador.setClaveEncriptada(jugador.getClave());

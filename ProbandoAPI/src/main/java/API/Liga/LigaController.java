@@ -1,6 +1,9 @@
 package API.Liga;
 
 import API.Jugador.*;
+import API.Partido.PartidoRepository;
+import API.Arbitro.Arbitro;
+import API.Arbitro.ArbitroRepository;
 import API.Equipo.*;
 
 
@@ -32,6 +35,10 @@ public class LigaController {
 	private EquipoRepository equipoRepository;
 	@Autowired
 	private LigaRepository ligaRepository;
+	@Autowired
+	private ArbitroRepository arbitroRepository;
+	@Autowired
+	private PartidoRepository partidoRepository;
 	
 	@JsonView(InfoLigaView.class)
 	@RequestMapping (method = RequestMethod.POST)
@@ -108,13 +115,40 @@ public class LigaController {
 			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
-	
+	@JsonView(InfoLigaView.class)
+	@RequestMapping(value="/{nombre}/arbitro/{idArbitro}",method = RequestMethod.PUT)
+	public ResponseEntity<Liga>añadirArbitro(@PathVariable (value = "nombre")String nombre, @PathVariable (value = "idArbitro")String idArbitro){
+		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
+		Arbitro arbitro = arbitroRepository.findById(idArbitro);
+		
+		if(liga == null || arbitro == null || liga.getArbitros().contains(arbitro)){
+			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		liga.getArbitros().add(arbitro);
+		ligaRepository.save(liga);
+		
+		return new ResponseEntity<Liga>(liga,HttpStatus.OK);
+	}
+	@JsonView(InfoLigaView.class)
+	@RequestMapping(value="/{nombre}/arbitro/{idArbitro}",method = RequestMethod.DELETE)
+	public ResponseEntity<Liga>eliminarArbitroLiga(@PathVariable (value = "nombre")String nombre, @PathVariable (value = "idArbitro")String idArbitro){
+		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
+		Arbitro arbitro = arbitroRepository.findById(idArbitro);
+		
+		if(liga == null || arbitro == null || !liga.getArbitros().contains(arbitro)){
+			return new ResponseEntity<Liga>(HttpStatus.NO_CONTENT);
+		}
+		liga.getArbitros().remove(arbitro);
+		ligaRepository.save(liga);
+		
+		return new ResponseEntity<Liga>(liga,HttpStatus.OK);
+	}
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(value="/{nombre}/equipo/{idEquipo}",method = RequestMethod.DELETE)
 	public ResponseEntity<Liga>eliminarEquipoLiga(@PathVariable (value = "nombre")String nombre, @PathVariable (value = "idEquipo")String idEquipo){
 		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
 		Equipo equipo = equipoRepository.findById(idEquipo);
-		if(liga == null || equipo == null){
+		if(liga == null || equipo == null || !liga.getClasificacion().contains(equipo)){
 			return new ResponseEntity<Liga>(HttpStatus.NO_CONTENT);
 		}
 		liga.getClasificacion().remove(equipo);
@@ -123,6 +157,7 @@ public class LigaController {
 		
 		equipoRepository.save(equipo);
 		ligaRepository.save(liga);
+		
 		
 		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
 	}
