@@ -3,6 +3,7 @@ package API.Arbitro;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -16,6 +17,7 @@ public class Arbitro {
 	private String nombre;
 	private String nombreUsuario;
 	private String clave;
+	// @DBRef
 	private List<Partido> partidosArbitrados;
 	private String fechaNacimiento;
 	private int edad;
@@ -161,8 +163,9 @@ public class Arbitro {
 	public void setClave(String clave) {
 		this.clave = clave;
 	}
+
 	public void setClaveEncriptada(String clave) {
-		this.clave =new BCryptPasswordEncoder().encode(clave);
+		this.clave = new BCryptPasswordEncoder().encode(clave);
 	}
 
 	public List<Partido> getPartidosArbitrados() {
@@ -283,6 +286,5 @@ public class Arbitro {
 			return false;
 		return true;
 	}
-	
-	
+
 }

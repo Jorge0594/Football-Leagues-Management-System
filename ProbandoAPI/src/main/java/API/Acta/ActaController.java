@@ -119,7 +119,6 @@ public class ActaController {
 			}
 			// Si el usuario conectado es un miembro del comité o un administrador.
 			else {
-
 				entrada.setId(null);
 				actaRepository.save(entrada);
 				Acta actaConId = actaRepository.findById(entrada.getId());
@@ -128,5 +127,46 @@ public class ActaController {
 				return new ResponseEntity<Acta>(entrada, HttpStatus.CREATED);
 			}
 		}
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Acta> modificarActa(@PathVariable String id, @RequestBody Acta entrada) {
+		Acta acta = actaRepository.findById(id);
+		if (acta == null) {
+			return new ResponseEntity<Acta>(HttpStatus.NOT_FOUND);
+		} else {
+			Partido partidoDelActa = partidoRepository.findById(acta.getIdPartido());
+			Arbitro arbitroConectado = arbitroRepository
+					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+			// Si el usuario conectado es un árbitro
+			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
+				if (!arbitroConectado.getId().equals(acta.getArbitro().getId())) {
+					return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
+				} else {
+					acta.setFecha(entrada.getFecha());
+					acta.setHora(entrada.getHora());
+					acta.setConvocadosLocal(entrada.getConvocadosLocal());
+					acta.setConvocadosVisitante(entrada.getConvocadosVisitante());
+					acta.setGolesLocal(entrada.getGolesLocal());
+					acta.setGolesVisitante(entrada.getGolesVisitante());
+					acta.setIncidencias(entrada.getIncidencias());
+					acta.setObservaciones(entrada.getObservaciones());
+					actaRepository.save(acta);
+					partidoDelActa.setActa(acta);
+					partidoRepository.save(partidoDelActa);
+					return new ResponseEntity<Acta>(acta, HttpStatus.OK);
+				}
+
+			}
+			// Si el usuario conectado es un miembro del Comité o un árbitro
+			else {
+				entrada.setId(acta.getId());
+				actaRepository.save(entrada);
+				partidoDelActa.setActa(entrada);
+				partidoRepository.save(partidoDelActa);
+				return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
+			}
+		}
+
 	}
 }

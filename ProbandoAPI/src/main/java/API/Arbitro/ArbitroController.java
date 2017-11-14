@@ -38,6 +38,7 @@ public class ArbitroController {
 		}
 		// Comprueba si el nombre de usuario no se encuentra ya en el sistema.
 		if (!nombresUsuarios.contains(arbitro.getNombreUsuario())) {
+			arbitro.setId(null);
 			// Se encripta la clave
 			arbitro.setClaveEncriptada(arbitro.getClave());
 			arbitroRepository.save(arbitro);

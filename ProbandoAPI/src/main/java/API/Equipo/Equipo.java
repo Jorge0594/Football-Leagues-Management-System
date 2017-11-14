@@ -70,15 +70,15 @@ public class Equipo implements Comparable<Equipo> {
 	public Equipo() {
 	}
 
-	public Equipo(String id, String nombre, String liga, String ciudad, int posicion, int golesEncajados,
-			int goles, List<Jugador> plantillaEquipo) {
+	public Equipo(String id, String nombre, String liga, String ciudad, int posicion, int golesEncajados, int goles,
+			List<Jugador> plantillaEquipo) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.liga = liga;
 		this.ciudad = ciudad;
 		this.posicion = posicion;
-		this.puntos = partidosGanados*3 + partidosEmpatados;
+		this.puntos = partidosGanados * 3 + partidosEmpatados;
 		this.golesEncajados = golesEncajados;
 		this.goles = goles;
 		this.partidosJugados = partidosGanados + partidosPerdidos + partidosEmpatados;
@@ -138,7 +138,8 @@ public class Equipo implements Comparable<Equipo> {
 	}
 
 	public void setPuntos(int puntos) {
-		this.puntos = partidosGanados*3 + partidosEmpatados;;
+		this.puntos = partidosGanados * 3 + partidosEmpatados;
+		;
 	}
 
 	public int getGolesEncajados() {
@@ -162,7 +163,7 @@ public class Equipo implements Comparable<Equipo> {
 	}
 
 	public void setPartidosGanados(int partidosGanados) {
-		this.puntos = this.puntos + 3*(partidosGanados-this.partidosGanados);
+		this.puntos = this.puntos + 3 * (partidosGanados - this.partidosGanados);
 		this.partidosGanados = partidosGanados;
 	}
 
@@ -179,7 +180,7 @@ public class Equipo implements Comparable<Equipo> {
 	}
 
 	public void setPartidosEmpatados(int partidosEmpatados) {
-		this.puntos = this.puntos + (partidosEmpatados-this.partidosEmpatados);
+		this.puntos = this.puntos + (partidosEmpatados - this.partidosEmpatados);
 		this.partidosEmpatados = partidosEmpatados;
 	}
 
@@ -206,6 +207,27 @@ public class Equipo implements Comparable<Equipo> {
 				+ ", goles=" + goles + ", partidosGanados=" + partidosGanados + ", partidosPerdidos=" + partidosPerdidos
 				+ ", partidosEmpatados=" + partidosEmpatados + ", partidosJugados=" + partidosJugados
 				+ ", plantillaEquipo=" + plantillaEquipo + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ciudad == null) ? 0 : ciudad.hashCode());
+		result = prime * result + goles;
+		result = prime * result + golesEncajados;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((imagenEquipo == null) ? 0 : imagenEquipo.hashCode());
+		result = prime * result + ((liga == null) ? 0 : liga.hashCode());
+		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+		result = prime * result + partidosEmpatados;
+		result = prime * result + partidosGanados;
+		result = prime * result + partidosJugados;
+		result = prime * result + partidosPerdidos;
+		result = prime * result + ((plantillaEquipo == null) ? 0 : plantillaEquipo.hashCode());
+		result = prime * result + posicion;
+		result = prime * result + puntos;
+		return result;
 	}
 
 	@Override
@@ -292,5 +314,4 @@ public class Equipo implements Comparable<Equipo> {
 		return 0;
 	}
 
-	
 }
