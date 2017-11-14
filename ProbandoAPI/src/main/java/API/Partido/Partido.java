@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import API.Acta.Acta;
@@ -17,19 +18,24 @@ public class Partido implements Comparable<Partido> {
 	@Id
 	private String id;
 	private String liga;
+	// @DBRef
 	private Equipo equipoLocal;
+	// @DBRef
 	private Equipo equipoVisitante;
 	private Integer golesLocal;
 	private Integer golesVisitante;
 	private String idArbitro;
 	private String fechaPartido;
 	private String horaPartido;
+	// @DBRef
 	private Estadio estadio;
 	private String estado;
 	private String jornada;
 	private String equipacionLocal;
 	private String equipacionVisitante;
+	// @DBRef
 	private List<Incidencia> incidencias;
+	// @DBRef
 	private Acta acta;
 
 	public Partido() {
@@ -183,7 +189,7 @@ public class Partido implements Comparable<Partido> {
 	}
 
 	public int compareTo(Partido partido2) {
-		 SimpleDateFormat formateador = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat formateador = new SimpleDateFormat("dd-MM-yyyy");
 		try {
 			return formateador.parse(this.getFechaPartido()).compareTo(formateador.parse(partido2.getFechaPartido()));
 		} catch (ParseException e) {
@@ -307,8 +313,5 @@ public class Partido implements Comparable<Partido> {
 			return false;
 		return true;
 	}
-
-
-	
 
 }

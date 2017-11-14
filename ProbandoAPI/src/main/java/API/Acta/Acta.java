@@ -3,6 +3,7 @@ package API.Acta;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import API.Arbitro.Arbitro;
@@ -17,13 +18,19 @@ public class Acta {
 	private String idPartido;
 	private String fecha;
 	private String hora;
+	// @DBRef
 	private Equipo equipoLocal;
+	// @DBRef
 	private Equipo equipoVisitante;
+	// @DBRef
 	private Arbitro arbitro;
+	// @DBRef
 	private List<Jugador> convocadosLocal;
+	// @DBRef
 	private List<Jugador> convocadosVisitante;
 	private int golesLocal;
 	private int golesVisitante;
+	// @DBRef
 	private List<Incidencia> incidencias;
 	private String observaciones;
 
@@ -136,7 +143,6 @@ public class Acta {
 	public void setGolesVisitante(int golesVisitante) {
 		this.golesVisitante = golesVisitante;
 	}
-	
 
 	public List<Incidencia> getIncidencias() {
 		return incidencias;
@@ -244,7 +250,5 @@ public class Acta {
 			return false;
 		return true;
 	}
-	
-	
 
 }
