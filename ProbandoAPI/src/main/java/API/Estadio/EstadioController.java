@@ -12,20 +12,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 @RestController
 @CrossOrigin
 @RequestMapping(value="/estadios")
 public class EstadioController {
 	
+	public interface EstadioView extends Estadio.BasicoAtt, Estadio.DatosAtt{}
+	
 	@Autowired
 	private EstadioRepository estadioRepository;
 	
+	@JsonView(EstadioView.class)
 	@RequestMapping (method = RequestMethod.GET)
 	public  ResponseEntity<List<Estadio>> verEstadios (){
 		return new ResponseEntity<List<Estadio>>(estadioRepository.findAll(),HttpStatus.OK);
 		
 	}
-
+	@JsonView(EstadioView.class)
 	@RequestMapping (value="/{id}", method=RequestMethod.GET)
 	public ResponseEntity<Estadio> verEstadio(@PathVariable String id){
 		Estadio entrada = estadioRepository.findById(id);
@@ -36,7 +41,7 @@ public class EstadioController {
 			return new ResponseEntity<Estadio>(entrada,HttpStatus.OK);
 		}
 	}
-	
+	@JsonView(EstadioView.class)
 	@RequestMapping (value="/{nombre}", method= RequestMethod.GET)
 	public ResponseEntity<Estadio> verEstadioNombre(String nombre){
 		Estadio entrada = estadioRepository.findByNombre(nombre);
@@ -45,7 +50,7 @@ public class EstadioController {
 		}
 		return new ResponseEntity<Estadio>(entrada, HttpStatus.OK);
 	}
-	
+	@JsonView(EstadioView.class)
 	@RequestMapping (method = RequestMethod.POST)
 	public ResponseEntity<Estadio> crearEstadios(@RequestBody Estadio estadio){
 		estadioRepository.save(estadio);

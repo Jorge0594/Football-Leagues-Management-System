@@ -13,8 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
+import API.Equipo.Equipo;
+import API.Estadio.Estadio;
+import API.Jugador.Jugador;
 import API.Partido.Partido;
 import API.Partido.PartidoRepository;
 import API.Usuario.UsuarioComponent;
@@ -23,6 +28,8 @@ import API.Usuario.UsuarioComponent;
 @CrossOrigin
 @RequestMapping("/actas")
 public class ActaController {
+	
+	public interface ActaView extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Estadio.BasicoAtt, Arbitro.ActaAtt{}
 
 	@Autowired
 	ActaRepository actaRepository;
@@ -33,12 +40,14 @@ public class ActaController {
 	@Autowired
 	UsuarioComponent usuarioComponent;
 
+	@JsonView(ActaView.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActas() {
 		return new ResponseEntity<List<Acta>>(actaRepository.findAll(), HttpStatus.OK);
 
 	}
 
+	@JsonView(ActaView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Acta> verActaId(@PathVariable String id) {
 		Acta entrada = actaRepository.findById(id);
@@ -48,6 +57,7 @@ public class ActaController {
 		return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ActaView.class)
 	@RequestMapping(value = "/partido/{idPartido}")
 	public ResponseEntity<Acta> verActaIdPartido(@PathVariable String idPartido) {
 		Acta entrada = actaRepository.findByIdPartidoIgnoreCase(idPartido);
@@ -57,6 +67,7 @@ public class ActaController {
 		return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ActaView.class)
 	@RequestMapping(value = "/arbitro/{arbitro}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaArbitro(@PathVariable String arbitro) {
 		List<Acta> entrada = actaRepository.findByArbitroId(new ObjectId(arbitro));
@@ -66,6 +77,7 @@ public class ActaController {
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ActaView.class)
 	@RequestMapping(value = "/fecha/{fecha}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaFecha(@PathVariable String fecha) {
 		List<Acta> entrada = actaRepository.findByFecha(fecha);
@@ -75,6 +87,7 @@ public class ActaController {
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ActaView.class)
 	@RequestMapping(value = "/equipoLocal/{equipoLocal}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaEquipoLocal(@PathVariable String equipoLocal) {
 		List<Acta> entrada = actaRepository.findByEquipoLocalId(new ObjectId(equipoLocal));
@@ -84,6 +97,7 @@ public class ActaController {
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ActaView.class)
 	@RequestMapping(value = "/equipoVisitante/{equipoVisitante}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaEquipoVisitante(@PathVariable String equipoVisitante) {
 		List<Acta> entrada = actaRepository.findByEquipoVisitanteId(new ObjectId(equipoVisitante));
@@ -93,6 +107,7 @@ public class ActaController {
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ActaView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Acta> crearActa(@RequestBody Acta entrada) {
 		Partido partidoDelActa = partidoRepository.findById(entrada.getIdPartido());
@@ -112,7 +127,7 @@ public class ActaController {
 					entrada.setId(null);
 					actaRepository.save(entrada);
 					Acta actaConId = actaRepository.findById(entrada.getId());
-					partidoDelActa.setActa(actaConId);
+					partidoDelActa.setIdActa(actaConId.getId());
 					partidoRepository.save(partidoDelActa);
 					return new ResponseEntity<Acta>(entrada, HttpStatus.CREATED);
 				}
@@ -122,13 +137,14 @@ public class ActaController {
 				entrada.setId(null);
 				actaRepository.save(entrada);
 				Acta actaConId = actaRepository.findById(entrada.getId());
-				partidoDelActa.setActa(actaConId);
+				partidoDelActa.setIdActa(actaConId.getId());
 				partidoRepository.save(partidoDelActa);
 				return new ResponseEntity<Acta>(entrada, HttpStatus.CREATED);
 			}
 		}
 	}
 
+	@JsonView(ActaView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Acta> modificarActa(@PathVariable String id, @RequestBody Acta entrada) {
 		Acta acta = actaRepository.findById(id);
@@ -152,7 +168,7 @@ public class ActaController {
 					acta.setIncidencias(entrada.getIncidencias());
 					acta.setObservaciones(entrada.getObservaciones());
 					actaRepository.save(acta);
-					partidoDelActa.setActa(acta);
+					partidoDelActa.setIdActa(acta.getId());
 					partidoRepository.save(partidoDelActa);
 					return new ResponseEntity<Acta>(acta, HttpStatus.OK);
 				}
@@ -162,7 +178,7 @@ public class ActaController {
 			else {
 				entrada.setId(acta.getId());
 				actaRepository.save(entrada);
-				partidoDelActa.setActa(entrada);
+				partidoDelActa.setIdActa(entrada.getId());
 				partidoRepository.save(partidoDelActa);
 				return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
 			}

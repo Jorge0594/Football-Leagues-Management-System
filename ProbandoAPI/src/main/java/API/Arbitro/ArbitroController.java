@@ -17,6 +17,7 @@ import API.Liga.Liga;
 import API.Liga.LigaRepository;
 import API.Partido.Partido;
 import API.Partido.PartidoRepository;
+import com.fasterxml.jackson.annotation.JsonView;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
@@ -25,6 +26,9 @@ import API.Usuario.UsuarioRepository;
 @CrossOrigin
 @RequestMapping("/arbitros")
 public class ArbitroController {
+
+	public interface ArbitroView extends Arbitro.ActaAtt, Arbitro.PerfilAtt, Partido.InfoAtt {
+	}
 
 	@Autowired
 	ArbitroRepository arbitroRepository;
@@ -37,6 +41,7 @@ public class ArbitroController {
 	@Autowired
 	PartidoRepository partidoRepository;
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Arbitro> creaArbitro(@RequestBody Arbitro arbitro) {
 		List<Usuario> usuarios = usuarioRepository.findAll();
@@ -58,6 +63,7 @@ public class ArbitroController {
 		}
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Arbitro> modificaArbitro(@PathVariable String id, @RequestBody Arbitro arbitroModificado) {
 		Arbitro entrada = arbitroRepository.findById(id);
@@ -131,17 +137,21 @@ public class ArbitroController {
 
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Arbitro>> verArbitros() {
 		return new ResponseEntity<List<Arbitro>>(arbitroRepository.findAll(), HttpStatus.OK);
 
 	}
 
+
 	@RequestMapping(value = "{id}/ligas", method = RequestMethod.GET)
 	public ResponseEntity<List<Liga>> verLigasArbitro(@PathVariable String id) {
 		return new ResponseEntity<List<Liga>>(ligaRepository.findByArbitrosId(id), HttpStatus.OK);
 	}
 
+
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> verArbitroId(@PathVariable String id) {
 		Arbitro entrada = arbitroRepository.findById(id);
@@ -151,6 +161,7 @@ public class ArbitroController {
 		return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/dni/{dni}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> verArbitroDni(@PathVariable String dni) {
 		Arbitro entrada = arbitroRepository.findByDni(dni);
@@ -160,6 +171,7 @@ public class ArbitroController {
 		return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/nombreUsuario/{nombreUsuario}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> verArbitroNombreUsuario(@PathVariable String nombreUsuario) {
 		Arbitro entrada = arbitroRepository.findByNombreUsuario(nombreUsuario);
@@ -169,6 +181,7 @@ public class ArbitroController {
 		return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/comite/{comite}", method = RequestMethod.GET)
 	public ResponseEntity<List<Arbitro>> verArbitrosComite(@PathVariable String comite) {
 		List<Arbitro> entrada = arbitroRepository.findByComite(comite);
@@ -177,7 +190,7 @@ public class ArbitroController {
 		}
 		return new ResponseEntity<List<Arbitro>>(entrada, HttpStatus.OK);
 	}
-
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Arbitro> eliminarArbitro(@PathVariable String id) {
 		Arbitro arbitro = arbitroRepository.findById(id);
@@ -187,7 +200,7 @@ public class ArbitroController {
 		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(arbitro.getNombreUsuario());
 
 		List<Liga> ligas = ligaRepository.findByArbitrosId(arbitro.getId());
-		if (!ligas.isEmpty()) {
+		if (!ligas.isEmpty()) {//borra al arbitro de las ligas a las que pertenecia
 			for (Liga l : ligas) {
 				l.getArbitros().remove(arbitro);
 				ligaRepository.save(l);

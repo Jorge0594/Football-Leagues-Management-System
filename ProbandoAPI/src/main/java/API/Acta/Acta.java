@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import API.Arbitro.Arbitro;
 import API.Equipo.Equipo;
 import API.Incidencia.Incidencia;
@@ -13,25 +15,35 @@ import API.Jugador.Jugador;
 
 @Document(collection = "Acta")
 public class Acta {
+	
+	public interface ActaAtt{}
+	
 	@Id
+	@JsonView(ActaAtt.class)
 	private String id;
+	@JsonView(ActaAtt.class)
 	private String idPartido;
+	@JsonView(ActaAtt.class)
 	private String fecha;
+	@JsonView(ActaAtt.class)
 	private String hora;
-	// @DBRef
+	@JsonView(ActaAtt.class)
 	private Equipo equipoLocal;
-	// @DBRef
+	@JsonView(ActaAtt.class)
 	private Equipo equipoVisitante;
-	// @DBRef
+	@JsonView(ActaAtt.class)
 	private Arbitro arbitro;
-	// @DBRef
+	@JsonView(ActaAtt.class)
 	private List<Jugador> convocadosLocal;
-	// @DBRef
+	@JsonView(ActaAtt.class)
 	private List<Jugador> convocadosVisitante;
+	@JsonView(ActaAtt.class)
 	private int golesLocal;
+	@JsonView(ActaAtt.class)
 	private int golesVisitante;
-	// @DBRef
+	@JsonView(ActaAtt.class)
 	private List<Incidencia> incidencias;
+	@JsonView(ActaAtt.class)
 	private String observaciones;
 
 	public Acta() {
