@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import API.Liga.Liga;
+import API.Liga.LigaRepository;
+import API.Partido.Partido;
+import API.Partido.PartidoRepository;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
@@ -28,6 +32,10 @@ public class ArbitroController {
 	UsuarioRepository usuarioRepository;
 	@Autowired
 	UsuarioComponent usuarioComponent;
+	@Autowired
+	LigaRepository ligaRepository;
+	@Autowired
+	PartidoRepository partidoRepository;
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Arbitro> creaArbitro(@RequestBody Arbitro arbitro) {
@@ -85,7 +93,8 @@ public class ArbitroController {
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				}
 			}
-			// Si el usuario conectado es un miembro del comité o un administrador
+			// Si el usuario conectado es un miembro del comité o un
+			// administrador
 			if ((usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE"))
 					|| (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN"))) {
 				entrada.setNombre(arbitroModificado.getNombre());
@@ -111,7 +120,7 @@ public class ArbitroController {
 				modificado.setClave(entrada.getClave());
 				modificado.setNombreUsuario(entrada.getNombreUsuario());
 				usuarioRepository.save(modificado);
-				return new ResponseEntity<Arbitro>(arbitroModificado, HttpStatus.OK);
+				return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 			}
 			// No debería entrar aquí nunca, por los permisos de Roles.
 			else {
@@ -128,11 +137,16 @@ public class ArbitroController {
 
 	}
 
+	@RequestMapping(value = "{id}/ligas", method = RequestMethod.GET)
+	public ResponseEntity<List<Liga>> verLigasArbitro(@PathVariable String id) {
+		return new ResponseEntity<List<Liga>>(ligaRepository.findByArbitrosId(id), HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> verArbitroId(@PathVariable String id) {
 		Arbitro entrada = arbitroRepository.findById(id);
 		if (entrada == null) {
-			return new ResponseEntity<Arbitro>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Arbitro>(HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 	}
@@ -162,6 +176,32 @@ public class ArbitroController {
 			return new ResponseEntity<List<Arbitro>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Arbitro>>(entrada, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Arbitro> eliminarArbitro(@PathVariable String id) {
+		Arbitro arbitro = arbitroRepository.findById(id);
+		if (arbitro == null) {
+			return new ResponseEntity<Arbitro>(HttpStatus.NO_CONTENT);
+		}
+		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(arbitro.getNombreUsuario());
+
+		List<Liga> ligas = ligaRepository.findByArbitrosId(arbitro.getId());
+		if (!ligas.isEmpty()) {
+			for (Liga l : ligas) {
+				l.getArbitros().remove(arbitro);
+				ligaRepository.save(l);
+			}
+		}
+		for(Partido p : arbitro.getPartidosArbitrados()){
+			p.setIdArbitro("");
+			partidoRepository.save(p);
+		}
+		if (usuario != null) {
+			usuarioRepository.delete(usuario);
+		}
+		arbitroRepository.delete(arbitro);
+		return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
 	}
 
 }

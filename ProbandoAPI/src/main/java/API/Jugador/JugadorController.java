@@ -260,7 +260,6 @@ public class JugadorController {
 
 		if (usuario != null) {
 			usuarioRepository.delete(usuario);
-			;
 		}
 
 		jugadorRepository.delete(jugador);
