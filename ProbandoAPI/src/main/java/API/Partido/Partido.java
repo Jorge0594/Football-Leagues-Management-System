@@ -8,35 +8,67 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import API.Acta.Acta;
 import API.Equipo.Equipo;
 import API.Estadio.Estadio;
 import API.Incidencia.Incidencia;
+import API.Jugador.Jugador;
 
 @Document(collection = "Partidos")
 public class Partido implements Comparable<Partido> {
+
+	public interface InfoAtt {
+	}
+
+	public interface RestAtt {
+	}
+
+	@JsonView(InfoAtt.class)
 	@Id
 	private String id;
+	@JsonView(InfoAtt.class)
 	private String liga;
 	// @DBRef
+	@JsonView(InfoAtt.class)
 	private Equipo equipoLocal;
 	// @DBRef
+	@JsonView(InfoAtt.class)
 	private Equipo equipoVisitante;
+	@JsonView(InfoAtt.class)
 	private Integer golesLocal;
+	@JsonView(InfoAtt.class)
 	private Integer golesVisitante;
+	@JsonView(InfoAtt.class)
 	private String idArbitro;
+	@JsonView(InfoAtt.class)
 	private String fechaPartido;
+	@JsonView(InfoAtt.class)
 	private String horaPartido;
 	// @DBRef
+	@JsonView(InfoAtt.class)
 	private Estadio estadio;
+	@JsonView(InfoAtt.class)
 	private String estado;
+	@JsonView(InfoAtt.class)
 	private String jornada;
+	@JsonView(InfoAtt.class)
 	private String equipacionLocal;
+	@JsonView(InfoAtt.class)
 	private String equipacionVisitante;
+	@DBRef
+	@JsonView(RestAtt.class)
+	private List<Jugador> convocadosLocal;
+	@DBRef
+	@JsonView(RestAtt.class)
+	private List<Jugador> convocadosVisitante;
 	// @DBRef
+	@JsonView(RestAtt.class)
 	private List<Incidencia> incidencias;
 	// @DBRef
-	private Acta acta;
+	@JsonView(RestAtt.class)
+	private String idActa;
 
 	public Partido() {
 	}
@@ -164,6 +196,23 @@ public class Partido implements Comparable<Partido> {
 		this.equipacionVisitante = equipacionVisitante;
 	}
 
+	
+	public List<Jugador> getConvocadosLocal() {
+		return convocadosLocal;
+	}
+
+	public void setConvocadosLocal(List<Jugador> convocadosLocal) {
+		this.convocadosLocal = convocadosLocal;
+	}
+
+	public List<Jugador> getConvocadosVisitante() {
+		return convocadosVisitante;
+	}
+
+	public void setConvocadosVisitante(List<Jugador> convocadosVisitante) {
+		this.convocadosVisitante = convocadosVisitante;
+	}
+
 	public Estadio getEstadio() {
 		return estadio;
 	}
@@ -172,12 +221,12 @@ public class Partido implements Comparable<Partido> {
 		this.estadio = estadio;
 	}
 
-	public Acta getActa() {
-		return acta;
+	public String getIdActa() {
+		return idActa;
 	}
 
-	public void setActa(Acta acta) {
-		this.acta = acta;
+	public void setIdActa(String acta) {
+		this.idActa = acta;
 	}
 
 	public List<Incidencia> getIncidencias() {
@@ -203,22 +252,7 @@ public class Partido implements Comparable<Partido> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((acta == null) ? 0 : acta.hashCode());
-		result = prime * result + ((equipacionLocal == null) ? 0 : equipacionLocal.hashCode());
-		result = prime * result + ((equipacionVisitante == null) ? 0 : equipacionVisitante.hashCode());
-		result = prime * result + ((equipoLocal == null) ? 0 : equipoLocal.hashCode());
-		result = prime * result + ((equipoVisitante == null) ? 0 : equipoVisitante.hashCode());
-		result = prime * result + ((estadio == null) ? 0 : estadio.hashCode());
-		result = prime * result + ((estado == null) ? 0 : estado.hashCode());
-		result = prime * result + ((fechaPartido == null) ? 0 : fechaPartido.hashCode());
-		result = prime * result + ((golesLocal == null) ? 0 : golesLocal.hashCode());
-		result = prime * result + ((golesVisitante == null) ? 0 : golesVisitante.hashCode());
-		result = prime * result + ((horaPartido == null) ? 0 : horaPartido.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((idArbitro == null) ? 0 : idArbitro.hashCode());
-		result = prime * result + ((incidencias == null) ? 0 : incidencias.hashCode());
-		result = prime * result + ((jornada == null) ? 0 : jornada.hashCode());
-		result = prime * result + ((liga == null) ? 0 : liga.hashCode());
 		return result;
 	}
 
@@ -231,85 +265,10 @@ public class Partido implements Comparable<Partido> {
 		if (getClass() != obj.getClass())
 			return false;
 		Partido other = (Partido) obj;
-		if (acta == null) {
-			if (other.acta != null)
-				return false;
-		} else if (!acta.equals(other.acta))
-			return false;
-		if (equipacionLocal == null) {
-			if (other.equipacionLocal != null)
-				return false;
-		} else if (!equipacionLocal.equals(other.equipacionLocal))
-			return false;
-		if (equipacionVisitante == null) {
-			if (other.equipacionVisitante != null)
-				return false;
-		} else if (!equipacionVisitante.equals(other.equipacionVisitante))
-			return false;
-		if (equipoLocal == null) {
-			if (other.equipoLocal != null)
-				return false;
-		} else if (!equipoLocal.equals(other.equipoLocal))
-			return false;
-		if (equipoVisitante == null) {
-			if (other.equipoVisitante != null)
-				return false;
-		} else if (!equipoVisitante.equals(other.equipoVisitante))
-			return false;
-		if (estadio == null) {
-			if (other.estadio != null)
-				return false;
-		} else if (!estadio.equals(other.estadio))
-			return false;
-		if (estado == null) {
-			if (other.estado != null)
-				return false;
-		} else if (!estado.equals(other.estado))
-			return false;
-		if (fechaPartido == null) {
-			if (other.fechaPartido != null)
-				return false;
-		} else if (!fechaPartido.equals(other.fechaPartido))
-			return false;
-		if (golesLocal == null) {
-			if (other.golesLocal != null)
-				return false;
-		} else if (!golesLocal.equals(other.golesLocal))
-			return false;
-		if (golesVisitante == null) {
-			if (other.golesVisitante != null)
-				return false;
-		} else if (!golesVisitante.equals(other.golesVisitante))
-			return false;
-		if (horaPartido == null) {
-			if (other.horaPartido != null)
-				return false;
-		} else if (!horaPartido.equals(other.horaPartido))
-			return false;
 		if (id == null) {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
-			return false;
-		if (idArbitro == null) {
-			if (other.idArbitro != null)
-				return false;
-		} else if (!idArbitro.equals(other.idArbitro))
-			return false;
-		if (incidencias == null) {
-			if (other.incidencias != null)
-				return false;
-		} else if (!incidencias.equals(other.incidencias))
-			return false;
-		if (jornada == null) {
-			if (other.jornada != null)
-				return false;
-		} else if (!jornada.equals(other.jornada))
-			return false;
-		if (liga == null) {
-			if (other.liga != null)
-				return false;
-		} else if (!liga.equals(other.liga))
 			return false;
 		return true;
 	}

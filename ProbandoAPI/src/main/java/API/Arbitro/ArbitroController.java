@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import API.Partido.Partido;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
@@ -22,6 +25,9 @@ import API.Usuario.UsuarioRepository;
 @RequestMapping("/arbitros")
 public class ArbitroController {
 
+	public interface ArbitroView extends Arbitro.ActaAtt, Arbitro.PerfilAtt, Partido.InfoAtt {
+	}
+
 	@Autowired
 	ArbitroRepository arbitroRepository;
 	@Autowired
@@ -29,6 +35,7 @@ public class ArbitroController {
 	@Autowired
 	UsuarioComponent usuarioComponent;
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Arbitro> creaArbitro(@RequestBody Arbitro arbitro) {
 		List<Usuario> usuarios = usuarioRepository.findAll();
@@ -50,6 +57,7 @@ public class ArbitroController {
 		}
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Arbitro> modificaArbitro(@PathVariable String id, @RequestBody Arbitro arbitroModificado) {
 		Arbitro entrada = arbitroRepository.findById(id);
@@ -122,12 +130,14 @@ public class ArbitroController {
 
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Arbitro>> verArbitros() {
 		return new ResponseEntity<List<Arbitro>>(arbitroRepository.findAll(), HttpStatus.OK);
 
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> verArbitroId(@PathVariable String id) {
 		Arbitro entrada = arbitroRepository.findById(id);
@@ -137,6 +147,7 @@ public class ArbitroController {
 		return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/dni/{dni}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> verArbitroDni(@PathVariable String dni) {
 		Arbitro entrada = arbitroRepository.findByDni(dni);
@@ -146,6 +157,7 @@ public class ArbitroController {
 		return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/nombreUsuario/{nombreUsuario}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> verArbitroNombreUsuario(@PathVariable String nombreUsuario) {
 		Arbitro entrada = arbitroRepository.findByNombreUsuario(nombreUsuario);
@@ -155,6 +167,7 @@ public class ArbitroController {
 		return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 	}
 
+	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/comite/{comite}", method = RequestMethod.GET)
 	public ResponseEntity<List<Arbitro>> verArbitrosComite(@PathVariable String comite) {
 		List<Arbitro> entrada = arbitroRepository.findByComite(comite);

@@ -7,26 +7,48 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import API.Partido.Partido;
 
 @Document(collection = "Arbitros")
 public class Arbitro {
+	
+	public interface ActaAtt{}
+	public interface PerfilAtt{}
+	public interface ClaveAtt{}
+	
+	@JsonView(ActaAtt.class)
 	@Id
 	private String id;
+	@JsonView(PerfilAtt.class)
 	private String dni;
+	@JsonView(ActaAtt.class)
 	private String nombre;
+	@JsonView(PerfilAtt.class)
 	private String nombreUsuario;
+	@JsonView(ClaveAtt.class)
 	private String clave;
-	// @DBRef
+	@DBRef
+	@JsonView(PerfilAtt.class)
 	private List<Partido> partidosArbitrados;
+	@JsonView(PerfilAtt.class)
 	private String fechaNacimiento;
+	@JsonView(PerfilAtt.class)
 	private int edad;
+	@JsonView(PerfilAtt.class)
 	private String lugarNacimiento;
+	@JsonView(ActaAtt.class)
 	private String comite;
+	@JsonView(ActaAtt.class)
 	private String categoria;
+	@JsonView(PerfilAtt.class)
 	private String email;
+	@JsonView(PerfilAtt.class)
 	private String tlf;
+	@JsonView(PerfilAtt.class)
 	private boolean internacional;
+	@JsonView(ActaAtt.class)
 	private String estado;
 
 	public Arbitro() {

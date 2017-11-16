@@ -3,17 +3,33 @@ package API.Estadio;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 @Document(collection = "Estadios")
 public class Estadio {
+	
+	public interface DatosAtt{}
+	public interface BasicoAtt{}
+	
+	
 	@Id
+	@JsonView(DatosAtt.class)
 	private String id;
+	@JsonView(BasicoAtt.class)
 	private String nombre;
+	@JsonView(DatosAtt.class)
 	private int capacidad;
+	@JsonView(DatosAtt.class)
 	private String pais;
+	@JsonView(DatosAtt.class)
 	private String provincia;
+	@JsonView(DatosAtt.class)
 	private String poblacion;
+	@JsonView(DatosAtt.class)
 	private int cp;
+	@JsonView(DatosAtt.class)
 	private String localizacion;
+	@JsonView(DatosAtt.class)
 	private String dimensiones;
 
 	public Estadio() {
