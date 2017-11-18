@@ -1,6 +1,5 @@
 package API.Jugador;
 
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -251,11 +250,10 @@ public class Jugador implements Comparable<Jugador> {
 	@Override
 	public String toString() {
 		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", dni=" + dni
-				+ ", nombreUsuario=" + nombreUsuario + ", email=" + email + ", fotoJugador=" + fotoJugador
-				+ ", equipo=" + equipo + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado="
-				+ estado + ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles
-				+ ", tarjetasAmarillas=" + tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", capitan="
-				+ capitan + "]";
+				+ ", nombreUsuario=" + nombreUsuario + ", email=" + email + ", fotoJugador=" + fotoJugador + ", equipo="
+				+ equipo + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado=" + estado
+				+ ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas="
+				+ tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", capitan=" + capitan + "]";
 	}
 
 	@Override
