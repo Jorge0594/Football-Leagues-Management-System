@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import API.Arbitro.ArbitroController.ArbitroView;
 import API.Usuario.*;
 
 
@@ -22,6 +25,8 @@ import API.Usuario.*;
 @CrossOrigin
 @RequestMapping("/miembrosComite")
 public class MiembroComiteController {
+	
+	public interface MiembroComiteView extends MiembroComite.PerfilMCAtt{}
 	
 	@Autowired
 	private MiembroComiteRepository miembroComiteRepository;
@@ -31,12 +36,13 @@ public class MiembroComiteController {
 	private UsuarioComponent usuarioComponent;
 	
 	//GET
+	@JsonView(MiembroComiteView.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<MiembroComite>> verTodosMiembrosComite() {
 		return new ResponseEntity<List<MiembroComite>>(miembroComiteRepository.findAll(), HttpStatus.OK);
 	}
 	
-
+	@JsonView(MiembroComiteView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<MiembroComite> verMiembroComite(@PathVariable String id) {
 		MiembroComite miembro = miembroComiteRepository.findById(id);
@@ -45,6 +51,7 @@ public class MiembroComiteController {
 		}
 		return new ResponseEntity<MiembroComite>(miembro, HttpStatus.OK);
 	}
+	@JsonView(MiembroComiteView.class)
 	@RequestMapping(value = "/{usuario}", method = RequestMethod.GET)
 	public ResponseEntity<MiembroComite> verMiembroComiteUsuario(@PathVariable String usuario){
 		MiembroComite miembro = miembroComiteRepository.findByUsuarioIgnoreCase(usuario);
@@ -53,7 +60,7 @@ public class MiembroComiteController {
 		}
 		return new ResponseEntity<MiembroComite>(miembro,HttpStatus.OK);
 	}
-	
+	@JsonView(MiembroComiteView.class)
 	@RequestMapping(value = "/{email}", method = RequestMethod.GET)
 	public ResponseEntity<MiembroComite> verMiembroComiteEmail(@PathVariable String email){
 		MiembroComite miembro = miembroComiteRepository.findByEmailIgnoreCase(email);
@@ -68,20 +75,28 @@ public class MiembroComiteController {
 	//PUT
 	
 	//Modificar información del miembro del comite
+	@JsonView(MiembroComiteView.class)
 	@RequestMapping(value = "modificarDatos/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<MiembroComite> modificarMiembroComiteInfo(@PathVariable String id, @RequestBody MiembroComite miembroModificado) {
 		MiembroComite miembro = miembroComiteRepository.findById(id);
 		if (miembro == null) {
 			return new ResponseEntity<MiembroComite>(HttpStatus.NO_CONTENT);
 		}
-		miembro.setNombre(miembroModificado.getNombre());
-		miembro.setApellidos(miembroModificado.getApellidos());
-		miembro.setEmail(miembroModificado.getEmail());
-		miembroComiteRepository.save(miembro);
+		Usuario usuarioConectado= usuarioRepository.findById(usuarioComponent.getLoggedUser().getId());
+		if(usuarioConectado.getNombreUsuario().equals(miembro.getUsuario()) || usuarioConectado.getRol().equals("ROLE_ADMIN")) {
+			miembro.setNombre(miembroModificado.getNombre());
+			miembro.setApellidos(miembroModificado.getApellidos());
+			miembro.setEmail(miembroModificado.getEmail());
+			miembroComiteRepository.save(miembro);
 		return new ResponseEntity<MiembroComite>(miembro, HttpStatus.OK);
+		}
+		else {
+			return new ResponseEntity<MiembroComite>(HttpStatus.UNAUTHORIZED);
+		}
 	}
 	
 	//Modificar datos de acceso del miembro del comite
+	@JsonView(MiembroComiteView.class)
 	@RequestMapping(value = "modificarUsuarioAcceso/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<MiembroComite> modificarMiembroComiteAcceso(@PathVariable String id, @RequestBody MiembroComite miembroModificado) {
 		Usuario usuarioConectado=usuarioRepository.findById(usuarioComponent.getLoggedUser().getId());
@@ -97,14 +112,16 @@ public class MiembroComiteController {
 				for(Usuario us : usuarios){
 					nombresUsuarios.add(us.getNombreUsuario());
 				}
-				if(!nombresUsuarios.contains(miembro.getUsuario())) {
+				if(!nombresUsuarios.contains(miembro.getUsuario())){
 					miembro.setUsuario(miembroModificado.getUsuario());
 					usuario.setNombreUsuario(miembro.getUsuario());
 				}
 				else {
-					return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+					return new ResponseEntity<MiembroComite>(miembro,HttpStatus.NOT_ACCEPTABLE);
 				}
-				miembro.setClaveSinEncriptar(miembroModificado.getClave());
+				if (!miembroModificado.getClave().equals(miembro.getClave())) {
+					miembro.setClaveEncriptada(miembroModificado.getClave());
+				}
 				usuario.setClave(miembro.getClave());
 				miembroComiteRepository.save(miembro);
 				usuarioRepository.save(usuario);
@@ -117,6 +134,7 @@ public class MiembroComiteController {
 	}
 	
 	//POST
+	@JsonView(MiembroComiteView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<MiembroComite> crearMiembroComite(@RequestBody MiembroComite miembro) {
 		List<Usuario> usuarios = usuarioRepository.findAll();
@@ -125,6 +143,7 @@ public class MiembroComiteController {
 			nombresUsuarios.add(us.getNombreUsuario());
 		}
 		if(!nombresUsuarios.contains(miembro.getUsuario())) {
+			miembro.setClaveEncriptada(miembro.getClave());
 			miembroComiteRepository.save(miembro);
 			Usuario usuarioNuevo = new Usuario(miembro.getUsuario(), miembro.getClave(), "ROLE_MIEMBROCOMITE");
 			usuarioRepository.save(usuarioNuevo);
@@ -135,6 +154,7 @@ public class MiembroComiteController {
 		}
 		
 	}
+	@JsonView(MiembroComiteView.class)
 	@RequestMapping(value="/crearAdmin", method = RequestMethod.POST)
 	public ResponseEntity<MiembroComite> crearMiembroComiteAdmin(@RequestBody MiembroComite miembro) {
 		List<Usuario> usuarios = usuarioRepository.findAll();
@@ -143,6 +163,7 @@ public class MiembroComiteController {
 			nombresUsuarios.add(us.getNombreUsuario());
 		}
 		if(!nombresUsuarios.contains(miembro.getUsuario())) {
+			miembro.setClaveEncriptada(miembro.getClave());
 			miembroComiteRepository.save(miembro);
 			Usuario usuarioNuevo = new Usuario(miembro.getUsuario(), miembro.getClave(), "ROLE_ADMIN");
 			usuarioRepository.save(usuarioNuevo);
@@ -155,6 +176,7 @@ public class MiembroComiteController {
 	}
 	
 	//DELETE
+	@JsonView(MiembroComiteView.class)
 	@RequestMapping(value="/{id}", method= RequestMethod.DELETE)
 	public ResponseEntity<MiembroComite> eliminarMiembroComite(@PathVariable String id){
 		

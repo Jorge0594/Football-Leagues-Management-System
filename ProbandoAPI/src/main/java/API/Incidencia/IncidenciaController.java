@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import API.Incidencia.Incidencia.IncidenciaAtt;
 import API.Jugador.JugadorRepository;
 import API.MiembroComite.MiembroComite;
 import API.Usuario.Usuario;
@@ -20,6 +23,7 @@ import API.Usuario.Usuario;
 @RequestMapping("/incidencias")
 public class IncidenciaController {
 	
+	public interface IncidenciaView extends Incidencia.IncidenciaAtt{}
 
 		@Autowired
 		IncidenciaRepository incidenciasRepository;
@@ -27,13 +31,13 @@ public class IncidenciaController {
 		JugadorRepository jugadoresRepository;
 
 		//GET
-		
+		@JsonView(IncidenciaView.class)
 		@RequestMapping(method = RequestMethod.GET)
 		public ResponseEntity<List<Incidencia>> verIncidencias() {
 			return new ResponseEntity<List<Incidencia>>(incidenciasRepository.findAll(), HttpStatus.OK);
 
 		}
-
+		@JsonView(IncidenciaView.class)
 		@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 		public ResponseEntity<Incidencia> verIncidencia(@PathVariable String id) {
 			Incidencia incidencia = incidenciasRepository.findById(id);
@@ -42,7 +46,7 @@ public class IncidenciaController {
 			}
 			return new ResponseEntity<Incidencia>(incidencia, HttpStatus.OK);
 		}
-
+		@JsonView(IncidenciaView.class)
 		@RequestMapping(value = "incidencias/partido/{idPartido}", method = RequestMethod.GET)
 		public ResponseEntity<List<Incidencia>> verIncidenciasPartido(@PathVariable String idPartido) {	
 			List<Incidencia> incidencias = incidenciasRepository.findByIdPartidoIgnoreCase(idPartido);
@@ -51,7 +55,7 @@ public class IncidenciaController {
 			}
 			return new ResponseEntity<List<Incidencia>>(incidencias, HttpStatus.OK);
 		}
-
+		@JsonView(IncidenciaView.class)
 		@RequestMapping(value = "incidencias/jugador/{idJugador}", method = RequestMethod.GET)
 		public ResponseEntity<List<Incidencia>> verIncidenciasJugador(@PathVariable String idJugador) {
 			List<Incidencia> incidencias = incidenciasRepository.findByIdJugadorIgnoreCase(idJugador);
@@ -60,7 +64,7 @@ public class IncidenciaController {
 			}
 			return new ResponseEntity<List<Incidencia>>(incidencias, HttpStatus.OK);
 		}
-		
+		@JsonView(IncidenciaView.class)
 		@RequestMapping(value = "incidencias/tipo/{tipoIncidencia}", method = RequestMethod.GET)
 		public ResponseEntity<List<Incidencia>> verIncidenciasTipo(@PathVariable String tipoIncidencia) {
 			List<Incidencia> incidencias = incidenciasRepository.findByTipoIgnoreCase(tipoIncidencia);
@@ -74,6 +78,7 @@ public class IncidenciaController {
 		//PUT
 		
 		//POST
+		@JsonView(IncidenciaView.class)
 		@RequestMapping(method = RequestMethod.POST)
 		public ResponseEntity<Incidencia> crearIncidencia(@RequestBody Incidencia incidencia) {
 			if( incidencia.getTipo().equalsIgnoreCase("ROJA") || incidencia.getTipo().equalsIgnoreCase("AMARILLA") || incidencia.getTipo().equalsIgnoreCase("GOL")) {
@@ -85,6 +90,7 @@ public class IncidenciaController {
 		}
 		
 		//DELETE
+		@JsonView(IncidenciaView.class)
 		@RequestMapping(value="/{id}", method= RequestMethod.DELETE)
 		public ResponseEntity<Incidencia> eliminarIncidencia(@PathVariable String id){
 			Incidencia incidencia= incidenciasRepository.findById(id);

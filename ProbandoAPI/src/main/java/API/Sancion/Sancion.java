@@ -6,18 +6,34 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import API.Arbitro.Arbitro.ActaAtt;
+
 @Document(collection = "Sancion")
 public class Sancion {
-
+	
+	public interface JugadorAtt{}
+	public interface SancionAtt{}
+	
 	@Id
+	@JsonView(SancionAtt.class)
 	private String id;
+	
+	@JsonView(JugadorAtt.class)
 	private String tipo;
+	@JsonView(SancionAtt.class)
 	private String jugadorId;
+	@JsonView(JugadorAtt.class)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date inicioSancion;
+	@JsonView(SancionAtt.class)
 	private String arbitroSdrId;
+	@JsonView(SancionAtt.class)
 	private String estado;
+	@JsonView(JugadorAtt.class)
 	private int partidosSancionados;
+	@JsonView(JugadorAtt.class)
 	private int partidosCumplidos;
 	
 	public Sancion() {}

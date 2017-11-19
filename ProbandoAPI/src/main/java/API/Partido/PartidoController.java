@@ -124,8 +124,20 @@ public class PartidoController {
 			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
 		} else {
 			partido.setId(null);
-			partidoRepository.save(partido);
-			Partido partidoConId = partidoRepository.findById(partido.getId());
+			if(ligaRepository.findByNombreIgnoreCase(partido.getLiga())==null){//método para añadir directamente un partido a una liga 
+				partido.setLiga("");
+				partidoRepository.save(partido);
+			}else{
+				Liga liga = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
+				if(liga == null){
+					return new ResponseEntity<Partido>(HttpStatus.NO_CONTENT);
+				}
+				partido.setLiga(liga.getNombre());
+				partidoRepository.save(partido);
+				liga.getPartidos().add(partido);
+				ligaRepository.save(liga);
+			}
+			Partido partidoConId= partidoRepository.findById(partido.getId());
 			arbitroDelPartido.getPartidosArbitrados().add(partidoConId);
 			arbitroRepository.save(arbitroDelPartido);
 			return new ResponseEntity<Partido>(partido, HttpStatus.CREATED);

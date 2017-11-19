@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.annotation.JsonView;
-
 import API.Acta.Acta;
 import API.Acta.ActaRepository;
 import API.Liga.Liga;
@@ -109,7 +107,8 @@ public class ArbitroController {
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				}
 			}
-			// Si el usuario conectado es un miembro del comité o un administrador
+			// Si el usuario conectado es un miembro del comité o un
+			// administrador
 			if ((usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE"))
 					|| (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN"))) {
 				entrada.setNombre(arbitroModificado.getNombre());
@@ -135,7 +134,7 @@ public class ArbitroController {
 				modificado.setClave(entrada.getClave());
 				modificado.setNombreUsuario(entrada.getNombreUsuario());
 				usuarioRepository.save(modificado);
-				return new ResponseEntity<Arbitro>(arbitroModificado, HttpStatus.OK);
+				return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 			}
 			// No debería entrar aquí nunca, por los permisos de Roles.
 			else {
@@ -153,12 +152,19 @@ public class ArbitroController {
 
 	}
 
+
+	@RequestMapping(value = "{id}/ligas", method = RequestMethod.GET)
+	public ResponseEntity<List<Liga>> verLigasArbitro(@PathVariable String id) {
+		return new ResponseEntity<List<Liga>>(ligaRepository.findByArbitrosId(id), HttpStatus.OK);
+	}
+
+
 	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> verArbitroId(@PathVariable String id) {
 		Arbitro entrada = arbitroRepository.findById(id);
 		if (entrada == null) {
-			return new ResponseEntity<Arbitro>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Arbitro>(HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<Arbitro>(entrada, HttpStatus.OK);
 	}

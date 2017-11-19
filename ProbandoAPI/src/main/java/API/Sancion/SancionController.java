@@ -14,14 +14,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import API.Acta.Acta;
 import API.Arbitro.*;
 import API.Jugador.*;
+import API.Sancion.Sancion.SancionAtt;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/sanciones")
 public class SancionController {
+	
+	public interface JugadorView extends Sancion.JugadorAtt{}
+	public interface SancionView extends  Sancion.SancionAtt, Sancion.JugadorAtt{}
 	
 	@Autowired
 	SancionRepository sancionRepository;
@@ -32,10 +38,12 @@ public class SancionController {
 	
 	
 	//Get
+	@JsonView(SancionView.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Sancion>> verSanciones(){
 		return new ResponseEntity<List<Sancion>>(sancionRepository.findAll(), HttpStatus.OK);
 	}
+	@JsonView(SancionView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Sancion> verSancionId(@PathVariable String id){
 		Sancion sancion = sancionRepository.findById(id);
@@ -46,7 +54,7 @@ public class SancionController {
 			return new ResponseEntity<Sancion>(sancion, HttpStatus.OK);
 		
 	}
-	
+	@JsonView(SancionView.class)
 	@RequestMapping(value = "/{estado}", method = RequestMethod.GET)
 	public ResponseEntity<List<Sancion>> verSancionesEstado(@PathVariable String estado){
 		List<Sancion> sanciones = sancionRepository.findByEstado(estado);
@@ -55,7 +63,7 @@ public class SancionController {
 		}
 		return new ResponseEntity<List<Sancion>>(sanciones, HttpStatus.OK);
 	}
-	
+	@JsonView(SancionView.class)
 	@RequestMapping(value = "/{inicioSancion}", method = RequestMethod.GET)
 	public ResponseEntity<List<Sancion>> verSancionesInicio(@PathVariable Date inicioSancion){
 		List<Sancion> sanciones = sancionRepository.findByInicioSancion(inicioSancion);
@@ -64,7 +72,7 @@ public class SancionController {
 		}
 		return new ResponseEntity<List<Sancion>>(sanciones, HttpStatus.OK);
 	}
-	
+	@JsonView(SancionView.class)
 	@RequestMapping(value = "/{arbitroId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Sancion>> verSancionesPorArbitro(@PathVariable String arbitroId){
 		List<Sancion> sanciones = sancionRepository.findByArbitroSdrId(arbitroId);
@@ -73,8 +81,7 @@ public class SancionController {
 		}
 		return new ResponseEntity<List<Sancion>>(sanciones, HttpStatus.OK);
 	}
-	
-	
+		
 	//PUT
 	@RequestMapping(value = "/aprobarSancion/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Sancion> modificarEstadoSancion(@PathVariable String id){
