@@ -16,45 +16,62 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value="/estadios")
+@RequestMapping(value = "/estadios")
 public class EstadioController {
-	
-	public interface EstadioView extends Estadio.BasicoAtt, Estadio.DatosAtt{}
-	
+
+	public interface EstadioView extends Estadio.BasicoAtt, Estadio.DatosAtt {
+	}
+
 	@Autowired
 	private EstadioRepository estadioRepository;
-	
+
 	@JsonView(EstadioView.class)
-	@RequestMapping (method = RequestMethod.GET)
-	public  ResponseEntity<List<Estadio>> verEstadios (){
-		return new ResponseEntity<List<Estadio>>(estadioRepository.findAll(),HttpStatus.OK);
-		
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<List<Estadio>> verEstadios() {
+		return new ResponseEntity<List<Estadio>>(estadioRepository.findAll(), HttpStatus.OK);
+
 	}
+
 	@JsonView(EstadioView.class)
-	@RequestMapping (value="/{id}", method=RequestMethod.GET)
-	public ResponseEntity<Estadio> verEstadio(@PathVariable String id){
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Estadio> verEstadio(@PathVariable String id) {
 		Estadio entrada = estadioRepository.findById(id);
-		if(entrada==null) {
+		if (entrada == null) {
 			return new ResponseEntity<Estadio>(HttpStatus.NOT_FOUND);
-		}
-		else {
-			return new ResponseEntity<Estadio>(entrada,HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Estadio>(entrada, HttpStatus.OK);
 		}
 	}
+
 	@JsonView(EstadioView.class)
-	@RequestMapping (value="/{nombre}", method= RequestMethod.GET)
-	public ResponseEntity<Estadio> verEstadioNombre(String nombre){
+	@RequestMapping(value = "/{nombre}", method = RequestMethod.GET)
+	public ResponseEntity<Estadio> verEstadioNombre(String nombre) {
 		Estadio entrada = estadioRepository.findByNombre(nombre);
-		if (entrada==null) {
+		if (entrada == null) {
 			return new ResponseEntity<Estadio>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Estadio>(entrada, HttpStatus.OK);
 	}
+
 	@JsonView(EstadioView.class)
-	@RequestMapping (method = RequestMethod.POST)
-	public ResponseEntity<Estadio> crearEstadios(@RequestBody Estadio estadio){
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Estadio> modificarEstadio(@PathVariable String id, @RequestBody Estadio estadio) {
+		Estadio entrada = estadioRepository.findById(id);
+		if (entrada == null) {
+			return new ResponseEntity<Estadio>(HttpStatus.NOT_FOUND);
+		} else {
+			estadio.setId(entrada.getId());
+			estadioRepository.save(estadio);
+			return new ResponseEntity<Estadio>(estadio, HttpStatus.OK);
+		}
+	}
+
+	@JsonView(EstadioView.class)
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<Estadio> crearEstadios(@RequestBody Estadio estadio) {
 		estadio.setId(null);
 		estadioRepository.save(estadio);
-		return new ResponseEntity<Estadio>(estadio,HttpStatus.CREATED);
+		return new ResponseEntity<Estadio>(estadio, HttpStatus.CREATED);
 	}
+
 }
