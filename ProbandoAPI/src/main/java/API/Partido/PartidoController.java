@@ -117,43 +117,51 @@ public class PartidoController {
 	}
 
 	@JsonView(PartidoView.class)
-	@RequestMapping(value="/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Partido> modificarPartido(@PathVariable String id, @RequestBody Partido partido){
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Partido> modificarPartido(@PathVariable String id, @RequestBody Partido partido) {
 		Partido entrada = partidoRepository.findById(id);
 		Arbitro arbitroDelPartido = arbitroRepository.findById(partido.getIdArbitro());
 		Liga ligaDelPartido = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
-		if(entrada==null) {
+		if (entrada == null) {
 			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
-		}
-		else {
-			if(arbitroDelPartido == null) {
-				return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+		} else {
+			if (ligaDelPartido == null) {
+				partido.setLiga("");
+			}else{
+				// Borra el partido de la anterior Liga y lo añade a la nueva
+				// Liga.
+				if (!ligaDelPartido.getNombre().equals(entrada.getLiga())) {
+					Liga antigua = ligaRepository.findByNombreIgnoreCase(entrada.getLiga());
+					if (antigua != null) {
+						System.out.println("Entro aqui");
+						antigua.getPartidos().remove(entrada);
+						ligaRepository.save(antigua);
+					}
+					ligaDelPartido.getPartidos().add(partido);
+					ligaRepository.save(ligaDelPartido);
+				}
 			}
-			if(ligaDelPartido == null) {
-				return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
-			}
-			//Borra el partido de la anterior Liga y lo añade a la nueva Liga.
-			if(!ligaDelPartido.getNombre().equals(entrada.getLiga())) {
-				Liga antigua= ligaRepository.findByNombreIgnoreCase(entrada.getLiga());
-				antigua.getPartidos().remove(entrada);
-				ligaRepository.save(antigua);
-				ligaDelPartido.getPartidos().add(partido);
-				ligaRepository.save(ligaDelPartido);
-			}
-			//Borra el partido del anterior árbitro y lo añade al nuevo árbitro.
-			if(!arbitroDelPartido.getId().equals(entrada.getIdArbitro())) {
-				Arbitro antiguo = arbitroRepository.findById(entrada.getIdArbitro());
-				antiguo.getPartidosArbitrados().remove(entrada);
-				arbitroRepository.save(antiguo);
-				arbitroDelPartido.getPartidosArbitrados().add(partido);
-				arbitroRepository.save(arbitroDelPartido);
+			// Borra el partido del anterior árbitro y lo añade al nuevo
+			// árbitro.
+			if (arbitroDelPartido == null) {
+				partido.setIdArbitro("");
+			}else{
+				if (!arbitroDelPartido.getId().equals(entrada.getIdArbitro())) {
+					Arbitro antiguo = arbitroRepository.findById(entrada.getIdArbitro());
+					if (antiguo != null) {
+						antiguo.getPartidosArbitrados().remove(entrada);
+						arbitroRepository.save(antiguo);
+					}
+					arbitroDelPartido.getPartidosArbitrados().add(partido);
+					arbitroRepository.save(arbitroDelPartido);
+				}
 			}
 			partido.setId(entrada.getId());
 			partidoRepository.save(partido);
-			return new ResponseEntity<Partido>(partido,HttpStatus.OK);
+			return new ResponseEntity<Partido>(partido, HttpStatus.OK);
 		}
 	}
-	
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Partido> crearPartido(@RequestBody Partido partido) {
@@ -161,14 +169,15 @@ public class PartidoController {
 		if (arbitroDelPartido == null) {
 			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
 		} else {
-			//Crea el partido y lo añade a los partidos de la liga y del árbitro.
+			// Crea el partido y lo añade a los partidos de la liga y del
+			// árbitro.
 			partido.setId(null);
-			if(ligaRepository.findByNombreIgnoreCase(partido.getLiga())==null){//método para añadir directamente un partido a una liga 
+			if (ligaRepository.findByNombreIgnoreCase(partido.getLiga()) == null) {
 				partido.setLiga("");
 				partidoRepository.save(partido);
-			}else{
+			} else {
 				Liga liga = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
-				if(liga == null){
+				if (liga == null) {
 					return new ResponseEntity<Partido>(HttpStatus.NO_CONTENT);
 				}
 				partido.setLiga(liga.getNombre());
@@ -176,7 +185,7 @@ public class PartidoController {
 				liga.getPartidos().add(partido);
 				ligaRepository.save(liga);
 			}
-			Partido partidoConId= partidoRepository.findById(partido.getId());
+			Partido partidoConId = partidoRepository.findById(partido.getId());
 			arbitroDelPartido.getPartidosArbitrados().add(partidoConId);
 			arbitroRepository.save(arbitroDelPartido);
 			return new ResponseEntity<Partido>(partido, HttpStatus.CREATED);
@@ -192,8 +201,8 @@ public class PartidoController {
 		}
 		// No está permitido borrar un partido si tiene acta
 		if ((entrada.getIdActa() != null)) {
-			if(!entrada.getIdActa().equals("")) {
-			return new ResponseEntity<Partido>(HttpStatus.NOT_ACCEPTABLE);
+			if (!entrada.getIdActa().equals("")) {
+				return new ResponseEntity<Partido>(HttpStatus.NOT_ACCEPTABLE);
 			}
 		}
 		Arbitro arbitroDelPartido = arbitroRepository.findById(entrada.getIdArbitro());
@@ -213,9 +222,9 @@ public class PartidoController {
 		}
 		if (ligaDelPartido != null) {
 			// Elimina el partido de su liga.
-			if(!ligaDelPartido.getPartidos().isEmpty()) {
-			ligaDelPartido.getPartidos().remove(entrada);
-			ligaRepository.save(ligaDelPartido);
+			if (!ligaDelPartido.getPartidos().isEmpty()) {
+				ligaDelPartido.getPartidos().remove(entrada);
+				ligaRepository.save(ligaDelPartido);
 			}
 		}
 		partidoRepository.delete(entrada);
