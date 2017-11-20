@@ -47,6 +47,7 @@ public class LigaController {
 		if(ligaRepository.findByNombreIgnoreCase(liga.getNombre())!= null){
 			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
 		}
+		liga.setId(null);
 		ligaRepository.save(liga);
 		return new ResponseEntity<Liga>(liga,HttpStatus.CREATED);
 	}

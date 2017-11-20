@@ -82,6 +82,7 @@ public class IncidenciaController {
 		@RequestMapping(method = RequestMethod.POST)
 		public ResponseEntity<Incidencia> crearIncidencia(@RequestBody Incidencia incidencia) {
 			if( incidencia.getTipo().equalsIgnoreCase("ROJA") || incidencia.getTipo().equalsIgnoreCase("AMARILLA") || incidencia.getTipo().equalsIgnoreCase("GOL")) {
+				incidencia.setId(null);
 				incidenciasRepository.save(incidencia);
 				return new ResponseEntity<Incidencia>(incidencia, HttpStatus.CREATED);
 			}

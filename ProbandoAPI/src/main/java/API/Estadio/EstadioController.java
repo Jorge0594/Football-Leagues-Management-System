@@ -53,6 +53,7 @@ public class EstadioController {
 	@JsonView(EstadioView.class)
 	@RequestMapping (method = RequestMethod.POST)
 	public ResponseEntity<Estadio> crearEstadios(@RequestBody Estadio estadio){
+		estadio.setId(null);
 		estadioRepository.save(estadio);
 		return new ResponseEntity<Estadio>(estadio,HttpStatus.CREATED);
 	}
