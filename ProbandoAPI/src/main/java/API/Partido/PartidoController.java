@@ -117,12 +117,51 @@ public class PartidoController {
 	}
 
 	@JsonView(PartidoView.class)
+	@RequestMapping(value="/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Partido> modificarPartido(@PathVariable String id, @RequestBody Partido partido){
+		Partido entrada = partidoRepository.findById(id);
+		Arbitro arbitroDelPartido = arbitroRepository.findById(partido.getIdArbitro());
+		Liga ligaDelPartido = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
+		if(entrada==null) {
+			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+		}
+		else {
+			if(arbitroDelPartido == null) {
+				return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+			}
+			if(ligaDelPartido == null) {
+				return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+			}
+			//Borra el partido de la anterior Liga y lo añade a la nueva Liga.
+			if(!ligaDelPartido.getNombre().equals(entrada.getLiga())) {
+				Liga antigua= ligaRepository.findByNombreIgnoreCase(entrada.getLiga());
+				antigua.getPartidos().remove(entrada);
+				ligaRepository.save(antigua);
+				ligaDelPartido.getPartidos().add(partido);
+				ligaRepository.save(ligaDelPartido);
+			}
+			//Borra el partido del anterior árbitro y lo añade al nuevo árbitro.
+			if(!arbitroDelPartido.getId().equals(entrada.getIdArbitro())) {
+				Arbitro antiguo = arbitroRepository.findById(entrada.getIdArbitro());
+				antiguo.getPartidosArbitrados().remove(entrada);
+				arbitroRepository.save(antiguo);
+				arbitroDelPartido.getPartidosArbitrados().add(partido);
+				arbitroRepository.save(arbitroDelPartido);
+			}
+			partido.setId(entrada.getId());
+			partidoRepository.save(partido);
+			return new ResponseEntity<Partido>(partido,HttpStatus.OK);
+		}
+	}
+	
+	@JsonView(PartidoView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Partido> crearPartido(@RequestBody Partido partido) {
 		Arbitro arbitroDelPartido = arbitroRepository.findById(partido.getIdArbitro());
 		if (arbitroDelPartido == null) {
 			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
 		} else {
+			//Crea el partido y lo añade a los partidos de la liga y del árbitro.
 			partido.setId(null);
 			if(ligaRepository.findByNombreIgnoreCase(partido.getLiga())==null){//método para añadir directamente un partido a una liga 
 				partido.setLiga("");
