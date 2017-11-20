@@ -13,7 +13,7 @@ public class Estadio {
 	
 	
 	@Id
-	@JsonView(DatosAtt.class)
+	@JsonView(BasicoAtt.class)
 	private String id;
 	@JsonView(BasicoAtt.class)
 	private String nombre;
