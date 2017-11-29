@@ -24,8 +24,8 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		// URLs that need authentication to access to it
 		//Jugadores
-		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/**").hasAnyRole("JUGADOR","ARBITRO","MIEMBROCOMITE","ADMIN");
-		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/jugadores/**").hasAnyRole("JUGADOR", "MIEMBROCOMITE","ARBITRO","ADMIN");
+		//http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/**").hasAnyRole("JUGADOR","ARBITRO","MIEMBROCOMITE","ADMIN");
+		//http.authorizeRequests().antMatchers(HttpMethod.PUT, "/jugadores/**").hasAnyRole("JUGADOR", "MIEMBROCOMITE","ARBITRO","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/jugadores/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		
 		//Equipos
@@ -60,6 +60,11 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/partidos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/partidos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/partidos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		//Liga
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/ligas/**").hasAnyRole("JUGADOR","ARBITRO","MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/ligas/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.POST, "/ligas/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/ligas/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		
 		http.authorizeRequests().anyRequest().permitAll();
 

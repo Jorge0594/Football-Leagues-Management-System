@@ -86,7 +86,7 @@ public class Jugador implements Comparable<Jugador> {
 		this.dni = dni;
 		this.nombreUsuario = nombreUsuario;
 		this.clave = clave;
-		this.fotoJugador = fotoJugador;
+		this.fotoJugador = "defaultProfile.jpg";
 		this.equipo = equipo;
 		this.posicion = posicion;
 		this.fechaSancion = fechaSancion;
