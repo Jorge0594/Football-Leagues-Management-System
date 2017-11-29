@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import API.Arbitro.ArbitroController.ArbitroView;
 import API.Usuario.*;
 
 
@@ -51,6 +50,7 @@ public class MiembroComiteController {
 		}
 		return new ResponseEntity<MiembroComite>(miembro, HttpStatus.OK);
 	}
+	
 	@JsonView(MiembroComiteView.class)
 	@RequestMapping(value = "/{usuario}", method = RequestMethod.GET)
 	public ResponseEntity<MiembroComite> verMiembroComiteUsuario(@PathVariable String usuario){
@@ -60,6 +60,7 @@ public class MiembroComiteController {
 		}
 		return new ResponseEntity<MiembroComite>(miembro,HttpStatus.OK);
 	}
+	
 	@JsonView(MiembroComiteView.class)
 	@RequestMapping(value = "/{email}", method = RequestMethod.GET)
 	public ResponseEntity<MiembroComite> verMiembroComiteEmail(@PathVariable String email){
@@ -154,6 +155,7 @@ public class MiembroComiteController {
 		}
 		
 	}
+	
 	@JsonView(MiembroComiteView.class)
 	@RequestMapping(value="/crearAdmin", method = RequestMethod.POST)
 	public ResponseEntity<MiembroComite> crearMiembroComiteAdmin(@RequestBody MiembroComite miembro) {
@@ -172,7 +174,6 @@ public class MiembroComiteController {
 		else {
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		
 	}
 	
 	//DELETE

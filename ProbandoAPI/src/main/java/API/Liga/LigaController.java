@@ -176,4 +176,16 @@ public class LigaController {
 		ligaRepository.delete(liga);
 		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
 	}
+	/*//Siempre que se apruebe un acta se deberá llamar a este método.
+	@JsonView(ClasificacionView.class)
+	@RequestMapping(value = "/{idLiga}/actualizarClasificacion", method = RequestMethod.PUT)
+	public ResponseEntity<List<Equipo>> actualizarClasificacion (@PathVariable String idLiga){
+		Liga liga = ligaRepository.findById(idLiga);
+		if(liga == null){
+			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
+		}
+		Collections.sort(liga.getClasificacion());
+		
+		return new ResponseEntity<List<Equipo>>(liga.getClasificacion(),HttpStatus.OK);
+	}*/
 }
