@@ -16,23 +16,38 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.Acta.Acta;
+import API.Acta.ActaRepository;
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
 import API.Estadio.Estadio;
+import API.Incidencia.Incidencia;
+import API.Incidencia.IncidenciaRepository;
 import API.Jugador.Jugador;
+import API.Liga.Liga;
+import API.Liga.LigaRepository;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/partidos")
 public class PartidoController {
-	
-	public interface PartidoView extends Estadio.BasicoAtt, Partido.InfoAtt, Partido.RestAtt, Jugador.EquipoAtt, Equipo.RankAtt{}
+
+	public interface PartidoView
+			extends Estadio.BasicoAtt, Partido.InfoAtt, Partido.RestAtt, Jugador.EquipoAtt, Equipo.RankAtt {
+	}
+
 	@Autowired
 	private PartidoRepository partidoRepository;
 	@Autowired
 	private ArbitroRepository arbitroRepository;
-	
+	@Autowired
+	private ActaRepository actaRepository;
+	@Autowired
+	private IncidenciaRepository incidenciaRepository;
+	@Autowired
+	private LigaRepository ligaRepository;
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidos() {
@@ -40,6 +55,7 @@ public class PartidoController {
 		Collections.sort(partidos);
 		return new ResponseEntity<List<Partido>>(partidos, HttpStatus.OK);
 	}
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Partido> verPartidoId(@PathVariable String id) {
@@ -49,6 +65,7 @@ public class PartidoController {
 		}
 		return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
 	}
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/liga/{liga}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosLiga(@PathVariable String liga) {
@@ -58,6 +75,7 @@ public class PartidoController {
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/jornada/{jornada}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosJornada(@PathVariable String jornada) {
@@ -67,6 +85,7 @@ public class PartidoController {
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/equipoLocal/{equipoLocalId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosEquipoLocal(@PathVariable String equipoLocalId) {
@@ -76,6 +95,7 @@ public class PartidoController {
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/equipoVisitante/{equipoVisitanteId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosEquipoVisitante(@PathVariable String equipoVisitanteId) {
@@ -85,6 +105,7 @@ public class PartidoController {
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/arbitro/{idArbitro}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosArbitro(@PathVariable String idArbitro) {
@@ -94,33 +115,120 @@ public class PartidoController {
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
+
+	@JsonView(PartidoView.class)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Partido> modificarPartido(@PathVariable String id, @RequestBody Partido partido) {
+		Partido entrada = partidoRepository.findById(id);
+		Arbitro arbitroDelPartido = arbitroRepository.findById(partido.getIdArbitro());
+		Liga ligaDelPartido = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
+		if (entrada == null) {
+			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+		} else {
+			if (ligaDelPartido == null) {
+				partido.setLiga("");
+			} else {
+				// Borra el partido de la anterior Liga y lo añade a la nueva
+				// Liga.
+				if (!ligaDelPartido.getNombre().equals(entrada.getLiga())) {
+					ligaDelPartido.getPartidos().add(partido);
+					ligaRepository.save(ligaDelPartido);
+				}
+			}
+			Liga antigua = ligaRepository.findByNombreIgnoreCase(entrada.getLiga());
+			if (antigua != null) {
+				antigua.getPartidos().remove(entrada);
+				ligaRepository.save(antigua);
+			}
+			// Borra el partido del anterior árbitro y lo añade al nuevo
+			// árbitro.
+			if (arbitroDelPartido == null) {
+				partido.setIdArbitro("");
+			} else {
+				if (!arbitroDelPartido.getId().equals(entrada.getIdArbitro())) {
+					arbitroDelPartido.getPartidosArbitrados().add(partido);
+					arbitroRepository.save(arbitroDelPartido);
+				}
+			}
+			Arbitro antiguo = arbitroRepository.findById(entrada.getIdArbitro());
+			if (antiguo != null) {
+				antiguo.getPartidosArbitrados().remove(entrada);
+				arbitroRepository.save(antiguo);
+			}
+			
+			partido.setId(entrada.getId());
+			partidoRepository.save(partido);
+			return new ResponseEntity<Partido>(partido, HttpStatus.OK);
+		}
+	}
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Partido> crearPartido(@RequestBody Partido partido) {
 		Arbitro arbitroDelPartido = arbitroRepository.findById(partido.getIdArbitro());
 		if (arbitroDelPartido == null) {
-			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
-		} else {
-			partido.setId(null);
-			partidoRepository.save(partido);
-			Partido partidoConId= partidoRepository.findById(partido.getId());
-			arbitroDelPartido.getPartidosArbitrados().add(partidoConId);
-			arbitroRepository.save(arbitroDelPartido);
-			return new ResponseEntity<Partido>(partido, HttpStatus.CREATED);
+			partido.setIdArbitro("");
 		}
+		partido.setId(null);
+		if (ligaRepository.findByNombreIgnoreCase(partido.getLiga()) == null) {
+			partido.setLiga("");
+			partidoRepository.save(partido);
+		} else {
+			Liga liga = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
+			if (liga == null) {
+				return new ResponseEntity<Partido>(HttpStatus.NO_CONTENT);
+			}
+			partido.setLiga(liga.getNombre());
+			partidoRepository.save(partido);
+			liga.getPartidos().add(partido);
+			ligaRepository.save(liga);
+		}
+
+		if (arbitroDelPartido != null) {
+			arbitroDelPartido.getPartidosArbitrados().add(partido);
+			arbitroRepository.save(arbitroDelPartido);
+		}
+		return new ResponseEntity<Partido>(partido, HttpStatus.CREATED);
+
 	}
+
 	@JsonView(PartidoView.class)
-	@RequestMapping(value="/{id}",method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Partido> EliminarPartidoId(@PathVariable String id) {
 		Partido entrada = partidoRepository.findById(id);
 		if (entrada == null) {
 			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
 		}
+		// No está permitido borrar un partido si tiene acta
+		if ((entrada.getIdActa() != null)) {
+			if (!entrada.getIdActa().equals("")) {
+				return new ResponseEntity<Partido>(HttpStatus.NOT_ACCEPTABLE);
+			}
+		}
 		Arbitro arbitroDelPartido = arbitroRepository.findById(entrada.getIdArbitro());
-		//Elimina el partido de los partidos arbitrados del árbitro.
-		arbitroDelPartido.getPartidosArbitrados().remove(entrada);
-		arbitroRepository.save(arbitroDelPartido);
+		List<Incidencia> incidenciasDelPartido = incidenciaRepository.findByIdPartidoIgnoreCase(entrada.getId());
+		Liga ligaDelPartido = ligaRepository.findByNombreIgnoreCase(entrada.getLiga());
+		if (arbitroDelPartido != null) {
+			// Elimina el partido de los partidos arbitrados del árbitro.
+			arbitroDelPartido.getPartidosArbitrados().remove(entrada);
+			arbitroRepository.save(arbitroDelPartido);
+		}
+		if (!incidenciasDelPartido.isEmpty()) {
+			// Elimina el partido de cada incidencia.
+			for (Incidencia incidencia : incidenciasDelPartido) {
+				incidencia.setIdPartido("");
+				incidenciaRepository.save(incidencia);
+			}
+		}
+		if (ligaDelPartido != null) {
+			// Elimina el partido de su liga.
+			if (!ligaDelPartido.getPartidos().isEmpty()) {
+				ligaDelPartido.getPartidos().remove(entrada);
+				ligaRepository.save(ligaDelPartido);
+			}
+		}
 		partidoRepository.delete(entrada);
 		return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
 	}
+
 }

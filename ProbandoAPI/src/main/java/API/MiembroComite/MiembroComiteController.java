@@ -165,6 +165,7 @@ public class MiembroComiteController {
 			nombresUsuarios.add(us.getNombreUsuario());
 		}
 		if(!nombresUsuarios.contains(miembro.getUsuario())) {
+			miembro.setId(null);
 			miembro.setClaveEncriptada(miembro.getClave());
 			miembroComiteRepository.save(miembro);
 			Usuario usuarioNuevo = new Usuario(miembro.getUsuario(), miembro.getClave(), "ROLE_ADMIN");

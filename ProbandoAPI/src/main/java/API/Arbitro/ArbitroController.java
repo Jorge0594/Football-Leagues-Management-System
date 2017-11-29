@@ -3,6 +3,7 @@ package API.Arbitro;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.fasterxml.jackson.annotation.JsonView;
+import API.Acta.Acta;
+import API.Acta.ActaRepository;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
 import API.Partido.Partido;
 import API.Partido.PartidoRepository;
-import com.fasterxml.jackson.annotation.JsonView;
+import API.Sancion.Sancion;
+import API.Sancion.SancionRepository;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
@@ -37,9 +41,13 @@ public class ArbitroController {
 	@Autowired
 	UsuarioComponent usuarioComponent;
 	@Autowired
+	ActaRepository actaRepository;
+	@Autowired
 	LigaRepository ligaRepository;
 	@Autowired
 	PartidoRepository partidoRepository;
+	@Autowired
+	SancionRepository sancionRepository;
 
 	@JsonView(ArbitroView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -190,31 +198,49 @@ public class ArbitroController {
 		}
 		return new ResponseEntity<List<Arbitro>>(entrada, HttpStatus.OK);
 	}
+
 	@JsonView(ArbitroView.class)
-	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Arbitro> eliminarArbitro(@PathVariable String id) {
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Arbitro> eliminaArbitro(@PathVariable String id) {
 		Arbitro arbitro = arbitroRepository.findById(id);
 		if (arbitro == null) {
-			return new ResponseEntity<Arbitro>(HttpStatus.NO_CONTENT);
-		}
-		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(arbitro.getNombreUsuario());
+			return new ResponseEntity<Arbitro>(HttpStatus.NOT_FOUND);
+		} else {
+			Usuario usuarioDelArbitro = usuarioRepository.findByNombreUsuarioIgnoreCase(arbitro.getNombreUsuario());
+			List<Liga> ligasDelArbitro = ligaRepository.findAll();
+			List<Partido> partidosDelArbitro = partidoRepository.findByIdArbitro(arbitro.getId());
+			List<Sancion> sancionesDelArbitro = sancionRepository.findByArbitroSdrId(arbitro.getId());
 
-		List<Liga> ligas = ligaRepository.findByArbitrosId(arbitro.getId());
-		if (!ligas.isEmpty()) {//borra al arbitro de las ligas a las que pertenecia
-			for (Liga l : ligas) {
-				l.getArbitros().remove(arbitro);
-				ligaRepository.save(l);
+			if (!ligasDelArbitro.isEmpty()) {
+				// Elimina al árbitro de todas sus ligas.
+				for (Liga liga : ligasDelArbitro) {
+					if (liga.getArbitros().contains(arbitro)) {
+						liga.getArbitros().remove(arbitro);
+						ligaRepository.save(liga);
+					}
+				}
 			}
+			if (!partidosDelArbitro.isEmpty()) {
+				// Elimina al árbitro de todos sus partidos.
+				for (Partido partido : partidosDelArbitro) {
+					partido.setIdArbitro("");
+					partidoRepository.save(partido);
+				}
+			}
+			if (!sancionesDelArbitro.isEmpty()) {
+				// Elimina al árbitro de todas sus sanciones.
+				for (Sancion sancion : sancionesDelArbitro) {
+					sancion.setArbitroSdrId("");
+					sancionRepository.save(sancion);
+				}
+			}
+			// Elimina el usuario del árbitro.
+			if (usuarioDelArbitro != null) {
+				usuarioRepository.delete(usuarioDelArbitro);
+			}
+			arbitroRepository.delete(arbitro);
+			return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
 		}
-		for(Partido p : arbitro.getPartidosArbitrados()){
-			p.setIdArbitro("");
-			partidoRepository.save(p);
-		}
-		if (usuario != null) {
-			usuarioRepository.delete(usuario);
-		}
-		arbitroRepository.delete(arbitro);
-		return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
 	}
 
 }

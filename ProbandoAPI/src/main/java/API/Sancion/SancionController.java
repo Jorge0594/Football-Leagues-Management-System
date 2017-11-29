@@ -114,6 +114,7 @@ public class SancionController {
 	public ResponseEntity<Sancion> crearSancion(@RequestBody Sancion sancion) {
 		sancion.setEstado("Pendiente");
 		sancion.setPartidosCumplidos(0);
+		sancion.setId(null);
 		sancionRepository.save(sancion);
 		return new ResponseEntity<Sancion>(sancion, HttpStatus.CREATED);
 

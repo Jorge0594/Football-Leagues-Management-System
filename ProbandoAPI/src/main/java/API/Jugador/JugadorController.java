@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -19,6 +21,7 @@ import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
+import API.Images.ImageService;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
 import API.Partido.PartidoRepository;
@@ -48,6 +51,8 @@ public class JugadorController {
 	PartidoRepository partidoRepository;
 	@Autowired
 	UsuarioComponent usuarioComponent;
+	@Autowired
+	ImageService imageService;
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -57,7 +62,7 @@ public class JugadorController {
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		jugador.setId(null);
-		jugador.setFotoJugador("defaultImage.png");
+		jugador.setFotoJugador("defaultProfile.jpg");
 		jugador.setEquipo("");
 		jugador.setGoles(0);
 		jugador.setTarjetasAmarillas(0);
@@ -86,7 +91,13 @@ public class JugadorController {
 		}
 		return new ResponseEntity<List<Jugador>>(jugadores, HttpStatus.OK);
 	}
-
+	
+	@JsonView(ProfileView.class)
+	@RequestMapping(value = "/usuario/{nombreUsuario}", method = RequestMethod.GET)
+	public ResponseEntity<Jugador>verPerfilJugadorUsuario(@PathVariable String nombreUsuario){
+		return new ResponseEntity<Jugador>(jugadorRepository.findByNombreUsuarioIgnoreCase(nombreUsuario),HttpStatus.OK);
+	}
+	
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{nombre}/{apellidos}", method = RequestMethod.GET)
 	public ResponseEntity<Jugador> verJugadorApellidos(@PathVariable(value = "nombre") String nombre,
@@ -235,7 +246,27 @@ public class JugadorController {
 		jugadorRepository.save(jugador);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
-
+	
+	@JsonView(ProfileView.class)
+	@RequestMapping(value = "/{id}/foto", method = RequestMethod.PUT)
+	public ResponseEntity<Jugador>modificarImagenPerfil(@PathVariable String id,@RequestParam("File")MultipartFile file){
+		Jugador jugador = jugadorRepository.findById(id);
+		if(jugador == null){
+			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
+		}
+		if(!usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())){
+			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
+		}else{
+			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getNombreUsuario(), file);
+			if(cambioFoto){
+				jugador.setFotoJugador(imageService.getImg().getFileName());
+				jugadorRepository.save(jugador);
+				return new ResponseEntity<Jugador>(jugador,HttpStatus.OK);
+			}else{
+				return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
+			}
+		}
+	}
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Jugador> eliminarJugador(@PathVariable String id) {

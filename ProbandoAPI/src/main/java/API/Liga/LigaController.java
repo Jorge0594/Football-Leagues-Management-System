@@ -1,6 +1,7 @@
 package API.Liga;
 
 import API.Jugador.*;
+import API.Partido.Partido;
 import API.Partido.PartidoRepository;
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
@@ -29,7 +30,7 @@ public class LigaController {
 	
 	public interface GoleadoresView extends Jugador.EquipoAtt {}
 	public interface ClasificacionView extends Equipo.RankAtt,Equipo.PerfilAtt{}
-	public interface InfoLigaView extends Liga.LigaAtt, Jugador.EquipoAtt, Equipo.RankAtt{}
+	public interface InfoLigaView extends Liga.LigaAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt{}
 	
 	@Autowired
 	private EquipoRepository equipoRepository;
@@ -46,6 +47,7 @@ public class LigaController {
 		if(ligaRepository.findByNombreIgnoreCase(liga.getNombre())!= null){
 			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
 		}
+		liga.setId(null);
 		ligaRepository.save(liga);
 		return new ResponseEntity<Liga>(liga,HttpStatus.CREATED);
 	}
@@ -129,6 +131,23 @@ public class LigaController {
 		
 		return new ResponseEntity<Liga>(liga,HttpStatus.OK);
 	}
+	
+	@JsonView (InfoLigaView.class)
+	@RequestMapping(value="/{nombre}/partido/{idPartido}",method = RequestMethod.PUT)
+	public ResponseEntity<Liga>añadirPartido(@PathVariable (value = "nombre") String nombre, @PathVariable (value = "idPartido")String idPartido){
+		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
+		Partido partido = partidoRepository.findById(idPartido);
+		if (liga == null || partido == null || liga.getPartidos().contains(partido)){
+			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		partido.setLiga(liga.getNombre());
+		liga.getPartidos().add(partido);
+		
+		partidoRepository.save(partido);
+		ligaRepository.save(liga);
+		
+		return new ResponseEntity<Liga>(liga,HttpStatus.OK);
+	}
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(value="/{nombre}/arbitro/{idArbitro}",method = RequestMethod.DELETE)
 	public ResponseEntity<Liga>eliminarArbitroLiga(@PathVariable (value = "nombre")String nombre, @PathVariable (value = "idArbitro")String idArbitro){
@@ -162,6 +181,22 @@ public class LigaController {
 		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
 	}
 	
+	@JsonView (InfoLigaView.class)
+	@RequestMapping(value="/{nombre}/partido/{idPartido}",method = RequestMethod.DELETE)
+	public ResponseEntity<Liga>eliminarPartido(@PathVariable (value = "nombre") String nombre, @PathVariable (value = "idPartido")String idPartido){
+		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
+		Partido partido = partidoRepository.findById(idPartido);
+		if (liga == null || partido == null || !liga.getPartidos().contains(partido)){
+			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		partido.setLiga("");
+		liga.getPartidos().remove(partido);
+		
+		partidoRepository.save(partido);
+		ligaRepository.save(liga);
+		
+		return new ResponseEntity<Liga>(liga,HttpStatus.OK);
+	}
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(value="/{id}",method = RequestMethod.DELETE)
 	public ResponseEntity<Liga>eliminarLiga(@PathVariable String id){

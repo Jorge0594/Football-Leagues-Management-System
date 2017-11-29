@@ -47,6 +47,7 @@ public class EquipoController {
 		if (equipoRepository.findByNombreIgnoreCase(equipo.getNombre()) != null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NOT_ACCEPTABLE);
 		}
+		equipo.setId(null);
 		equipo.setImagenEquipo("imageTeamDafault.png");
 		// COMENTADO PARA FACILTAR EL TESTING BOPRRAR CUANDO SE PASE A
 		// PRODUCCION
