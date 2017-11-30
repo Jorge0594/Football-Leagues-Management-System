@@ -25,8 +25,10 @@ import API.Estadio.Estadio;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
 import API.Jugador.Jugador;
+import API.Jugador.JugadorRepository;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
+import API.Usuario.UsuarioComponent;
 
 @RestController
 @CrossOrigin
@@ -47,6 +49,10 @@ public class PartidoController {
 	private IncidenciaRepository incidenciaRepository;
 	@Autowired
 	private LigaRepository ligaRepository;
+	@Autowired
+	private JugadorRepository jugadorRepository;
+	@Autowired
+	private UsuarioComponent usuarioComponent;
 
 	@JsonView(PartidoView.class)
 	@RequestMapping(method = RequestMethod.GET)
@@ -117,6 +123,83 @@ public class PartidoController {
 	}
 
 	@JsonView(PartidoView.class)
+	@RequestMapping(value = "/addConvocadoLocal/{id}/{idJugador}", method = RequestMethod.PUT)
+	public ResponseEntity<Partido> nuevoConvocadoLocal(@PathVariable String id, @PathVariable String idJugador) {
+		Partido entrada = partidoRepository.findById(id);
+		// Si el partido no existe.
+		if (entrada == null) {
+			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+		}
+		Jugador jugadorEntrada = jugadorRepository.findById(idJugador);
+		// Si no existe el jugador
+		if (jugadorEntrada == null) {
+			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+		}
+		// Si el partido y el jugador existen.
+		// Si el usuario conectado es un árbitro.
+		if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
+			Arbitro arbitroConectado = arbitroRepository
+					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+			// Si el árbitro conectado es el árbitro del partido.
+			if (arbitroConectado.getId().equals(entrada.getIdArbitro())) {
+				if (!entrada.getConvocadosLocal().contains(jugadorEntrada)) {
+					entrada.getConvocadosLocal().add(jugadorEntrada);
+				}
+				partidoRepository.save(entrada);
+				return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Partido>(HttpStatus.FORBIDDEN);
+			}
+		}
+		// Si el usuario conectado no es un árbitro.
+		else {
+			if (!entrada.getConvocadosLocal().contains(jugadorEntrada)) {
+				entrada.getConvocadosLocal().add(jugadorEntrada);
+			}
+			partidoRepository.save(entrada);
+			return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
+		}
+	}
+	@JsonView(PartidoView.class)
+	@RequestMapping(value = "/addConvocadoVisitante/{id}/{idJugador}", method = RequestMethod.PUT)
+	public ResponseEntity<Partido> nuevoConvocadoVisitante(@PathVariable String id, @PathVariable String idJugador) {
+		Partido entrada = partidoRepository.findById(id);
+		// Si el partido no existe.
+		if (entrada == null) {
+			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+		}
+		Jugador jugadorEntrada = jugadorRepository.findById(idJugador);
+		// Si no existe el jugador
+		if (jugadorEntrada == null) {
+			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
+		}
+		// Si el partido y el jugador existen.
+		// Si el usuario conectado es un árbitro.
+		if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
+			Arbitro arbitroConectado = arbitroRepository
+					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+			// Si el árbitro conectado es el árbitro del partido.
+			if (arbitroConectado.getId().equals(entrada.getIdArbitro())) {
+				if (!entrada.getConvocadosVisitante().contains(jugadorEntrada)) {
+					entrada.getConvocadosVisitante().add(jugadorEntrada);
+				}
+				partidoRepository.save(entrada);
+				return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Partido>(HttpStatus.FORBIDDEN);
+			}
+		}
+		// Si el usuario conectado no es un árbitro.
+		else {
+			if (!entrada.getConvocadosVisitante().contains(jugadorEntrada)) {
+				entrada.getConvocadosVisitante().add(jugadorEntrada);
+			}
+			partidoRepository.save(entrada);
+			return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
+		}
+	}
+
+	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Partido> modificarPartido(@PathVariable String id, @RequestBody Partido partido) {
 		Partido entrada = partidoRepository.findById(id);
@@ -155,7 +238,7 @@ public class PartidoController {
 				antiguo.getPartidosArbitrados().remove(entrada);
 				arbitroRepository.save(antiguo);
 			}
-			
+
 			partido.setId(entrada.getId());
 			partidoRepository.save(partido);
 			return new ResponseEntity<Partido>(partido, HttpStatus.OK);
