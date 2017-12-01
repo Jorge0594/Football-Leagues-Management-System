@@ -1,6 +1,7 @@
 package API.Images;
 
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -58,22 +59,42 @@ public class ModuleImages {
 				}
 
 				File uploadedFile = new File(filesFolder.getAbsolutePath(), fileName);
-				/*FileOutputStream writeFile = new FileOutputStream(uploadedFile);
+				uploadedFile.createNewFile();
+				FileOutputStream writeFile = new FileOutputStream(uploadedFile);
 				
-				BufferedImage bImagen = ImageIO.read(uploadedFile);
-				BufferedImage imgDimensionada = new BufferedImage(200, 200, bImagen.getType());
+				writeFile.write(file.getBytes());
+				writeFile.close();
 				
-				ImageIO.write(imgDimensionada, "jpg", uploadedFile);*/
-				file.transferTo(uploadedFile);
+				BufferedImage bImage = ImageIO.read(uploadedFile);
+				Image imageScaled;
+				if(bImage.getWidth()>=800 && bImage.getHeight()>=800){
+					imageScaled = bImage.getScaledInstance((int)(bImage.getWidth()*0.2), (int)(bImage.getHeight()*0.2), BufferedImage.SCALE_SMOOTH);
+				}else{
+					imageScaled = bImage.getScaledInstance((int)(bImage.getWidth()*0.7), (int)(bImage.getHeight()*0.7), BufferedImage.SCALE_SMOOTH);//render de la imagen
+				}
+				
+				BufferedImage bImageResize = toBufferedImage(imageScaled);
+				
+				ImageIO.write(bImageResize, "jpg", uploadedFile);
 
 			} catch (Exception e) {
-
+				System.out.println(e);
 				return false;
 			}
 		}
 		return true;
 	}
-
+	
+	public static BufferedImage toBufferedImage(Image image){
+		if(image instanceof BufferedImage){//Si la imagen ya esta contenida en algún buffer de imagenes
+			return (BufferedImage)image;
+		}
+		
+		BufferedImage bImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
+		bImage.getGraphics().drawImage(image, 0, 0, null);
+		
+		return bImage;
+	}
 	/*
 	 * public String getFilePath() { return filePath; } public void
 	 * setFilePath(String filePath) { this.filePath = filePath; }
