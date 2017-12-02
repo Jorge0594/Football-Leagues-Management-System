@@ -1,8 +1,7 @@
 package API.Images;
 
-import java.awt.Graphics2D;
+
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class ModuleImages {
 
-	// private String filePath="src/main/resources/static/planImages/";
 	private String fileName;
 
 	public ModuleImages() {
@@ -29,7 +27,6 @@ public class ModuleImages {
 
 	public ModuleImages(String fileName) {
 		this.fileName = fileName;
-		// this.filePath=filePath;
 	}
 
 	public void handleFileDownload(String fName, HttpServletResponse res) throws FileNotFoundException, IOException {
@@ -68,7 +65,7 @@ public class ModuleImages {
 				BufferedImage bImage = ImageIO.read(uploadedFile);
 				Image imageScaled;
 				if(bImage.getWidth()>=800 && bImage.getHeight()>=800){
-					imageScaled = bImage.getScaledInstance((int)(bImage.getWidth()*0.2), (int)(bImage.getHeight()*0.2), BufferedImage.SCALE_SMOOTH);
+					imageScaled = bImage.getScaledInstance((int)(bImage.getWidth()*0.2), (int)(bImage.getHeight()*0.2), BufferedImage.SCALE_SMOOTH);//render de la imagen
 				}else{
 					imageScaled = bImage.getScaledInstance((int)(bImage.getWidth()*0.7), (int)(bImage.getHeight()*0.7), BufferedImage.SCALE_SMOOTH);//render de la imagen
 				}
@@ -95,10 +92,7 @@ public class ModuleImages {
 		
 		return bImage;
 	}
-	/*
-	 * public String getFilePath() { return filePath; } public void
-	 * setFilePath(String filePath) { this.filePath = filePath; }
-	 */
+	
 	public String getFileName() {
 		return fileName;
 	}
