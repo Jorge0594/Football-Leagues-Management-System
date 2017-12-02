@@ -36,6 +36,9 @@ public class Equipo implements Comparable<Equipo> {
 	@JsonView(RankAtt.class)
 	private String imagenEquipo;
 
+	@JsonView(PerfilAtt.class)
+	private boolean aceptado;
+
 	@JsonView(RankAtt.class)
 	private int posicion;
 
@@ -75,6 +78,7 @@ public class Equipo implements Comparable<Equipo> {
 		super();
 		this.id = id;
 		this.nombre = nombre;
+		this.aceptado = false;
 		this.liga = liga;
 		this.ciudad = ciudad;
 		this.posicion = posicion;
@@ -198,6 +202,14 @@ public class Equipo implements Comparable<Equipo> {
 
 	public void setPlantillaEquipo(List<Jugador> plantillaEquipo) {
 		this.plantillaEquipo = plantillaEquipo;
+	}
+
+	public boolean isAceptado() {
+		return aceptado;
+	}
+
+	public void setAceptado(boolean aceptado) {
+		this.aceptado = aceptado;
 	}
 
 	@Override

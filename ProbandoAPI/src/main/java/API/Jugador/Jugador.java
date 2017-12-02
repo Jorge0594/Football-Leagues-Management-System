@@ -29,6 +29,9 @@ public class Jugador implements Comparable<Jugador> {
 	private String apellidos;
 
 	@JsonView(PerfilAtt.class)
+	private boolean aceptado;
+
+	@JsonView(PerfilAtt.class)
 	private String dni;
 
 	@JsonView(PerfilAtt.class)
@@ -245,6 +248,14 @@ public class Jugador implements Comparable<Jugador> {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public boolean isAceptado() {
+		return aceptado;
+	}
+
+	public void setAceptado(boolean aceptado) {
+		this.aceptado = aceptado;
 	}
 
 	@Override
