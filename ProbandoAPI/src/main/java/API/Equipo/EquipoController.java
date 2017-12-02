@@ -49,6 +49,7 @@ public class EquipoController {
 		}
 		equipo.setId(null);
 		equipo.setImagenEquipo("imageTeamDafault.png");
+		equipo.setAceptado(false);
 		// COMENTADO PARA FACILTAR EL TESTING BOPRRAR CUANDO SE PASE A
 		// PRODUCCION
 		/*
@@ -104,7 +105,8 @@ public class EquipoController {
 		if (equipo == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
-		//los puntos se recalculan automaticamente por el número de partidos ganados y empatados.
+		// los puntos se recalculan automaticamente por el número de partidos
+		// ganados y empatados.
 		equipo.setNombre(auxEquipo.getNombre());
 		equipo.setCiudad(auxEquipo.getCiudad());
 		equipo.setPosicion(auxEquipo.getPosicion());
