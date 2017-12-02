@@ -23,19 +23,31 @@ public class Incidencia {
 	private String idPartido;
 	@JsonView(IncidenciaAtt.class)
 	private String minuto;
-	
+	@JsonView(IncidenciaAtt.class)
+	private String observaciones;
 				
 	public Incidencia() {}
 
 
-	public Incidencia(String id, String tipo, String idJugador, String idPartido, String minuto) {
+	public Incidencia(String id, String tipo, String idJugador, String idPartido, String minuto, String observaciones) {
 		super();
 		this.id = id;
 		this.tipo = tipo;
 		this.idJugador = idJugador;
 		this.idPartido = idPartido;
 		this.minuto = minuto;
+		this.observaciones = observaciones;
 	}
+
+	public String getObservaciones() {
+		return observaciones;
+	}
+
+
+	public void setObservaciones(String observaciones) {
+		this.observaciones = observaciones;
+	}
+
 
 	public String getId() {
 		return id;

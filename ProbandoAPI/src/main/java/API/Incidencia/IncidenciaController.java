@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import API.Incidencia.Incidencia.IncidenciaAtt;
 import API.Jugador.JugadorRepository;
 import API.MiembroComite.MiembroComite;
+import API.MiembroComite.MiembroComiteController.MiembroComiteView;
 import API.Usuario.Usuario;
 
 
@@ -76,7 +77,22 @@ public class IncidenciaController {
 		
 		
 		//PUT
-		
+		@JsonView(IncidenciaView.class)
+		@RequestMapping(value = "modificarIncidencia/{id}", method = RequestMethod.PUT)
+		public ResponseEntity<Incidencia> modificarIncidencia(@PathVariable String id, @RequestBody Incidencia incidenciaModificada) {
+			Incidencia incidencia = incidenciasRepository.findById(id);
+			if (incidencia == null) {
+				return new ResponseEntity<Incidencia>(HttpStatus.NO_CONTENT);
+			}else {
+				incidencia.setTipo(incidenciaModificada.getTipo());
+				incidencia.setIdJugador(incidenciaModificada.getIdJugador());
+				incidencia.setIdPartido(incidenciaModificada.getIdPartido());
+				incidencia.setMinuto(incidenciaModificada.getMinuto());
+				incidencia.setObservaciones(incidenciaModificada.getObservaciones());
+				incidenciasRepository.save(incidencia);
+				return new ResponseEntity<Incidencia>(HttpStatus.OK);
+			}
+		}
 		//POST
 		@JsonView(IncidenciaView.class)
 		@RequestMapping(method = RequestMethod.POST)
