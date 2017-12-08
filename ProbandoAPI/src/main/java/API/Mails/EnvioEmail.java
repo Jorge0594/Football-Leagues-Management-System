@@ -19,7 +19,7 @@ public class EnvioEmail {
 		
 		String credenciales [] = texto.split(";");
 		
-		String cuerpoCorreo = "Hola " + credenciales[0] + "\n\n" + correo + "\n\n" + "USUARIO: " + credenciales[1] +
+		String cuerpoCorreo = "Hola " + credenciales[0] + "\n\n" + correo + "\n" + "USUARIO: " + credenciales[1] +
 				"\n\n" + "CONTRASEÑA: " + credenciales[2] +
 				"\n\n Le recomendamos que cambie su contraseña por una más segura una vez haya accedido a la aplicación.\n"
 				+ "\n¡Buena suerte en sus partidos!"; 
