@@ -27,7 +27,10 @@ public class Jugador implements Comparable<Jugador> {
 
 	@JsonView(EquipoAtt.class)
 	private String apellidos;
-
+	
+	@JsonView(PerfilAtt.class)
+	private int edad;
+	
 	@JsonView(PerfilAtt.class)
 	private boolean aceptado;
 
@@ -258,13 +261,22 @@ public class Jugador implements Comparable<Jugador> {
 		this.aceptado = aceptado;
 	}
 
+	public int getEdad() {
+		return edad;
+	}
+
+	public void setEdad(int edad) {
+		this.edad = edad;
+	}
+
 	@Override
 	public String toString() {
-		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", dni=" + dni
-				+ ", nombreUsuario=" + nombreUsuario + ", email=" + email + ", fotoJugador=" + fotoJugador + ", equipo="
-				+ equipo + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion + ", estado=" + estado
-				+ ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas="
-				+ tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", capitan=" + capitan + "]";
+		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", edad=" + edad
+				+ ", aceptado=" + aceptado + ", dni=" + dni + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave
+				+ ", email=" + email + ", fotoJugador=" + fotoJugador + ", equipo=" + equipo + ", posicion=" + posicion
+				+ ", fechaSancion=" + fechaSancion + ", estado=" + estado + ", nacionalidad=" + nacionalidad
+				+ ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas=" + tarjetasAmarillas
+				+ ", tarjetasRojas=" + tarjetasRojas + ", capitan=" + capitan + "]";
 	}
 
 	@Override

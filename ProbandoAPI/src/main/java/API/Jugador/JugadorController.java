@@ -67,6 +67,7 @@ public class JugadorController {
 		String clave = jugador.getClave();
 		jugador.setId(null);
 		jugador.setFotoJugador("defaultProfile.jpg");
+		jugador.setNombreUsuario(generarNombreUsuario(jugador.getNombre(), jugador.getApellidos(), jugador.getEdad()));
 		jugador.setAceptado(false);
 		jugador.setEquipo("");
 		jugador.setGoles(0);
@@ -83,7 +84,7 @@ public class JugadorController {
 		usuarioRepository.save(usuario);
 		jugadorRepository.save(jugador);
 		String texto = jugador.getNombre()+";"+ jugador.getNombreUsuario()+";"+clave+";" + jugador.getEmail() + ";";
-		mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de usuario y contraseña",texto);
+		//mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de usuario y contraseña",texto);//Comentado para que no problemas con mails que no existen.
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.CREATED);
 	}
 
@@ -309,6 +310,14 @@ public class JugadorController {
 
 		jugadorRepository.delete(jugador);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
+	}
+	
+	private String generarNombreUsuario(String nombre, String apellidos,int edad){
+		
+		String apellido [] = apellidos.split(" ");
+		
+		String usuario = nombre + apellido[0].toUpperCase() + edad;
+		return usuario;
 	}
 
 }
