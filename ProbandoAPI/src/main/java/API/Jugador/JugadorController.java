@@ -24,6 +24,7 @@ import API.Equipo.EquipoRepository;
 import API.Images.ImageService;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
+import API.Mails.MailService;
 import API.Partido.PartidoRepository;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
@@ -38,21 +39,23 @@ public class JugadorController {
 	}
 
 	@Autowired
-	JugadorRepository jugadorRepository;
+	private JugadorRepository jugadorRepository;
 	@Autowired
-	EquipoRepository equipoRepository;
+	private EquipoRepository equipoRepository;
 	@Autowired
-	LigaRepository ligaRepository;
+	private LigaRepository ligaRepository;
 	@Autowired
-	UsuarioRepository usuarioRepository;
+	private UsuarioRepository usuarioRepository;
 	@Autowired
-	ArbitroRepository arbitroRepository;
+	private ArbitroRepository arbitroRepository;
 	@Autowired
-	PartidoRepository partidoRepository;
+	private PartidoRepository partidoRepository;
 	@Autowired
-	UsuarioComponent usuarioComponent;
+	private UsuarioComponent usuarioComponent;
 	@Autowired
-	ImageService imageService;
+	private MailService mailService;
+	@Autowired
+	private ImageService imageService;
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -70,12 +73,16 @@ public class JugadorController {
 		jugador.setTarjetasRojas(0);
 		jugador.setClaveEncriptada(jugador.getClave());
 
-		if (jugador.isAceptado()) {
+		/*if (jugador.isAceptado()) {
 			Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
 
 			usuarioRepository.save(usuario);
-		}
+		}*/
+		Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
+		usuarioRepository.save(usuario);
 		jugadorRepository.save(jugador);
+		String texto = "Hola "+ jugador.getNombre() + "Su usuario y contraseña son: "+ jugador.getNombreUsuario() + " " + jugador.getClave();
+		mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de usuario y contraseña",texto);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.CREATED);
 	}
 
