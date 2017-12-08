@@ -64,6 +64,7 @@ public class JugadorController {
 				|| usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario()) != null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 		}
+		String clave = jugador.getClave();
 		jugador.setId(null);
 		jugador.setFotoJugador("defaultProfile.jpg");
 		jugador.setAceptado(false);
@@ -81,7 +82,7 @@ public class JugadorController {
 		Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
 		usuarioRepository.save(usuario);
 		jugadorRepository.save(jugador);
-		String texto = "Hola "+ jugador.getNombre() + "Su usuario y contraseña son: "+ jugador.getNombreUsuario() + " " + jugador.getClave();
+		String texto = jugador.getNombre()+";"+ jugador.getNombreUsuario()+";"+clave+";" + jugador.getEmail() + ";";
 		mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de usuario y contraseña",texto);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.CREATED);
 	}
