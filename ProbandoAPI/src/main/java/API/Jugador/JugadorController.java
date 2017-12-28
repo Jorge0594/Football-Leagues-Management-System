@@ -172,7 +172,17 @@ public class JugadorController {
 		}
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
-
+	
+	@JsonView(ProfileView.class)
+	@RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Jugador> verJugadorId(@PathVariable(value = "id") String id) {
+		Jugador jugador = jugadorRepository.findById(id);
+		if (jugador == null) {
+			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
+	}
+	
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Jugador> actualizaJugadorId(@PathVariable(value = "id") String id,
