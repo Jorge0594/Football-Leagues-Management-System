@@ -33,6 +33,9 @@ public class Jugador implements Comparable<Jugador> {
 	
 	@JsonView(PerfilAtt.class)
 	private boolean aceptado;
+	
+	@JsonView(PerfilAtt.class)
+	private String fechaNacimiento;
 
 	@JsonView(PerfilAtt.class)
 	private String dni;
@@ -60,6 +63,9 @@ public class Jugador implements Comparable<Jugador> {
 
 	@JsonView(PerfilAtt.class)
 	private String estado;
+	
+	@JsonView(PerfilAtt.class)
+	private String lugarNacimiento;
 
 	@JsonView(PerfilAtt.class)
 	private String nacionalidad;
@@ -269,12 +275,29 @@ public class Jugador implements Comparable<Jugador> {
 		this.edad = edad;
 	}
 
+	public String getFechaNacimiento() {
+		return fechaNacimiento;
+	}
+
+	public void setFechaNacimiento(String fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
+	}
+
+	public String getLugarNacimiento() {
+		return lugarNacimiento;
+	}
+
+	public void setLugarNacimiento(String lugarNacimiento) {
+		this.lugarNacimiento = lugarNacimiento;
+	}
+
 	@Override
 	public String toString() {
 		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", edad=" + edad
-				+ ", aceptado=" + aceptado + ", dni=" + dni + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave
-				+ ", email=" + email + ", fotoJugador=" + fotoJugador + ", equipo=" + equipo + ", posicion=" + posicion
-				+ ", fechaSancion=" + fechaSancion + ", estado=" + estado + ", nacionalidad=" + nacionalidad
+				+ ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni
+				+ ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
+				+ fotoJugador + ", equipo=" + equipo + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion
+				+ ", estado=" + estado + ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad
 				+ ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas=" + tarjetasAmarillas
 				+ ", tarjetasRojas=" + tarjetasRojas + ", capitan=" + capitan + "]";
 	}

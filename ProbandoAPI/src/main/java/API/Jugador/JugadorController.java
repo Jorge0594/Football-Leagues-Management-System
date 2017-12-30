@@ -225,8 +225,7 @@ public class JugadorController {
 			 * jugador.setTarjetasRojas(entrada.getTarjetasRojas()); } else {
 			 * return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED); }
 			 */
-			Arbitro arbitro = arbitroRepository
-					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+			Arbitro arbitro = arbitroRepository.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
 			if (!partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(arbitro.getId(),
 					new ObjectId(jugador.getEquipo()), new ObjectId(jugador.getEquipo())).isEmpty()) {
 				jugador.setGoles(entrada.getGoles());
@@ -258,6 +257,8 @@ public class JugadorController {
 			jugador.setGoles(entrada.getGoles());
 			jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
 			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
+			jugador.setFechaNacimiento(entrada.getFechaNacimiento());
+			jugador.setLugarNacimiento(entrada.getLugarNacimiento());
 
 			usuario.setNombreUsuario(jugador.getNombreUsuario());
 			usuarioRepository.save(usuario);
@@ -281,7 +282,7 @@ public class JugadorController {
 		if (!usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())) {
 			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 		} else {
-			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getNombreUsuario(), file);
+			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
 				jugador.setFotoJugador(imageService.getImg().getFileName());
 				jugadorRepository.save(jugador);
