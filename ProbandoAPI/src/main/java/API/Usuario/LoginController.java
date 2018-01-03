@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,10 +22,9 @@ public class LoginController {
 	@Autowired
 	private UsuarioComponent usuarioComponent;
 	
-	@RequestMapping("/iniciarSesion")
-	public ResponseEntity<Usuario> logIn() {
-
-		if (!usuarioComponent.isLoggedUser()) {
+	@RequestMapping("/iniciarSesion/{rol}")
+	public ResponseEntity<Usuario> logIn(@PathVariable (value = "rol")String rol) {
+		if (!usuarioComponent.isLoggedUser() || !usuarioComponent.getLoggedUser().getRol().equals(rol)) {
 			log.info("Not user logged");
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		} else {

@@ -105,10 +105,9 @@ public class JugadorController {
 	}
 
 	@JsonView(ProfileView.class)
-	@RequestMapping(value = "/usuario/{nombreUsuario}", method = RequestMethod.GET)
-	public ResponseEntity<Jugador> verPerfilJugadorUsuario(@PathVariable String nombreUsuario) {
-		return new ResponseEntity<Jugador>(jugadorRepository.findByNombreUsuarioIgnoreCase(nombreUsuario),
-				HttpStatus.OK);
+	@RequestMapping(value = "/usuario", method = RequestMethod.GET)
+	public ResponseEntity<Jugador> verPerfilJugadorUsuario() {
+		return new ResponseEntity<Jugador>(jugadorRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario()),HttpStatus.OK);
 	}
 
 	@JsonView(ProfileView.class)
