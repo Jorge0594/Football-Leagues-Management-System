@@ -10,7 +10,7 @@ public interface PartidoRepository extends MongoRepository<Partido, String> {
 
 	List<Partido> findByLiga(String liga);
 
-	List<Partido> findByJornada(String jornada);
+	List<Partido> findByJornada(int jornada);
 
 	List<Partido> findByEquipoLocalId(ObjectId equipoLocalId);
 

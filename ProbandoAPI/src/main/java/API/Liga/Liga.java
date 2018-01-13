@@ -41,7 +41,33 @@ public class Liga {
 	@JsonView(LigaAtt.class)
 	@DBRef
 	private List<Partido> partidos = new ArrayList<>();
+	@JsonView(LigaAtt.class)
+	@DBRef
+	private List<Equipo> equipos = new ArrayList<>();
 	
+	
+	
+	public Liga(String id, String nombre, List<Equipo> clasificacion, List<Jugador> goleadores, List<Arbitro> arbitros,
+			List<Sancion> sancion, List<Partido> partidos, List<Equipo> equipos) {
+		super();
+		this.id = id;
+		this.nombre = nombre;
+		this.clasificacion = clasificacion;
+		this.goleadores = goleadores;
+		this.arbitros = arbitros;
+		this.sancion = sancion;
+		this.partidos = partidos;
+		this.equipos = equipos;
+	}
+
+	public List<Equipo> getEquipos() {
+		return equipos;
+	}
+
+	public void setEquipos(List<Equipo> equipos) {
+		this.equipos = equipos;
+	}
+
 	public Liga() {
 	}
 	
@@ -173,6 +199,8 @@ public class Liga {
 			return false;
 		return true;
 	}
+
+	
 
 	
 	
