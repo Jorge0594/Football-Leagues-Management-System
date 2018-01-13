@@ -113,7 +113,7 @@ public class LigaController {
 				}
 			}
 			equipo.setLiga(liga.getNombre());
-
+			equipo.setAceptado(true);			
 			equipoRepository.save(equipo);
 
 			liga.getClasificacion().add(equipo);

@@ -7,5 +7,6 @@ public interface EquipoRepository extends MongoRepository<Equipo, String> {
 	List<Equipo>findByLigaIgnoreCase(String liga);
 	Equipo findByPosicion(int posicion);
 	Equipo findByNombreIgnoreCase(String nombre);
+	Equipo findByLigaAndNombreAllIgnoreCase(String liga, String nombre);
 	Equipo findById (String id);
 }

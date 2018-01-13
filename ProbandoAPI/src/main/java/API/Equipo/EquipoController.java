@@ -86,6 +86,16 @@ public class EquipoController {
 		}
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 	}
+	
+	@JsonView(PerfilView.class)
+	@RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Equipo> verEquipoId(@PathVariable String id) {
+		Equipo equipo = equipoRepository.findById(id);
+		if (equipo == null) {
+			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
+	}
 
 	@JsonView(JugadorView.class)
 	@RequestMapping(value = "/{nombre}/plantilla", method = RequestMethod.GET)

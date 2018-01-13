@@ -111,7 +111,12 @@ public class PartidoController {
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
-
+	@JsonView(PartidoView.class)
+	@RequestMapping(value = "/partidosEquipo/{idEquipo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>>verPartidosEquipo(@PathVariable String idEquipo){
+		return new ResponseEntity<List<Partido>>(partidoRepository.findByEquipoVisitanteIdOrEquipoLocalId(new ObjectId(idEquipo),new ObjectId(idEquipo)),HttpStatus.OK);
+	}
+	
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/arbitro/{idArbitro}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosArbitro(@PathVariable String idArbitro) {
