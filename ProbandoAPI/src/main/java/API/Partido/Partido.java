@@ -52,7 +52,7 @@ public class Partido implements Comparable<Partido> {
 	@JsonView(InfoAtt.class)
 	private String estado;
 	@JsonView(InfoAtt.class)
-	private String jornada;
+	private int jornada;
 	@JsonView(InfoAtt.class)
 	private String equipacionLocal;
 	@JsonView(InfoAtt.class)
@@ -74,7 +74,7 @@ public class Partido implements Comparable<Partido> {
 	}
 
 	public Partido(String liga, Equipo equipoLocal, Equipo equipoVisitante, int golesLocal, int golesVisitante,
-			String idArbitro, String fechaPartido, String horaPartido, Estadio estadio, String estado, String jornada,
+			String idArbitro, String fechaPartido, String horaPartido, Estadio estadio, String estado, int jornada,
 			String equipacionLocal, String equipacionVisitante) throws ParseException {
 		super();
 		this.liga = liga;
@@ -104,8 +104,8 @@ public class Partido implements Comparable<Partido> {
 		return liga;
 	}
 
-	public void setLiga(String liga) {
-		this.liga = liga;
+	public void setLiga(String ligaId) {
+		this.liga = ligaId;
 	}
 
 	public Equipo getEquipoLocal() {
@@ -172,11 +172,11 @@ public class Partido implements Comparable<Partido> {
 		this.estado = estado;
 	}
 
-	public String getJornada() {
+	public int getJornada() {
 		return jornada;
 	}
 
-	public void setJornada(String jornada) {
+	public void setJornada(int jornada) {
 		this.jornada = jornada;
 	}
 
@@ -242,7 +242,7 @@ public class Partido implements Comparable<Partido> {
 		try {
 			return formateador.parse(this.getFechaPartido()).compareTo(formateador.parse(partido2.getFechaPartido()));
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+		
 			e.printStackTrace();
 		}
 		return -2;
