@@ -28,45 +28,62 @@ public class Partido implements Comparable<Partido> {
 	@JsonView(InfoAtt.class)
 	@Id
 	private String id;
+	
 	@JsonView(InfoAtt.class)
 	private String liga;
+	
 	// @DBRef
 	@JsonView(InfoAtt.class)
 	private Equipo equipoLocal;
+	
 	// @DBRef
 	@JsonView(InfoAtt.class)
 	private Equipo equipoVisitante;
+	
 	@JsonView(InfoAtt.class)
 	private Integer golesLocal;
+	
 	@JsonView(InfoAtt.class)
 	private Integer golesVisitante;
+	
 	@JsonView(InfoAtt.class)
 	private String idArbitro;
+	
 	@JsonView(InfoAtt.class)
 	private String fechaPartido;
+	
 	@JsonView(InfoAtt.class)
 	private String horaPartido;
+	
 	// @DBRef
 	@JsonView(InfoAtt.class)
 	private Estadio estadio;
+	
 	@JsonView(InfoAtt.class)
 	private String estado;
+	
 	@JsonView(InfoAtt.class)
 	private int jornada;
+	
 	@JsonView(InfoAtt.class)
 	private String equipacionLocal;
+	
 	@JsonView(InfoAtt.class)
 	private String equipacionVisitante;
+	
 	@DBRef
 	@JsonView(RestAtt.class)
 	private List<Jugador> convocadosLocal;
+	
 	@DBRef
 	@JsonView(RestAtt.class)
 	private List<Jugador> convocadosVisitante;
+	
 	// @DBRef
 	@JsonView(RestAtt.class)
 	private List<Incidencia> incidencias;
 	// @DBRef
+	
 	@JsonView(RestAtt.class)
 	private String idActa;
 
@@ -242,7 +259,6 @@ public class Partido implements Comparable<Partido> {
 		try {
 			return formateador.parse(this.getFechaPartido()).compareTo(formateador.parse(partido2.getFechaPartido()));
 		} catch (ParseException e) {
-		
 			e.printStackTrace();
 		}
 		return -2;

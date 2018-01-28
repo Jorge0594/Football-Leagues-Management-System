@@ -83,9 +83,9 @@ public class PartidoController {
 	}
 
 	@JsonView(PartidoView.class)
-	@RequestMapping(value = "/jornada/{jornada}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> verPartidosJornada(@PathVariable int jornada) {
-		List<Partido> entrada = partidoRepository.findByJornada(jornada);
+	@RequestMapping(value = "/jornada/{jornada}/{nombreLiga}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> verPartidosJornada(@PathVariable (value = "jornada") int jornada, @PathVariable (value = "nombreLiga")String nombreLiga) {
+		List<Partido> entrada = partidoRepository.findByJornadaAndLigaIgnoreCase(jornada, nombreLiga);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}

@@ -75,16 +75,21 @@ public class JugadorController {
 		jugador.setTarjetasRojas(0);
 		jugador.setClaveEncriptada(jugador.getClave());
 
-		/*if (jugador.isAceptado()) {
-			Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
-
-			usuarioRepository.save(usuario);
-		}*/
+		/*
+		 * if (jugador.isAceptado()) { Usuario usuario = new
+		 * Usuario(jugador.getNombreUsuario(), jugador.getClave(),
+		 * "ROLE_JUGADOR");
+		 * 
+		 * usuarioRepository.save(usuario); }
+		 */
 		Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
 		usuarioRepository.save(usuario);
 		jugadorRepository.save(jugador);
-		String texto = jugador.getNombre()+";"+ jugador.getNombreUsuario()+";"+clave+";" + jugador.getEmail() + ";";
-		//mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de usuario y contraseña",texto);//Comentado para que no problemas con mails que no existen.
+		String texto = jugador.getNombre() + ";" + jugador.getNombreUsuario() + ";" + clave + ";" + jugador.getEmail()
+				+ ";";
+		// mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de
+		// usuario y contraseña",texto);//Comentado para que no problemas con
+		// mails que no existen.
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.CREATED);
 	}
 
@@ -107,7 +112,9 @@ public class JugadorController {
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/usuario", method = RequestMethod.GET)
 	public ResponseEntity<Jugador> verPerfilJugadorUsuario() {
-		return new ResponseEntity<Jugador>(jugadorRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario()),HttpStatus.OK);
+		return new ResponseEntity<Jugador>(
+				jugadorRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario()),
+				HttpStatus.OK);
 	}
 
 	@JsonView(ProfileView.class)
@@ -171,7 +178,7 @@ public class JugadorController {
 		}
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
-	
+
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Jugador> verJugadorId(@PathVariable(value = "id") String id) {
@@ -181,7 +188,7 @@ public class JugadorController {
 		}
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
-	
+
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Jugador> actualizaJugadorId(@PathVariable(value = "id") String id,
@@ -224,7 +231,8 @@ public class JugadorController {
 			 * jugador.setTarjetasRojas(entrada.getTarjetasRojas()); } else {
 			 * return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED); }
 			 */
-			Arbitro arbitro = arbitroRepository.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+			Arbitro arbitro = arbitroRepository
+					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
 			if (!partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(arbitro.getId(),
 					new ObjectId(jugador.getEquipo()), new ObjectId(jugador.getEquipo())).isEmpty()) {
 				jugador.setGoles(entrada.getGoles());
@@ -278,9 +286,8 @@ public class JugadorController {
 		if (jugador == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
-		if (!usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())) {
-			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
-		} else {
+		if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())
+				|| usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE")) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
 				jugador.setFotoJugador(imageService.getImg().getFileName());
@@ -289,6 +296,9 @@ public class JugadorController {
 			} else {
 				return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 			}
+
+		} else {
+			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
@@ -321,11 +331,11 @@ public class JugadorController {
 		jugadorRepository.delete(jugador);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
-	
-	private String generarNombreUsuario(String nombre, String apellidos,int edad){
-		
-		String apellido [] = apellidos.split(" ");
-		
+
+	private static String generarNombreUsuario(String nombre, String apellidos, int edad) {
+
+		String apellido[] = apellidos.split(" ");
+
 		String usuario = nombre + apellido[0].toUpperCase() + edad;
 		return usuario;
 	}
