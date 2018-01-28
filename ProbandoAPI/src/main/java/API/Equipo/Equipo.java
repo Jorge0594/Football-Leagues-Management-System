@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.Estadio.Estadio;
 import API.Jugador.Jugador;
 
 @Document(collection = "Equipo")
@@ -62,6 +63,10 @@ public class Equipo implements Comparable<Equipo> {
 
 	@JsonView(RankAtt.class)
 	private int partidosJugados;
+	
+	@JsonView (PerfilAtt.class)
+	@DBRef
+	private Estadio estadioEquipo;
 
 	@JsonView(RankAtt.class)
 	@DBRef
@@ -143,7 +148,6 @@ public class Equipo implements Comparable<Equipo> {
 
 	public void setPuntos(int puntos) {
 		this.puntos = partidosGanados * 3 + partidosEmpatados;
-		;
 	}
 
 	public int getGolesEncajados() {
@@ -210,6 +214,14 @@ public class Equipo implements Comparable<Equipo> {
 
 	public void setAceptado(boolean aceptado) {
 		this.aceptado = aceptado;
+	}
+
+	public Estadio getEstadioEquipo() {
+		return estadioEquipo;
+	}
+
+	public void setEstadioEquipo(Estadio estadioEquipo) {
+		this.estadioEquipo = estadioEquipo;
 	}
 
 	@Override

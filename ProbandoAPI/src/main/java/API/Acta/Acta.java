@@ -21,28 +21,40 @@ public class Acta {
 	@Id
 	@JsonView(ActaAtt.class)
 	private String id;
+	
 	@JsonView(ActaAtt.class)
 	private String idPartido;
+	
 	@JsonView(ActaAtt.class)
 	private String fecha;
+	
 	@JsonView(ActaAtt.class)
 	private String hora;
+	
 	@JsonView(ActaAtt.class)
 	private Equipo equipoLocal;
+	
 	@JsonView(ActaAtt.class)
 	private Equipo equipoVisitante;
+	
 	@JsonView(ActaAtt.class)
 	private Arbitro arbitro;
+	
 	@JsonView(ActaAtt.class)
 	private List<Jugador> convocadosLocal;
+	
 	@JsonView(ActaAtt.class)
 	private List<Jugador> convocadosVisitante;
+	
 	@JsonView(ActaAtt.class)
 	private int golesLocal;
+	
 	@JsonView(ActaAtt.class)
 	private int golesVisitante;
+	
 	@JsonView(ActaAtt.class)
 	private List<Incidencia> incidencias;
+	
 	@JsonView(ActaAtt.class)
 	private String observaciones;
 

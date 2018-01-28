@@ -76,7 +76,7 @@ public class LigaController {
 		if (liga == null) {
 			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
 		}
-		Collections.sort(liga.getClasificacion());
+		//Collections.sort(liga.getClasificacion());
 
 		return new ResponseEntity<List<Equipo>>(liga.getClasificacion(), HttpStatus.OK);
 	}
@@ -88,8 +88,7 @@ public class LigaController {
 		if (liga == null) {
 			return new ResponseEntity<List<Jugador>>(HttpStatus.NO_CONTENT);
 		}
-		Collections.sort(liga.getGoleadores());
-
+		//Collections.sort(liga.getGoleadores());
 		return new ResponseEntity<List<Jugador>>(liga.getGoleadores(), HttpStatus.OK);
 	}
 

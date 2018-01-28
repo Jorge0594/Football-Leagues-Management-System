@@ -162,7 +162,7 @@ public class JugadorController {
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/capitan/{equipo}", method = RequestMethod.GET)
 	public ResponseEntity<Jugador> verCapitanEquipo(@PathVariable String equipo) {
-		Jugador capitan = jugadorRepository.findByCapitanAndEquipoIgnoreCase(true, equipo);
+		Jugador capitan = jugadorRepository.findByCapitanAndEquipo(true, equipo);
 		if (capitan == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}

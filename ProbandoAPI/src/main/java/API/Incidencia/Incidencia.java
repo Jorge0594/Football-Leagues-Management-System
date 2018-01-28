@@ -15,14 +15,19 @@ public class Incidencia {
 	@Id
 	@JsonView(IncidenciaAtt.class)
 	private String id;
+	
 	@JsonView(IncidenciaAtt.class)
 	private String tipo;
+	
 	@JsonView(IncidenciaAtt.class)
 	private String idJugador;
+	
 	@JsonView(IncidenciaAtt.class)
 	private String idPartido;
+	
 	@JsonView(IncidenciaAtt.class)
 	private String minuto;
+	
 	@JsonView(IncidenciaAtt.class)
 	private String observaciones;
 				

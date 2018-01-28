@@ -50,7 +50,7 @@ public class EquipoController {
 		equipo.setId(null);
 		equipo.setImagenEquipo("imageTeamDafault.png");
 		equipo.setAceptado(false);
-		// COMENTADO PARA FACILTAR EL TESTING BOPRRAR CUANDO SE PASE A
+		// COMENTADO PARA FACILITAR EL TESTING BOPRRAR CUANDO SE PASE A
 		// PRODUCCION
 		/*
 		 * equipo.setPartidosEmpatados(0); equipo.setPartidosGanados(0);
