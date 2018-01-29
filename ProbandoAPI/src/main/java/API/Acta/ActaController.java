@@ -1,5 +1,6 @@
 package API.Acta;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -18,8 +19,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
+import API.Equipo.EquipoRepository;
 import API.Estadio.Estadio;
 import API.Jugador.Jugador;
+import API.Jugador.JugadorRepository;
+import API.Liga.Liga;
+import API.Liga.LigaRepository;
 import API.Partido.Partido;
 import API.Partido.PartidoRepository;
 import API.Usuario.UsuarioComponent;
@@ -28,11 +33,19 @@ import API.Usuario.UsuarioComponent;
 @CrossOrigin
 @RequestMapping("/actas")
 public class ActaController {
-	
-	public interface ActaView extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Estadio.BasicoAtt, Arbitro.ActaAtt{}
+
+	public interface ActaView
+			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Estadio.BasicoAtt, Arbitro.ActaAtt {
+	}
 
 	@Autowired
 	ActaRepository actaRepository;
+	@Autowired
+	EquipoRepository equipoRepository;
+	@Autowired
+	JugadorRepository jugadorRepository;
+	@Autowired
+	LigaRepository ligaRepository;
 	@Autowired
 	PartidoRepository partidoRepository;
 	@Autowired
@@ -106,6 +119,32 @@ public class ActaController {
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
+	
+	@JsonView(ActaView.class)
+	@RequestMapping(value = "/aceptar/{idActa}", method = RequestMethod.PUT)
+	public ResponseEntity<Acta> aceptarActa(@PathVariable(value = "idActa") String idActa) {
+		Acta acta = actaRepository.findById(idActa);
+		if (acta == null || acta.isAceptada() || acta.getEquipoLocal() == null || acta.getEquipoVisitante() == null){
+			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		acta.setAceptada(true);
+		
+		Liga liga = ligaRepository.findByNombreIgnoreCase(acta.getEquipoLocal().getLiga());
+		if (liga == null){
+			return new ResponseEntity<Acta>(HttpStatus.BAD_GATEWAY);
+		}
+		
+		actualizarEquipos(acta);
+		
+		Collections.sort(liga.getClasificacion());
+		//falta actualiar a los jugadores
+		
+		ligaRepository.save(liga);
+		actaRepository.save(acta);
+		return new ResponseEntity<Acta>(acta, HttpStatus.OK);
+	}
+
+	
 
 	@JsonView(ActaView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -117,9 +156,9 @@ public class ActaController {
 		} else {
 			// Si el usuario conectado es un árbitro.
 			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
-				Arbitro arbitroConectado = arbitroRepository
-						.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
-				// Si un árbitro intenta crear un acta que no sea de un partido que ha
+				Arbitro arbitroConectado = arbitroRepository.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+				// Si un árbitro intenta crear un acta que no sea de un partido
+				// que ha
 				// arbitrado.
 				if (!arbitroConectado.getPartidosArbitrados().contains(partidoDelActa)) {
 					return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
@@ -132,7 +171,8 @@ public class ActaController {
 					return new ResponseEntity<Acta>(entrada, HttpStatus.CREATED);
 				}
 			}
-			// Si el usuario conectado es un miembro del comité o un administrador.
+			// Si el usuario conectado es un miembro del comité o un
+			// administrador.
 			else {
 				entrada.setId(null);
 				actaRepository.save(entrada);
@@ -183,6 +223,55 @@ public class ActaController {
 				return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
 			}
 		}
+	}
+	
+	public void actualizarEquipos(Acta acta) {
 
+		Equipo local = equipoRepository.findById(acta.getEquipoLocal().getId());
+		Equipo visitante = equipoRepository.findById(acta.getEquipoVisitante().getId());
+
+		if (acta.getGolesLocal() > acta.getGolesVisitante()) {
+
+			local.setPartidosGanados(local.getPartidosGanados() + 1);
+			local.setGoles(local.getGoles() + acta.getGolesLocal());
+			local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
+			local.setPuntos();
+			local.setPartidosJugados();
+			
+			visitante.setPartidosPerdidos(visitante.getPartidosPerdidos() + 1);
+			visitante.setGoles(visitante.getGoles() + acta.getGolesVisitante());
+			visitante.setGolesEncajados(visitante.getGolesEncajados() + acta.getGolesLocal());
+			visitante.setPartidosJugados();
+
+		} else if (acta.getGolesLocal() < acta.getGolesVisitante()) {
+
+			visitante.setPartidosGanados(visitante.getPartidosGanados() + 1);
+			visitante.setGoles(visitante.getGoles() + acta.getGolesVisitante());
+			visitante.setGolesEncajados(visitante.getGolesEncajados() + acta.getGolesLocal());
+			visitante.setPuntos();
+			visitante.setPartidosJugados();
+			
+			local.setPartidosPerdidos(local.getPartidosPerdidos() + 1);
+			local.setGoles(local.getGoles() + acta.getGolesLocal());
+			local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
+			local.setPartidosJugados();
+
+		} else {
+
+			local.setPartidosEmpatados(local.getPartidosEmpatados() + 1);
+			local.setGoles(local.getGoles() + acta.getGolesLocal());
+			local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
+			local.setPuntos();
+			local.setPartidosJugados();
+
+			visitante.setPartidosEmpatados(visitante.getPartidosEmpatados() + 1);
+			visitante.setGoles(visitante.getGoles() + acta.getGolesVisitante());
+			visitante.setGolesEncajados(visitante.getGolesEncajados() + acta.getGolesLocal());
+			visitante.setPuntos();
+			visitante.setPartidosJugados();
+		}
+		
+		equipoRepository.save(local);
+		equipoRepository.save(visitante);
 	}
 }

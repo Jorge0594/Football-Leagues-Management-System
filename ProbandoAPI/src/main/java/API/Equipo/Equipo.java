@@ -28,7 +28,7 @@ public class Equipo implements Comparable<Equipo> {
 	@JsonView(RankAtt.class)
 	private String nombre;
 
-	@JsonView(PerfilAtt.class)
+	@JsonView(RankAtt.class)
 	private String liga;
 
 	@JsonView(PerfilAtt.class)
@@ -146,7 +146,7 @@ public class Equipo implements Comparable<Equipo> {
 		return puntos;
 	}
 
-	public void setPuntos(int puntos) {
+	public void setPuntos() {
 		this.puntos = partidosGanados * 3 + partidosEmpatados;
 	}
 
@@ -196,7 +196,7 @@ public class Equipo implements Comparable<Equipo> {
 		return partidosJugados;
 	}
 
-	public void setPartidosJugados(int partidosJugados) {
+	public void setPartidosJugados() {
 		this.partidosJugados = partidosGanados + partidosPerdidos + partidosEmpatados;
 	}
 
