@@ -35,6 +35,12 @@ public class Estadio {
 	private int cp;
 	
 	@JsonView(DatosAtt.class)
+	private double latitud;
+	
+	@JsonView(DatosAtt.class)
+	private double longitud;
+	
+	@JsonView(DatosAtt.class)
 	private String localizacion;
 	
 	@JsonView(DatosAtt.class)
@@ -127,6 +133,22 @@ public class Estadio {
 
 	public void setDimensiones(String dimensiones) {
 		this.dimensiones = dimensiones;
+	}
+
+	public double getLatitud() {
+		return latitud;
+	}
+
+	public void setLatitud(double latitud) {
+		this.latitud = latitud;
+	}
+
+	public double getLongitud() {
+		return longitud;
+	}
+
+	public void setLongitud(double longitud) {
+		this.longitud = longitud;
 	}
 
 	@Override

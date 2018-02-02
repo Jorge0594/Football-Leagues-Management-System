@@ -32,11 +32,11 @@ public class Partido implements Comparable<Partido> {
 	@JsonView(InfoAtt.class)
 	private String liga;
 	
-	// @DBRef
+	@DBRef
 	@JsonView(InfoAtt.class)
 	private Equipo equipoLocal;
 	
-	// @DBRef
+	@DBRef
 	@JsonView(InfoAtt.class)
 	private Equipo equipoVisitante;
 	
@@ -55,7 +55,7 @@ public class Partido implements Comparable<Partido> {
 	@JsonView(InfoAtt.class)
 	private String horaPartido;
 	
-	// @DBRef
+	@DBRef
 	@JsonView(InfoAtt.class)
 	private Estadio estadio;
 	
@@ -79,10 +79,9 @@ public class Partido implements Comparable<Partido> {
 	@JsonView(RestAtt.class)
 	private List<Jugador> convocadosVisitante;
 	
-	// @DBRef
+	@DBRef
 	@JsonView(RestAtt.class)
 	private List<Incidencia> incidencias;
-	// @DBRef
 	
 	@JsonView(RestAtt.class)
 	private String idActa;
