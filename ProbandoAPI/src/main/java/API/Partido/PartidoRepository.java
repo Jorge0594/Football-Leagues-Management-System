@@ -11,21 +11,22 @@ public interface PartidoRepository extends MongoRepository<Partido, String> {
 	List<Partido> findByLiga(String liga);
 
 	List<Partido> findByJornada(int jornada);
-	
-	List<Partido>findByJornadaAndLigaIgnoreCase(int jornada, String liga);
+
+	List<Partido> findByJornadaAndLigaIgnoreCase(int jornada, String liga);
 
 	List<Partido> findByEquipoLocalId(ObjectId equipoLocalId);
 
 	List<Partido> findByEquipoVisitanteId(ObjectId equipoVisitanteId);
-	
-	List<Partido> findByEquipoVisitanteIdOrEquipoLocalId(ObjectId equipoLocal,ObjectId equipoVisitante);
+
+	List<Partido> findByEquipoVisitanteIdOrEquipoLocalId(String equipoLocal, String equipoVisitante);
 
 	List<Partido> findByIdArbitro(String idArbitro);
-	
-	List<Partido> findByIdArbitroAndEquipoLocalId(String id, ObjectId equipoLocalId);
-	
-	List<Partido> findByIdArbitroAndEquipoVisitanteId(String id, ObjectId equipoVisitanteId);
-	
-	List<Partido>findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(String id,  ObjectId equipoLocalId, ObjectId equipoVisitanteId);
-	
+
+	List<Partido> findByIdArbitroAndEquipoLocalId(String id, String equipoLocalId);
+
+	List<Partido> findByIdArbitroAndEquipoVisitanteId(String id, String equipoVisitanteId);
+
+	List<Partido> findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(String id, String equipoLocalId,
+			String equipoVisitanteId);
+
 }

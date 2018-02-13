@@ -233,8 +233,7 @@ public class JugadorController {
 			 */
 			Arbitro arbitro = arbitroRepository
 					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
-			if (!partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(arbitro.getId(),
-					new ObjectId(jugador.getEquipo()), new ObjectId(jugador.getEquipo())).isEmpty()) {
+			if (!partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(arbitro.getId(), jugador.getEquipo(), jugador.getEquipo()).isEmpty()) {
 				jugador.setGoles(entrada.getGoles());
 				jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
 				jugador.setTarjetasRojas(entrada.getTarjetasRojas());

@@ -35,8 +35,8 @@ import API.Usuario.UsuarioComponent;
 @RequestMapping("/partidos")
 public class PartidoController {
 
-	public interface PartidoView
-			extends Estadio.BasicoAtt,Estadio.DatosAtt, Partido.InfoAtt, Partido.RestAtt, Jugador.EquipoAtt, Equipo.RankAtt {
+	public interface PartidoView extends Estadio.BasicoAtt, Estadio.DatosAtt, Partido.InfoAtt, Partido.RestAtt,
+			Jugador.EquipoAtt, Equipo.RankAtt {
 	}
 
 	@Autowired
@@ -84,7 +84,8 @@ public class PartidoController {
 
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/jornada/{jornada}/{nombreLiga}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> verPartidosJornada(@PathVariable (value = "jornada") int jornada, @PathVariable (value = "nombreLiga")String nombreLiga) {
+	public ResponseEntity<List<Partido>> verPartidosJornada(@PathVariable(value = "jornada") int jornada,
+			@PathVariable(value = "nombreLiga") String nombreLiga) {
 		List<Partido> entrada = partidoRepository.findByJornadaAndLigaIgnoreCase(jornada, nombreLiga);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NO_CONTENT);
@@ -112,14 +113,15 @@ public class PartidoController {
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/partidosEquipo/{idEquipo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>>verPartidosEquipo(@PathVariable String idEquipo){
-		List<Partido> partidosEquipo = partidoRepository.findByEquipoVisitanteIdOrEquipoLocalId(new ObjectId(idEquipo),new ObjectId(idEquipo));
+	public ResponseEntity<List<Partido>> verPartidosEquipo(@PathVariable String idEquipo) {
+		List<Partido> partidosEquipo = partidoRepository.findByEquipoVisitanteIdOrEquipoLocalId(idEquipo, idEquipo);
 		Collections.sort(partidosEquipo);
-		return new ResponseEntity<List<Partido>>(partidosEquipo,HttpStatus.OK);
+		return new ResponseEntity<List<Partido>>(partidosEquipo, HttpStatus.OK);
 	}
-	
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/arbitro/{idArbitro}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosArbitro(@PathVariable String idArbitro) {
@@ -129,6 +131,17 @@ public class PartidoController {
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
+	
+	@JsonView(PartidoView.class)
+	@RequestMapping(value = "/arbitro/{idArbitro}/{idEquipo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> verPartidosArbitroEquipo(@PathVariable String idArbitro, @PathVariable String idEquipo) {
+		List<Partido> entrada = partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(idArbitro, idEquipo, idEquipo);
+		if (entrada.isEmpty()) {
+			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
+	}
+	
 
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/addConvocadoLocal/{id}/{idJugador}", method = RequestMethod.PUT)
@@ -168,6 +181,7 @@ public class PartidoController {
 			return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
 		}
 	}
+
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/addConvocadoVisitante/{id}/{idJugador}", method = RequestMethod.PUT)
 	public ResponseEntity<Partido> nuevoConvocadoVisitante(@PathVariable String id, @PathVariable String idJugador) {
