@@ -137,7 +137,7 @@ public class ActaController {
 		actualizarEquipos(acta);
 		
 		Collections.sort(liga.getClasificacion());
-		//falta actualiar a los jugadores
+		//falta actualizar a los jugadores
 		
 		ligaRepository.save(liga);
 		actaRepository.save(acta);

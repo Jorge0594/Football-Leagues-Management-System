@@ -87,8 +87,9 @@ public class PartidoController {
 	public ResponseEntity<List<Partido>> verPartidosJornada(@PathVariable (value = "jornada") int jornada, @PathVariable (value = "nombreLiga")String nombreLiga) {
 		List<Partido> entrada = partidoRepository.findByJornadaAndLigaIgnoreCase(jornada, nombreLiga);
 		if (entrada.isEmpty()) {
-			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<List<Partido>>(HttpStatus.NO_CONTENT);
 		}
+		Collections.sort(entrada);
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
 
@@ -114,7 +115,9 @@ public class PartidoController {
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/partidosEquipo/{idEquipo}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>>verPartidosEquipo(@PathVariable String idEquipo){
-		return new ResponseEntity<List<Partido>>(partidoRepository.findByEquipoVisitanteIdOrEquipoLocalId(new ObjectId(idEquipo),new ObjectId(idEquipo)),HttpStatus.OK);
+		List<Partido> partidosEquipo = partidoRepository.findByEquipoVisitanteIdOrEquipoLocalId(new ObjectId(idEquipo),new ObjectId(idEquipo));
+		Collections.sort(partidosEquipo);
+		return new ResponseEntity<List<Partido>>(partidosEquipo,HttpStatus.OK);
 	}
 	
 	@JsonView(PartidoView.class)
@@ -269,6 +272,7 @@ public class PartidoController {
 			partido.setLiga(liga.getNombre());
 			partidoRepository.save(partido);
 			liga.getPartidos().add(partido);
+			Collections.sort(liga.getPartidos());
 			ligaRepository.save(liga);
 		}
 

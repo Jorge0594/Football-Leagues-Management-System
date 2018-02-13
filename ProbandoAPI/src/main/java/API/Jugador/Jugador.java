@@ -28,7 +28,7 @@ public class Jugador implements Comparable<Jugador> {
 	@JsonView(EquipoAtt.class)
 	private String apellidos;
 	
-	@JsonView(PerfilAtt.class)
+	@JsonView(EquipoAtt.class)
 	private int edad;
 	
 	@JsonView(PerfilAtt.class)
@@ -67,7 +67,7 @@ public class Jugador implements Comparable<Jugador> {
 	@JsonView(PerfilAtt.class)
 	private String lugarNacimiento;
 
-	@JsonView(PerfilAtt.class)
+	@JsonView(EquipoAtt.class)
 	private String nacionalidad;
 
 	@JsonView(EquipoAtt.class)

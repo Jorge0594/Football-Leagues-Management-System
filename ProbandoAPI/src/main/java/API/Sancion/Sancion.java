@@ -12,14 +12,17 @@ import API.Arbitro.Arbitro.ActaAtt;
 
 @Document(collection = "Sancion")
 public class Sancion {
-	
-	public interface JugadorAtt{}
-	public interface SancionAtt{}
-	
+
+	public interface JugadorAtt {
+	}
+
+	public interface SancionAtt {
+	}
+
 	@Id
 	@JsonView(SancionAtt.class)
 	private String id;
-	
+
 	@JsonView(JugadorAtt.class)
 	private String tipo;
 	@JsonView(SancionAtt.class)
@@ -35,11 +38,10 @@ public class Sancion {
 	private int partidosSancionados;
 	@JsonView(JugadorAtt.class)
 	private int partidosCumplidos;
-	
-	public Sancion() {}
-	
-	
-	
+
+	public Sancion() {
+	}
+
 	public Sancion(String id, String tipo, String jugadorId, Date inicioSancion, String arbitroSdrId, String estado,
 			int partidosSancionados, int partidosCumplidos) {
 		super();
@@ -52,62 +54,69 @@ public class Sancion {
 		this.partidosSancionados = partidosSancionados;
 		this.partidosCumplidos = partidosCumplidos;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getTipo() {
 		return tipo;
 	}
+
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
+
 	public String getJugadorId() {
 		return jugadorId;
 	}
+
 	public void setJugadorId(String jugadorId) {
 		this.jugadorId = jugadorId;
 	}
+
 	public Date getInicioSancion() {
 		return inicioSancion;
 	}
+
 	public void setInicioSancion(Date inicioSancion) {
 		this.inicioSancion = inicioSancion;
 	}
+
 	public String getArbitroSdrId() {
 		return arbitroSdrId;
 	}
+
 	public void setArbitroSdrId(String arbitroSdrId) {
 		this.arbitroSdrId = arbitroSdrId;
 	}
+
 	public String getEstado() {
 		return estado;
 	}
+
 	public void setEstado(String estado) {
 		this.estado = estado;
 	}
+
 	public int getPartidosSancionados() {
 		return partidosSancionados;
 	}
+
 	public void setPartidosSancionados(int partidosSancionados) {
 		this.partidosSancionados = partidosSancionados;
 	}
+
 	public int getPartidosCumplidos() {
 		return partidosCumplidos;
 	}
+
 	public void setPartidosCumplidos(int partidosCumplidos) {
 		this.partidosCumplidos = partidosCumplidos;
 	}
-	
-	
-	
-	
 
-	
-		
-	
-	
 }

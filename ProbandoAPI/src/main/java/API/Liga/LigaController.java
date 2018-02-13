@@ -152,7 +152,8 @@ public class LigaController {
 		}
 		partido.setLiga(liga.getNombre());
 		liga.getPartidos().add(partido);
-
+		Collections.sort(liga.getPartidos());
+		
 		partidoRepository.save(partido);
 		ligaRepository.save(liga);
 
