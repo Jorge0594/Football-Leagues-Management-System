@@ -36,7 +36,7 @@ import API.Usuario.UsuarioComponent;
 public class PartidoController {
 
 	public interface PartidoView extends Estadio.BasicoAtt, Estadio.DatosAtt, Partido.InfoAtt, Partido.RestAtt,
-			Jugador.EquipoAtt, Equipo.RankAtt {
+			Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt {
 	}
 
 	@Autowired
