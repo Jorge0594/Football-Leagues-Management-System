@@ -28,6 +28,7 @@ import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
+import API.Sancion.Sancion;
 import API.Usuario.UsuarioComponent;
 
 @RestController
@@ -36,7 +37,7 @@ import API.Usuario.UsuarioComponent;
 public class PartidoController {
 
 	public interface PartidoView extends Estadio.BasicoAtt, Estadio.DatosAtt, Partido.InfoAtt, Partido.RestAtt,
-			Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt {
+			Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Sancion.JugadorAtt, Sancion.SancionAtt {
 	}
 
 	@Autowired
