@@ -1,5 +1,6 @@
 package API.Jugador;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -74,6 +75,7 @@ public class JugadorController {
 		jugador.setTarjetasAmarillas(0);
 		jugador.setTarjetasRojas(0);
 		jugador.setClaveEncriptada(jugador.getClave());
+		jugador.setSanciones(new ArrayList<>());
 
 		/*
 		 * if (jugador.isAceptado()) { Usuario usuario = new
@@ -256,7 +258,7 @@ public class JugadorController {
 			}
 			jugador.setDorsal(entrada.getDorsal());
 			jugador.setGoles(entrada.getGoles());
-			jugador.setFechaSancion(entrada.getFechaSancion());
+			jugador.setSanciones(entrada.getSanciones());
 			jugador.setNacionalidad(entrada.getNacionalidad());
 			jugador.setEstado(entrada.getEstado());
 			jugador.setPosicion(entrada.getPosicion());

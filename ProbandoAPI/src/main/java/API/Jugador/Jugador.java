@@ -1,10 +1,15 @@
 package API.Jugador;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonView;
+
+import API.Sancion.Sancion;
 
 @Document(collection = "Jugador")
 public class Jugador implements Comparable<Jugador> {
@@ -58,9 +63,6 @@ public class Jugador implements Comparable<Jugador> {
 	@JsonView(EquipoAtt.class)
 	private String posicion;
 
-	@JsonView(EquipoAtt.class)
-	private String fechaSancion;
-
 	@JsonView(PerfilAtt.class)
 	private String estado;
 	
@@ -84,32 +86,44 @@ public class Jugador implements Comparable<Jugador> {
 
 	@JsonView(EquipoAtt.class)
 	private boolean capitan;
+	
+	@JsonView(PerfilAtt.class)
+	@DBRef
+	private List<Sancion> sanciones;
 
 	public Jugador() {
 	};
 
-	public Jugador(String id, String nombre, String apellidos, String dni, String nombreUsuario, String clave,
-			String fotoJugador, String equipo, String posicion, String fechaSancion, String estado, String nacionalidad,
-			int dorsal, int goles, int tarjetasAmarillas, int tarjetasRojas, boolean capitan) {
+
+	public Jugador(String id, String nombre, String apellidos, int edad, boolean aceptado, String fechaNacimiento,
+			String dni, String nombreUsuario, String clave, String email, String fotoJugador, String equipo,
+			String posicion, String estado, String lugarNacimiento, String nacionalidad, int dorsal, int goles,
+			int tarjetasAmarillas, int tarjetasRojas, boolean capitan, List<Sancion> sanciones) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
+		this.edad = edad;
+		this.aceptado = aceptado;
+		this.fechaNacimiento = fechaNacimiento;
 		this.dni = dni;
 		this.nombreUsuario = nombreUsuario;
 		this.clave = clave;
-		this.fotoJugador = "defaultProfile.jpg";
+		this.email = email;
+		this.fotoJugador = fotoJugador;
 		this.equipo = equipo;
 		this.posicion = posicion;
-		this.fechaSancion = fechaSancion;
 		this.estado = estado;
+		this.lugarNacimiento = lugarNacimiento;
 		this.nacionalidad = nacionalidad;
 		this.dorsal = dorsal;
 		this.goles = goles;
 		this.tarjetasAmarillas = tarjetasAmarillas;
 		this.tarjetasRojas = tarjetasRojas;
 		this.capitan = capitan;
+		this.sanciones = sanciones;
 	}
+
 
 	public String getId() {
 		return id;
@@ -171,13 +185,6 @@ public class Jugador implements Comparable<Jugador> {
 		this.posicion = posicion;
 	}
 
-	public String getFechaSancion() {
-		return fechaSancion;
-	}
-
-	public void setFechaSancion(String fechaSancion) {
-		this.fechaSancion = fechaSancion;
-	}
 
 	public String getEstado() {
 		return estado;
@@ -291,16 +298,58 @@ public class Jugador implements Comparable<Jugador> {
 		this.lugarNacimiento = lugarNacimiento;
 	}
 
+
+	public List<Sancion> getSanciones() {
+		return sanciones;
+	}
+
+
+	public void setSanciones(List<Sancion> sanciones) {
+		this.sanciones = sanciones;
+	}
+
+
 	@Override
 	public String toString() {
 		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", edad=" + edad
 				+ ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni
 				+ ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
-				+ fotoJugador + ", equipo=" + equipo + ", posicion=" + posicion + ", fechaSancion=" + fechaSancion
-				+ ", estado=" + estado + ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad
-				+ ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas=" + tarjetasAmarillas
-				+ ", tarjetasRojas=" + tarjetasRojas + ", capitan=" + capitan + "]";
+				+ fotoJugador + ", equipo=" + equipo + ", posicion=" + posicion + ", estado=" + estado
+				+ ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal
+				+ ", goles=" + goles + ", tarjetasAmarillas=" + tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas
+				+ ", capitan=" + capitan + ", sanciones=" + sanciones + "]";
 	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (aceptado ? 1231 : 1237);
+		result = prime * result + ((apellidos == null) ? 0 : apellidos.hashCode());
+		result = prime * result + (capitan ? 1231 : 1237);
+		result = prime * result + ((clave == null) ? 0 : clave.hashCode());
+		result = prime * result + ((dni == null) ? 0 : dni.hashCode());
+		result = prime * result + dorsal;
+		result = prime * result + edad;
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((equipo == null) ? 0 : equipo.hashCode());
+		result = prime * result + ((estado == null) ? 0 : estado.hashCode());
+		result = prime * result + ((fechaNacimiento == null) ? 0 : fechaNacimiento.hashCode());
+		result = prime * result + ((fotoJugador == null) ? 0 : fotoJugador.hashCode());
+		result = prime * result + goles;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((lugarNacimiento == null) ? 0 : lugarNacimiento.hashCode());
+		result = prime * result + ((nacionalidad == null) ? 0 : nacionalidad.hashCode());
+		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+		result = prime * result + ((nombreUsuario == null) ? 0 : nombreUsuario.hashCode());
+		result = prime * result + ((posicion == null) ? 0 : posicion.hashCode());
+		result = prime * result + ((sanciones == null) ? 0 : sanciones.hashCode());
+		result = prime * result + tarjetasAmarillas;
+		result = prime * result + tarjetasRojas;
+		return result;
+	}
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -311,6 +360,8 @@ public class Jugador implements Comparable<Jugador> {
 		if (getClass() != obj.getClass())
 			return false;
 		Jugador other = (Jugador) obj;
+		if (aceptado != other.aceptado)
+			return false;
 		if (apellidos == null) {
 			if (other.apellidos != null)
 				return false;
@@ -330,6 +381,13 @@ public class Jugador implements Comparable<Jugador> {
 			return false;
 		if (dorsal != other.dorsal)
 			return false;
+		if (edad != other.edad)
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
 		if (equipo == null) {
 			if (other.equipo != null)
 				return false;
@@ -340,10 +398,10 @@ public class Jugador implements Comparable<Jugador> {
 				return false;
 		} else if (!estado.equals(other.estado))
 			return false;
-		if (fechaSancion == null) {
-			if (other.fechaSancion != null)
+		if (fechaNacimiento == null) {
+			if (other.fechaNacimiento != null)
 				return false;
-		} else if (!fechaSancion.equals(other.fechaSancion))
+		} else if (!fechaNacimiento.equals(other.fechaNacimiento))
 			return false;
 		if (fotoJugador == null) {
 			if (other.fotoJugador != null)
@@ -356,6 +414,11 @@ public class Jugador implements Comparable<Jugador> {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
+			return false;
+		if (lugarNacimiento == null) {
+			if (other.lugarNacimiento != null)
+				return false;
+		} else if (!lugarNacimiento.equals(other.lugarNacimiento))
 			return false;
 		if (nacionalidad == null) {
 			if (other.nacionalidad != null)
@@ -377,12 +440,18 @@ public class Jugador implements Comparable<Jugador> {
 				return false;
 		} else if (!posicion.equals(other.posicion))
 			return false;
+		if (sanciones == null) {
+			if (other.sanciones != null)
+				return false;
+		} else if (!sanciones.equals(other.sanciones))
+			return false;
 		if (tarjetasAmarillas != other.tarjetasAmarillas)
 			return false;
 		if (tarjetasRojas != other.tarjetasRojas)
 			return false;
 		return true;
 	}
+
 
 	@Override
 	public int compareTo(Jugador o) {

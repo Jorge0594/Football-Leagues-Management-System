@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Partido.Partido.InfoAtt;
 
-@Document(collection="Incidencias")		
+@Document(collection="Incidencia")		
 public class Incidencia {
 	
 	public interface IncidenciaAtt{}

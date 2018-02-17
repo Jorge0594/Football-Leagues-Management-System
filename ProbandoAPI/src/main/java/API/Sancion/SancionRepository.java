@@ -13,11 +13,11 @@ public interface SancionRepository extends MongoRepository<Sancion,String>{
 
 	Sancion findById(String id);
 
-	List<Sancion> findByEstado(String estado);
+	List<Sancion> findByEnVigor(boolean enVigor);
 
-	List<Sancion> findByInicioSancion(Date inicioSancion);
+	List<Sancion> findByInicioSancion(String inicioSancion);
 
-	Sancion findByJugadorId(String jugadorId);
+	Sancion findBySancionadoId(String jugadorId);
 
 	List<Sancion> findByArbitroSdrId(String arbitroId);
 

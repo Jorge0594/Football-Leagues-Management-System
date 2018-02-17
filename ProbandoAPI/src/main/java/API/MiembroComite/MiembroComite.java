@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Arbitro.Arbitro.ActaAtt;
 
-@Document(collection="MiembrosComite")		
+@Document(collection="MiembroComite")		
 public class MiembroComite {
 	
 	public interface PerfilMCAtt{}

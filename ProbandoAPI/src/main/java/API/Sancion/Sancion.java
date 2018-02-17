@@ -4,8 +4,6 @@ import java.util.Date;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Arbitro.Arbitro.ActaAtt;
@@ -26,33 +24,38 @@ public class Sancion {
 	@JsonView(JugadorAtt.class)
 	private String tipo;
 	@JsonView(SancionAtt.class)
-	private String jugadorId;
+	private String sancionadoId;
 	@JsonView(JugadorAtt.class)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	private Date inicioSancion;
+	private String inicioSancion;
+	@JsonView(JugadorAtt.class)
+	private String finSancion;
 	@JsonView(SancionAtt.class)
 	private String arbitroSdrId;
 	@JsonView(SancionAtt.class)
-	private String estado;
+	private boolean enVigor;
 	@JsonView(JugadorAtt.class)
 	private int partidosSancionados;
 	@JsonView(JugadorAtt.class)
-	private int partidosCumplidos;
+	private int partidosRestantes;
+	@JsonView(JugadorAtt.class)
+	private String descripcion;
 
 	public Sancion() {
 	}
 
-	public Sancion(String id, String tipo, String jugadorId, Date inicioSancion, String arbitroSdrId, String estado,
-			int partidosSancionados, int partidosCumplidos) {
+	public Sancion(String id, String tipo, String sancionadoId, String inicioSancion, String finSancion,
+			String arbitroSdrId, boolean enVigor, int partidosSancionados, int partidosRestantes, String descripcion) {
 		super();
 		this.id = id;
 		this.tipo = tipo;
-		this.jugadorId = jugadorId;
+		this.sancionadoId = sancionadoId;
 		this.inicioSancion = inicioSancion;
+		this.finSancion = finSancion;
 		this.arbitroSdrId = arbitroSdrId;
-		this.estado = estado;
+		this.enVigor = enVigor;
 		this.partidosSancionados = partidosSancionados;
-		this.partidosCumplidos = partidosCumplidos;
+		this.partidosRestantes = partidosRestantes;
+		this.descripcion = descripcion;
 	}
 
 	public String getId() {
@@ -71,20 +74,28 @@ public class Sancion {
 		this.tipo = tipo;
 	}
 
-	public String getJugadorId() {
-		return jugadorId;
+	public String getSancionadoId() {
+		return sancionadoId;
 	}
 
-	public void setJugadorId(String jugadorId) {
-		this.jugadorId = jugadorId;
+	public void setSancionadoId(String sancionadoId) {
+		this.sancionadoId = sancionadoId;
 	}
 
-	public Date getInicioSancion() {
+	public String getInicioSancion() {
 		return inicioSancion;
 	}
 
-	public void setInicioSancion(Date inicioSancion) {
+	public void setInicioSancion(String inicioSancion) {
 		this.inicioSancion = inicioSancion;
+	}
+
+	public String getFinSancion() {
+		return finSancion;
+	}
+
+	public void setFinSancion(String finSancion) {
+		this.finSancion = finSancion;
 	}
 
 	public String getArbitroSdrId() {
@@ -95,12 +106,12 @@ public class Sancion {
 		this.arbitroSdrId = arbitroSdrId;
 	}
 
-	public String getEstado() {
-		return estado;
+	public boolean isEnVigor() {
+		return enVigor;
 	}
 
-	public void setEstado(String estado) {
-		this.estado = estado;
+	public void setEnVigor(boolean enVigor) {
+		this.enVigor = enVigor;
 	}
 
 	public int getPartidosSancionados() {
@@ -111,12 +122,22 @@ public class Sancion {
 		this.partidosSancionados = partidosSancionados;
 	}
 
-	public int getPartidosCumplidos() {
-		return partidosCumplidos;
+	public int getPartidosRestantes() {
+		return partidosRestantes;
 	}
 
-	public void setPartidosCumplidos(int partidosCumplidos) {
-		this.partidosCumplidos = partidosCumplidos;
+	public void setPartidosRestantes(int partidosRestantes) {
+		this.partidosRestantes = partidosRestantes;
 	}
 
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+	
+
+	
 }

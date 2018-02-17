@@ -1,9 +1,7 @@
 package API.Sancion;
 
-import java.util.Date;
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import API.Acta.Acta;
 import API.Arbitro.*;
 import API.Jugador.*;
-import API.Sancion.Sancion.SancionAtt;
 
 @RestController
 @CrossOrigin
@@ -55,9 +51,9 @@ public class SancionController {
 		
 	}
 	@JsonView(SancionView.class)
-	@RequestMapping(value = "/{estado}", method = RequestMethod.GET)
-	public ResponseEntity<List<Sancion>> verSancionesEstado(@PathVariable String estado){
-		List<Sancion> sanciones = sancionRepository.findByEstado(estado);
+	@RequestMapping(value = "/{enVigor}", method = RequestMethod.GET)
+	public ResponseEntity<List<Sancion>> verSancionesEnVigor(@PathVariable boolean enVigor){
+		List<Sancion> sanciones = sancionRepository.findByEnVigor(enVigor);
 		if(sanciones.isEmpty()) {
 			return new ResponseEntity<List<Sancion>>(HttpStatus.NOT_FOUND);
 		}
@@ -65,7 +61,7 @@ public class SancionController {
 	}
 	@JsonView(SancionView.class)
 	@RequestMapping(value = "/{inicioSancion}", method = RequestMethod.GET)
-	public ResponseEntity<List<Sancion>> verSancionesInicio(@PathVariable Date inicioSancion){
+	public ResponseEntity<List<Sancion>> verSancionesInicio(@PathVariable String inicioSancion){
 		List<Sancion> sanciones = sancionRepository.findByInicioSancion(inicioSancion);
 		if(sanciones.isEmpty()) {
 			return new ResponseEntity<List<Sancion>>(HttpStatus.NOT_FOUND);
@@ -89,20 +85,20 @@ public class SancionController {
 		if(sancion == null) {
 			return new ResponseEntity<Sancion>(HttpStatus.NOT_FOUND);
 		}
-		sancion.setEstado("Activa");
+		sancion.setEnVigor(true);
 		return new ResponseEntity<Sancion>(sancion, HttpStatus.OK);
 	}
 	
 	//Cuando se apruebe un acta se comprueba si hay jugadores de los equipos que han jugado con sanciones y se aumentan los dias cumplidos. 
-	@RequestMapping(value = "/partidoCumplido/{idJugador}", method = RequestMethod.PUT)
-	public ResponseEntity<Sancion> cumplirPartidoSancion(@PathVariable String idJugador){
-		Sancion sancion = sancionRepository.findByJugadorId(idJugador);
+	@RequestMapping(value = "/partidoCumplido/{sancionadoId}", method = RequestMethod.PUT)
+	public ResponseEntity<Sancion> cumplirPartidoSancion(@PathVariable String sancionadoId){
+		Sancion sancion = sancionRepository.findBySancionadoId(sancionadoId);
 		if(sancion == null) {
 			return new ResponseEntity<Sancion>(HttpStatus.NOT_FOUND);
 		}
-		sancion.setPartidosCumplidos(sancion.getPartidosCumplidos() +1);
-		if(sancion.getPartidosCumplidos()== sancion.getPartidosSancionados()) {
-			sancion.setEstado("Cumplida");
+		sancion.setPartidosRestantes(sancion.getPartidosRestantes() - 1);
+		if(sancion.getPartidosRestantes()==0) {
+			sancion.setEnVigor(false);
 		}
 		sancionRepository.save(sancion);
 		return new ResponseEntity<Sancion>(sancion, HttpStatus.OK);
@@ -112,8 +108,8 @@ public class SancionController {
 	//POST
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Sancion> crearSancion(@RequestBody Sancion sancion) {
-		sancion.setEstado("Pendiente");
-		sancion.setPartidosCumplidos(0);
+		sancion.setEnVigor(true);
+		sancion.setPartidosRestantes(sancion.getPartidosSancionados());
 		sancion.setId(null);
 		sancionRepository.save(sancion);
 		return new ResponseEntity<Sancion>(sancion, HttpStatus.CREATED);

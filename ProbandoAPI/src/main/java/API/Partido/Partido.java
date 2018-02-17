@@ -16,7 +16,7 @@ import API.Estadio.Estadio;
 import API.Incidencia.Incidencia;
 import API.Jugador.Jugador;
 
-@Document(collection = "Partidos")
+@Document(collection = "Partido")
 public class Partido implements Comparable<Partido> {
 
 	public interface InfoAtt {

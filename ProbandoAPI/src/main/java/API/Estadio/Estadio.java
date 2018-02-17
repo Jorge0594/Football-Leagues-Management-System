@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-@Document(collection = "Estadios")
+@Document(collection = "Estadio")
 public class Estadio {
 	
 	public interface DatosAtt{}

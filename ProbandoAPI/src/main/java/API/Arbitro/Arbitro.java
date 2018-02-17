@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Partido.Partido;
 
-@Document(collection = "Arbitros")
+@Document(collection = "Arbitro")
 public class Arbitro {
 	
 	public interface ActaAtt{}
