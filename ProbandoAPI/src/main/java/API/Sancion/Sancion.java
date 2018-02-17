@@ -23,22 +23,31 @@ public class Sancion {
 
 	@JsonView(JugadorAtt.class)
 	private String tipo;
+	
 	@JsonView(SancionAtt.class)
 	private String sancionadoId;
+	
 	@JsonView(JugadorAtt.class)
 	private String inicioSancion;
+	
 	@JsonView(JugadorAtt.class)
 	private String finSancion;
+	
 	@JsonView(SancionAtt.class)
 	private String arbitroSdrId;
+	
 	@JsonView(SancionAtt.class)
 	private boolean enVigor;
+	
 	@JsonView(JugadorAtt.class)
 	private int partidosSancionados;
+	
 	@JsonView(JugadorAtt.class)
 	private int partidosRestantes;
+	
 	@JsonView(JugadorAtt.class)
 	private String descripcion;
+	
 
 	public Sancion() {
 	}
