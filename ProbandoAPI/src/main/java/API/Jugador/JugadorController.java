@@ -27,6 +27,7 @@ import API.Liga.Liga;
 import API.Liga.LigaRepository;
 import API.Mails.MailService;
 import API.Partido.PartidoRepository;
+import API.Sancion.Sancion;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
@@ -36,7 +37,7 @@ import API.Usuario.UsuarioRepository;
 @RequestMapping("/jugadores")
 public class JugadorController {
 
-	public interface ProfileView extends Jugador.PerfilAtt, Jugador.EquipoAtt {
+	public interface ProfileView extends Jugador.PerfilAtt, Jugador.EquipoAtt, Sancion.SancionAtt, Sancion.JugadorAtt {
 	}
 
 	@Autowired

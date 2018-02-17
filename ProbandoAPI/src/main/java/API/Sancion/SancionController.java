@@ -112,6 +112,15 @@ public class SancionController {
 		sancion.setPartidosRestantes(sancion.getPartidosSancionados());
 		sancion.setId(null);
 		sancionRepository.save(sancion);
+		if(sancion.getSancionadoId()!= null && sancion.getTipo().equals("JUGADOR")){
+			Jugador jugador = jugadorRepository.findById(sancion.getSancionadoId());
+			if(jugador == null){
+				return new ResponseEntity<Sancion>(HttpStatus.NO_CONTENT);
+			}
+			
+			jugador.getSanciones().add(sancion);
+			jugadorRepository.save(jugador);
+		}
 		return new ResponseEntity<Sancion>(sancion, HttpStatus.CREATED);
 
 	}
