@@ -2,6 +2,7 @@ package API.Jugador;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +63,7 @@ public class JugadorController {
 	@JsonView(ProfileView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Jugador> crearJugador(@RequestBody Jugador jugador) {
-		if (jugadorRepository.findByDniIgnoreCase(jugador.getDni()) != null
-				|| usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario()) != null) {
+		if (jugadorRepository.findByDniIgnoreCase(jugador.getDni()) != null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		String clave = jugador.getClave();
@@ -334,11 +334,19 @@ public class JugadorController {
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
 
-	private static String generarNombreUsuario(String nombre, String apellidos, int edad) {
+	private String generarNombreUsuario(String nombre, String apellidos, int edad) {
 
 		String apellido[] = apellidos.split(" ");
 
 		String usuario = nombre + apellido[0].toUpperCase() + edad;
+		
+		while(usuarioRepository.findByNombreUsuarioIgnoreCase(usuario)!= null){
+			Random rnd = new Random();
+			int num = rnd.nextInt(100);
+			if(usuarioRepository.findByNombreUsuarioIgnoreCase((usuario += num)) == null){
+				usuario += num;
+			}
+		}
 		return usuario;
 	}
 
