@@ -48,7 +48,7 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		equipo.setId(null);
-		equipo.setImagenEquipo("imageTeamDafault.png");
+		equipo.setImagenEquipo("shield.png");
 		equipo.setAceptado(false);
 		// COMENTADO PARA FACILITAR EL TESTING BOPRRAR CUANDO SE PASE A
 		// PRODUCCION
@@ -56,7 +56,7 @@ public class EquipoController {
 		 * equipo.setPartidosEmpatados(0); equipo.setPartidosGanados(0);
 		 * equipo.setPartidosPerdidos(0);
 		 */
-		equipo.setLiga("");
+		//equipo.setLiga("");
 		equipoRepository.save(equipo);
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);
 	}
@@ -140,7 +140,7 @@ public class EquipoController {
 		if (equipo == null || jugador == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
-		if (!equipo.getLiga().equals("")) {
+		if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
 			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
 			liga.getGoleadores().add(jugador);
 			ligaRepository.save(liga);
@@ -148,7 +148,7 @@ public class EquipoController {
 		if (!jugador.getEquipo().equals("")) {
 			if (!equipo.getPlantillaEquipo().contains(jugador)) {
 				Equipo aux = equipoRepository.findById(jugador.getEquipo());
-				if (!aux.getLiga().equals(equipo.getLiga()) && (!aux.getLiga().equals(""))) {
+				if (!aux.getLiga().equals(equipo.getLiga()) && (!aux.getLiga().equals("")) && (aux.isAceptado())) {
 					Liga ligaAux = ligaRepository.findByNombreIgnoreCase(aux.getLiga());
 					ligaAux.getGoleadores().remove(jugador);
 					ligaRepository.save(ligaAux);
