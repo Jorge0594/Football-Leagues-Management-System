@@ -69,7 +69,7 @@ public class JugadorController {
 		String clave = jugador.getClave();
 		jugador.setId(null);
 		jugador.setFotoJugador("defaultProfile.jpg");
-		jugador.setNombreUsuario(generarNombreUsuario(jugador.getNombre(), jugador.getApellidos(), jugador.getEdad()));
+		jugador.setNombreUsuario(generarNombreUsuario(jugador.getNombre(), jugador.getApellidos()));
 		jugador.setAceptado(false);
 		jugador.setEquipo("");
 		jugador.setGoles(0);
@@ -334,15 +334,15 @@ public class JugadorController {
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
 
-	private String generarNombreUsuario(String nombre, String apellidos, int edad) {
+	private String generarNombreUsuario(String nombre, String apellidos) {
 
 		String apellido[] = apellidos.split(" ");
 
-		String usuario = nombre + apellido[0].toUpperCase() + edad;
+		String usuario = nombre + apellido[0].toUpperCase();
 		
 		while(usuarioRepository.findByNombreUsuarioIgnoreCase(usuario)!= null){
 			Random rnd = new Random();
-			int num = rnd.nextInt(100);
+			int num = rnd.nextInt(1000);
 			if(usuarioRepository.findByNombreUsuarioIgnoreCase((usuario += num)) == null){
 				usuario += num;
 			}
