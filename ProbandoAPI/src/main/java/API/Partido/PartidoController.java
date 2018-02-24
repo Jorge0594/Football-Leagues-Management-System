@@ -127,6 +127,7 @@ public class PartidoController {
 	@RequestMapping(value = "/arbitro/{idArbitro}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosArbitro(@PathVariable String idArbitro) {
 		List<Partido> entrada = partidoRepository.findByIdArbitro(idArbitro);
+		Collections.sort(entrada);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}
