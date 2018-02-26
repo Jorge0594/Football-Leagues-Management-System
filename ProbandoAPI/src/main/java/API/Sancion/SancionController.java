@@ -140,7 +140,7 @@ public class SancionController {
 		sancion.setEnVigor(true);
 		sancion.setPartidosRestantes(sancion.getPartidosSancionados());
 		sancion.setId(null);
-		if (!sancion.getTipo().equals("JUGADOR") || !sancion.getTipo().equals("EQUIPO")) {
+		if (!sancion.getTipo().equals("JUGADOR") && !sancion.getTipo().equals("EQUIPO")) {
 			return new ResponseEntity<Sancion>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		sancionRepository.save(sancion);
