@@ -55,7 +55,7 @@ public class SancionController {
 	}
 
 	@JsonView(SancionView.class)
-	@RequestMapping(value = "/{enVigor}", method = RequestMethod.GET)
+	@RequestMapping(value = "/activas/{enVigor}", method = RequestMethod.GET)
 	public ResponseEntity<List<Sancion>> verSancionesEnVigor(@PathVariable boolean enVigor) {
 		List<Sancion> sanciones = sancionRepository.findByEnVigor(enVigor);
 		if (sanciones.isEmpty()) {
@@ -65,7 +65,7 @@ public class SancionController {
 	}
 
 	@JsonView(SancionView.class)
-	@RequestMapping(value = "/{inicioSancion}", method = RequestMethod.GET)
+	@RequestMapping(value = "/inicio/{inicioSancion}", method = RequestMethod.GET)
 	public ResponseEntity<List<Sancion>> verSancionesInicio(@PathVariable String inicioSancion) {
 		List<Sancion> sanciones = sancionRepository.findByInicioSancion(inicioSancion);
 		if (sanciones.isEmpty()) {
@@ -73,9 +73,29 @@ public class SancionController {
 		}
 		return new ResponseEntity<List<Sancion>>(sanciones, HttpStatus.OK);
 	}
+	
+	@JsonView(JugadorView.class)
+	@RequestMapping(value = "/sancionado/{sancionadoId}", method = RequestMethod.GET)
+	public ResponseEntity<List<Sancion>>verSancionesSancionado(@PathVariable String sancionadoId){
+		List<Sancion> sanciones = sancionRepository.findBySancionadoId(sancionadoId);
+		if(sanciones.isEmpty()){
+			return new ResponseEntity<List<Sancion>>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<List<Sancion>>(sanciones,HttpStatus.OK);
+	}
+	
+	@JsonView(JugadorView.class)
+	@RequestMapping(value = "/activas/sancionado/{sancionadoId}", method = RequestMethod.GET)
+	public ResponseEntity<List<Sancion>>serSancionesActivasSancionado(@PathVariable String sancionadoId){
+		List<Sancion>sanciones = sancionRepository.findBySancionadoIdAndEnVigor(sancionadoId, true);
+		if (sanciones.isEmpty()){
+			return new ResponseEntity<List<Sancion>>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<List<Sancion>>(sanciones, HttpStatus.OK);
+	}
 
 	@JsonView(SancionView.class)
-	@RequestMapping(value = "/{arbitroId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/arbitro/{arbitroId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Sancion>> verSancionesPorArbitro(@PathVariable String arbitroId) {
 		List<Sancion> sanciones = sancionRepository.findByArbitroSdrId(arbitroId);
 		if (sanciones.isEmpty()) {
@@ -85,6 +105,7 @@ public class SancionController {
 	}
 
 	// PUT
+	@JsonView(SancionView.class)
 	@RequestMapping(value = "/aprobarSancion/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Sancion> modificarEstadoSancion(@PathVariable String id) {
 		Sancion sancion = sancionRepository.findById(id);
@@ -97,9 +118,10 @@ public class SancionController {
 
 	// Cuando se apruebe un acta se comprueba si hay jugadores de los equipos
 	// que han jugado con sanciones y se aumentan los dias cumplidos.
-	@RequestMapping(value = "/partidoCumplido/{sancionadoId}", method = RequestMethod.PUT)
-	public ResponseEntity<Sancion> cumplirPartidoSancion(@PathVariable String sancionadoId) {
-		Sancion sancion = sancionRepository.findBySancionadoId(sancionadoId);
+	@JsonView(SancionView.class)
+	@RequestMapping(value = "/partidoCumplido/{idSancion}/{sancionadoId}", method = RequestMethod.PUT)
+	public ResponseEntity<Sancion> cumplirPartidoSancion(@PathVariable String idSancion, @PathVariable String sancionadoId) {
+		Sancion sancion = sancionRepository.findByIdAndSancionadoId(idSancion, sancionadoId);
 		if (sancion == null) {
 			return new ResponseEntity<Sancion>(HttpStatus.NOT_FOUND);
 		}
@@ -112,6 +134,7 @@ public class SancionController {
 	}
 
 	// POST
+	@JsonView(SancionView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Sancion> crearSancion(@RequestBody Sancion sancion) {
 		sancion.setEnVigor(true);
