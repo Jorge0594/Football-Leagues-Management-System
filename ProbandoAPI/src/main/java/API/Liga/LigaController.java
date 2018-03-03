@@ -45,6 +45,8 @@ public class LigaController {
 	private ArbitroRepository arbitroRepository;
 	@Autowired
 	private PartidoRepository partidoRepository;
+	@Autowired
+	private JugadorRepository jugadorRepository;
 
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -93,10 +95,9 @@ public class LigaController {
 	}
 
 	@JsonView(InfoLigaView.class)
-	@RequestMapping(value = "/{nombre}/equipo/{nombreEquipo}", method = RequestMethod.PUT)
-	public ResponseEntity<Liga> añadirEquipo(@PathVariable(value = "nombre") String nombre,
-			@PathVariable(value = "nombreEquipo") String nombreEquipo) {
-		Equipo equipo = equipoRepository.findByNombreIgnoreCase(nombreEquipo);
+	@RequestMapping(value = "/{nombre}/equipo/{idEquipo}", method = RequestMethod.PUT)
+	public ResponseEntity<Liga> añadirEquipo(@PathVariable(value = "nombre") String nombre, @PathVariable(value = "idEquipo") String idEquipo) {
+		Equipo equipo = equipoRepository.findById(idEquipo);
 		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
 		if (liga == null || equipo == null) {
 			return new ResponseEntity<Liga>(HttpStatus.NO_CONTENT);
@@ -112,7 +113,11 @@ public class LigaController {
 				}
 			}
 			equipo.setLiga(liga.getNombre());
-			equipo.setAceptado(true);			
+			equipo.setAceptado(true);
+			for(Jugador j : equipo.getPlantillaEquipo()){
+				j.setAceptado(true);
+				jugadorRepository.save(j);
+			}
 			equipoRepository.save(equipo);
 
 			liga.getClasificacion().add(equipo);

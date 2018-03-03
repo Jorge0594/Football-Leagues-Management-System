@@ -12,15 +12,17 @@ public interface SancionRepository extends MongoRepository<Sancion,String>{
 	List<Sancion> findAll();
 
 	Sancion findById(String id);
+	
+	Sancion findByIdAndSancionadoId(String idSancion, String sancionadoId);
 
 	List<Sancion> findByEnVigor(boolean enVigor);
 
 	List<Sancion> findByInicioSancion(String inicioSancion);
 
-	Sancion findBySancionadoId(String jugadorId);
+	List<Sancion> findBySancionadoId(String sancionadoId);
 
 	List<Sancion> findByArbitroSdrId(String arbitroId);
-
 	
-
+	List<Sancion>findBySancionadoIdAndEnVigor(String sancionadoId, boolean enVigor);
+	
 }
