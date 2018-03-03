@@ -171,6 +171,28 @@ public class JugadorController {
 		}
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
+	
+	@JsonView(ProfileView.class)
+	@RequestMapping(value = "clave/{dni}", method = RequestMethod.GET)
+	public ResponseEntity<Jugador> claveOlvidada(@PathVariable String dni) {
+		//Deberia ser con email pero no funciona.
+		Jugador jugador = jugadorRepository.findByDniIgnoreCase(dni);
+		if (jugador == null) {
+			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
+		} else {
+			Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario());
+			if (usuario == null) {
+				return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
+			}
+			String clave = generarClave();
+			jugador.setClaveEncriptada(clave);
+			usuario.setClave(jugador.getClave());
+			usuarioRepository.save(usuario);
+			jugadorRepository.save(jugador);
+			mailService.getMail().mandarContraseña(jugador.getEmail(), jugador.getNombreUsuario(), clave);
+			return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
+		}
+	}
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
@@ -226,7 +248,8 @@ public class JugadorController {
 			 */
 			Arbitro arbitro = arbitroRepository
 					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
-			if (!partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(arbitro.getId(), jugador.getEquipo(), jugador.getEquipo()).isEmpty()) {
+			if (!partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(arbitro.getId(),
+					jugador.getEquipo(), jugador.getEquipo()).isEmpty()) {
 				jugador.setGoles(entrada.getGoles());
 				jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
 				jugador.setTarjetasRojas(entrada.getTarjetasRojas());
@@ -266,6 +289,18 @@ public class JugadorController {
 			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 		}
 
+		jugadorRepository.save(jugador);
+		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
+	}
+
+	@JsonView(ProfileView.class)
+	@RequestMapping(value = "/{id}/email", method = RequestMethod.PUT)
+	public ResponseEntity<Jugador> cambiarEmail(@PathVariable String id, @RequestBody String email) {
+		Jugador jugador = jugadorRepository.findById(id);
+		if (jugador == null) {
+			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
+		}
+		jugador.setEmail(email);
 		jugadorRepository.save(jugador);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}
@@ -329,15 +364,28 @@ public class JugadorController {
 		String apellido[] = apellidos.split(" ");
 
 		String usuario = nombre + apellido[0].toUpperCase();
-		
-		while(usuarioRepository.findByNombreUsuarioIgnoreCase(usuario)!= null){
+
+		while (usuarioRepository.findByNombreUsuarioIgnoreCase(usuario) != null) {
 			Random rnd = new Random();
 			int num = rnd.nextInt(1000);
-			if(usuarioRepository.findByNombreUsuarioIgnoreCase((usuario += num)) == null){
+			if (usuarioRepository.findByNombreUsuarioIgnoreCase((usuario += num)) == null) {
 				usuario += num;
 			}
 		}
 		return usuario;
+	}
+
+	private static String generarClave() {// Genera una clave con caracteres
+											// ASCII aleatorios
+		String clave = "";
+		Random rnd = new Random();
+		for (int i = 0; i < 5; i++) {
+			clave = clave + ((char) (rnd.nextInt(27) + 63));// Caracteres del
+															// '?' a la 'Z'
+			clave = clave + ((char) (rnd.nextInt(25) + 97));// Carateres de la
+															// 'a' a la 'z'
+		}
+		return clave;
 	}
 
 }

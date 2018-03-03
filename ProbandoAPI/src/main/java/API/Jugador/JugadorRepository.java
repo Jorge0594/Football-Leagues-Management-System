@@ -20,6 +20,8 @@ public interface JugadorRepository extends MongoRepository<Jugador, String> {
 	
 	Jugador findById(String id);
 	
+	Jugador findByEmailIgnoreCase(String email);
+	
 	Jugador findByDniIgnoreCase(String dni);
 	
 	Jugador findByCapitanAndEquipo(boolean capitan, String idEquipo);

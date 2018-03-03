@@ -15,6 +15,8 @@ public class EnvioEmail {
 			+ "\nEn nuestra app podrá visualizar de manera rápida y sencilla toda la información referente a su liga, equipo, o de su propio perfil.\n"
 			+ "\nSe le ha asignado el siguiente usuario y contraseña para el acceso a la aplicación:\n";
 	
+	private final String recuperarCredenciales = "Su usuario y contraseña de acceso es:\n";
+	
 	public void mandarEmail (String destinatatio, String asunto, String texto){
 		
 		String credenciales [] = texto.split(";");
@@ -26,8 +28,19 @@ public class EnvioEmail {
 		SimpleMailMessage mail = new SimpleMailMessage();
 		
 		mail.setTo(credenciales[3]);//Correo del usuario.
-		mail.setSubject("tfg");
+		mail.setSubject(asunto);
 		mail.setText(cuerpoCorreo);
+		
+		envioEmail.send(mail);
+	}
+	
+	public void mandarContraseña(String destinatario, String usuario, String clave){
+		String cuerpo = recuperarCredenciales + "\n\n"+ "USUARIO: " + usuario +"\n\n" +  "CONTRASEÑA: " + clave;
+		SimpleMailMessage mail = new SimpleMailMessage();
+		
+		mail.setTo(destinatario);
+		mail.setSubject("Usuario y contraseña");
+		mail.setText(cuerpo);
 		
 		envioEmail.send(mail);
 	}
