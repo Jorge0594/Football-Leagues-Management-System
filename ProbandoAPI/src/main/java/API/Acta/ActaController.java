@@ -138,6 +138,7 @@ public class ActaController {
 		
 		Collections.sort(liga.getClasificacion());
 		//falta actualizar a los jugadores
+		//Por cada jugador que haya metido gol llamar a reordenarGoleadores(jugador) o reordenarGoleadoresLista(List<Jugador>jugadores)
 		
 		ligaRepository.save(liga);
 		actaRepository.save(acta);

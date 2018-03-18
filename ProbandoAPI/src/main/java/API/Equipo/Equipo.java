@@ -68,7 +68,7 @@ public class Equipo implements Comparable<Equipo> {
 	@DBRef
 	private Estadio estadioEquipo;
 
-	@JsonView(RankAtt.class)
+	@JsonView(PerfilAtt.class)
 	@DBRef
 	private List<Jugador> plantillaEquipo = new ArrayList<>();
 
