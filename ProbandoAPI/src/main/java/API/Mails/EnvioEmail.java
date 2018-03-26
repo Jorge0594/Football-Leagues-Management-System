@@ -17,7 +17,7 @@ public class EnvioEmail {
 	
 	private final String recuperarCredenciales = "Su usuario y contraseña de acceso es:\n";
 	
-	public void mandarEmail (String destinatatio, String asunto, String texto){
+	public void mandarEmail (String destinatario, String asunto, String texto){
 		
 		String credenciales [] = texto.split(";");
 		
@@ -27,7 +27,7 @@ public class EnvioEmail {
 				+ "\n¡Buena suerte en sus partidos!"; 
 		SimpleMailMessage mail = new SimpleMailMessage();
 		
-		mail.setTo(credenciales[3]);//Correo del usuario.
+		mail.setTo(destinatario);//Correo del usuario.
 		mail.setSubject(asunto);
 		mail.setText(cuerpoCorreo);
 		

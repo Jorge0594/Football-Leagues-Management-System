@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -58,7 +59,6 @@ public class LigaController {
 		ligaRepository.save(liga);
 		return new ResponseEntity<Liga>(liga, HttpStatus.CREATED);
 	}
-
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Liga>> verLigas() {
@@ -90,7 +90,6 @@ public class LigaController {
 		if (liga == null) {
 			return new ResponseEntity<List<Jugador>>(HttpStatus.NO_CONTENT);
 		}
-		//Collections.sort(liga.getGoleadores());
 		return new ResponseEntity<List<Jugador>>(liga.getGoleadores(), HttpStatus.OK);
 	}
 
@@ -116,12 +115,13 @@ public class LigaController {
 			equipo.setAceptado(true);
 			for(Jugador j : equipo.getPlantillaEquipo()){
 				j.setAceptado(true);
+				j.setLiga(liga.getNombre());
 				jugadorRepository.save(j);
 			}
 			equipoRepository.save(equipo);
 
 			liga.getClasificacion().add(equipo);
-			liga.getGoleadores().addAll(equipo.getPlantillaEquipo());
+			//liga.getGoleadores().addAll(equipo.getPlantillaEquipo());//No queremos tener a todos los jugadorss en la clasificacion
 
 			ligaRepository.save(liga);
 			return new ResponseEntity<Liga>(liga, HttpStatus.OK);
@@ -146,7 +146,7 @@ public class LigaController {
 		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
 	}
 
-	@JsonView(InfoLigaView.class)
+	/*@JsonView(InfoLigaView.class)
 	@RequestMapping(value = "/{nombre}/partido/{idPartido}", method = RequestMethod.PUT)
 	public ResponseEntity<Liga> añadirPartido(@PathVariable(value = "nombre") String nombre,
 			@PathVariable(value = "idPartido") String idPartido) {
@@ -163,7 +163,7 @@ public class LigaController {
 		ligaRepository.save(liga);
 
 		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
-	}
+	}*/
 
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(value = "/{nombre}/arbitro/{idArbitro}", method = RequestMethod.DELETE)
@@ -200,7 +200,7 @@ public class LigaController {
 		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
 	}
 
-	@JsonView(InfoLigaView.class)
+	/*@JsonView(InfoLigaView.class)
 	@RequestMapping(value = "/{nombre}/partido/{idPartido}", method = RequestMethod.DELETE)
 	public ResponseEntity<Liga> eliminarPartido(@PathVariable(value = "nombre") String nombre,
 			@PathVariable(value = "idPartido") String idPartido) {
@@ -216,7 +216,7 @@ public class LigaController {
 		ligaRepository.save(liga);
 
 		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
-	}
+	}*/
 
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

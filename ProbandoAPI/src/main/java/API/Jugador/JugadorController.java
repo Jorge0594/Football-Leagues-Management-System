@@ -72,6 +72,7 @@ public class JugadorController {
 		jugador.setNombreUsuario(generarNombreUsuario(jugador.getNombre(), jugador.getApellidos()));
 		jugador.setAceptado(false);
 		jugador.setEquipo("");
+		jugador.setLiga("");
 		jugador.setGoles(0);
 		jugador.setTarjetasAmarillas(0);
 		jugador.setTarjetasRojas(0);
@@ -88,8 +89,7 @@ public class JugadorController {
 		Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
 		usuarioRepository.save(usuario);
 		jugadorRepository.save(jugador);
-		String texto = jugador.getNombre() + ";" + jugador.getNombreUsuario() + ";" + clave + ";" + jugador.getEmail()
-				+ ";";
+		String texto = jugador.getNombre() + ";" + jugador.getNombreUsuario() + ";" + clave;
 		// mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de
 		// usuario y contraseña",texto);//Comentado para que no problemas con
 		// mails que no existen.

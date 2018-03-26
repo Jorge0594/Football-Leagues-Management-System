@@ -74,7 +74,7 @@ public class SancionController {
 		return new ResponseEntity<List<Sancion>>(sanciones, HttpStatus.OK);
 	}
 	
-	@JsonView(JugadorView.class)
+	@JsonView(SancionView.class)
 	@RequestMapping(value = "/sancionado/{sancionadoId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Sancion>>verSancionesSancionado(@PathVariable String sancionadoId){
 		List<Sancion> sanciones = sancionRepository.findBySancionadoId(sancionadoId);
@@ -84,7 +84,7 @@ public class SancionController {
 		return new ResponseEntity<List<Sancion>>(sanciones,HttpStatus.OK);
 	}
 	
-	@JsonView(JugadorView.class)
+	@JsonView(SancionView.class)
 	@RequestMapping(value = "/activas/sancionado/{sancionadoId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Sancion>>serSancionesActivasSancionado(@PathVariable String sancionadoId){
 		List<Sancion>sanciones = sancionRepository.findBySancionadoIdAndEnVigor(sancionadoId, true);
@@ -132,7 +132,17 @@ public class SancionController {
 		sancionRepository.save(sancion);
 		return new ResponseEntity<Sancion>(sancion, HttpStatus.OK);
 	}
-
+	
+	@JsonView(SancionView.class)
+	@RequestMapping(value = "/espirar/{idSancion}", method = RequestMethod.PUT)
+	public ResponseEntity<Sancion>espirada(@PathVariable String idSancion){
+		Sancion sancion = sancionRepository.findById(idSancion);
+		sancion.setEnVigor(false);
+		sancion.setPartidosRestantes(0);
+		
+		sancionRepository.save(sancion);
+		return new ResponseEntity<Sancion>(sancion, HttpStatus.OK);
+	}
 	// POST
 	@JsonView(SancionView.class)
 	@RequestMapping(method = RequestMethod.POST)

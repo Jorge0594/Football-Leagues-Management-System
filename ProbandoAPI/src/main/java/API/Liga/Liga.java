@@ -1,11 +1,10 @@
 package API.Liga;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import API.Jugador.*;
-import API.Partido.Partido;
-import API.Sancion.Sancion;
 import API.Equipo.*;
 import API.Arbitro.*;
 
@@ -18,54 +17,37 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Document(collection = "Liga")
 public class Liga {
 
-	public interface LigaAtt {
-	}
+	public interface LigaAtt {}
 
 	@Id
 	@JsonView(LigaAtt.class)
 	private String id;
 	@JsonView(LigaAtt.class)
 	private String nombre;
-	@JsonView(LigaAtt.class)
 	@DBRef
+	@JsonView(LigaAtt.class)
 	private List<Equipo> clasificacion = new ArrayList<>();
-	@JsonView(LigaAtt.class)
-	@DBRef
-	private List<Jugador> goleadores = new ArrayList<>();
 	@JsonView(LigaAtt.class)
 	@DBRef
 	private List<Arbitro> arbitros = new ArrayList<>();
 	@JsonView(LigaAtt.class)
 	@DBRef
+	private List<Jugador> goleadores = new ArrayList<>(5);
+	/*@JsonView(LigaAtt.class)
+	@DBRef
 	private List<Sancion> sancion = new ArrayList<>();
 	@JsonView(LigaAtt.class)
 	@DBRef
-	private List<Partido> partidos = new ArrayList<>();
-	@JsonView(LigaAtt.class)
-	@DBRef
-	private List<Equipo> equipos = new ArrayList<>();
+	private List<Partido> partidos = new ArrayList<>();*/
 	
 	
 	
-	public Liga(String id, String nombre, List<Equipo> clasificacion, List<Jugador> goleadores, List<Arbitro> arbitros,
-			List<Sancion> sancion, List<Partido> partidos, List<Equipo> equipos) {
+	public Liga(String id, String nombre, List<Equipo> clasificacion, List<Arbitro> arbitros) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.clasificacion = clasificacion;
-		this.goleadores = goleadores;
 		this.arbitros = arbitros;
-		this.sancion = sancion;
-		this.partidos = partidos;
-		this.equipos = equipos;
-	}
-
-	public List<Equipo> getEquipos() {
-		return equipos;
-	}
-
-	public void setEquipos(List<Equipo> equipos) {
-		this.equipos = equipos;
 	}
 
 	public Liga() {
@@ -75,6 +57,27 @@ public class Liga {
 		super();
 		this.nombre = nombre;
 	}
+	
+	public void crearGoleadores(List<Jugador>jugadoresLiga){
+		Collections.sort(jugadoresLiga);
+		this.goleadores.clear();
+		this.goleadores.addAll(jugadoresLiga.subList(0, 5));
+	}
+	
+	public void reordenarGoleadores(Jugador jugador){
+		if(jugador.compareTo(this.goleadores.get(4)) == -1){
+			this.goleadores.remove(4);
+			this.goleadores.add(jugador);
+			Collections.sort(this.goleadores);
+		}
+	}
+	
+	public void reordenarGoleadoresLista(List<Jugador>juagdores){
+		for(Jugador jugador: juagdores){
+			reordenarGoleadores(jugador);
+		}
+	}
+	
 
 	public String getId() {
 		return id;
@@ -117,22 +120,6 @@ public class Liga {
 		this.arbitros = arbitros;
 	}
 
-	public List<Sancion> getSancion() {
-		return sancion;
-	}
-
-	public void setSancion(List<Sancion> sancion) {
-		this.sancion = sancion;
-	}
-
-	public List<Partido> getPartidos() {
-		return partidos;
-	}
-
-	public void setPartidos(List<Partido> partidos) {
-		this.partidos = partidos;
-	}
-
 	@Override
 	public String toString() {
 		return "Liga [id=" + id + ", nombre=" + nombre + ", clasificacion=" + clasificacion + ", goleadores="
@@ -148,8 +135,6 @@ public class Liga {
 		result = prime * result + ((goleadores == null) ? 0 : goleadores.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-		result = prime * result + ((partidos == null) ? 0 : partidos.hashCode());
-		result = prime * result + ((sancion == null) ? 0 : sancion.hashCode());
 		return result;
 	}
 
@@ -187,22 +172,7 @@ public class Liga {
 				return false;
 		} else if (!nombre.equals(other.nombre))
 			return false;
-		if (partidos == null) {
-			if (other.partidos != null)
-				return false;
-		} else if (!partidos.equals(other.partidos))
-			return false;
-		if (sancion == null) {
-			if (other.sancion != null)
-				return false;
-		} else if (!sancion.equals(other.sancion))
-			return false;
 		return true;
 	}
-
-	
-
-	
-	
 
 }
