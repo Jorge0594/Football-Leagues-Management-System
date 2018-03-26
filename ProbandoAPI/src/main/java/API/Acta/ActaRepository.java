@@ -11,5 +11,7 @@ public interface ActaRepository extends MongoRepository<Acta,String>{
 	List<Acta> findByEquipoLocalId(ObjectId equipoLocal);
 	List<Acta> findByEquipoVisitanteId(ObjectId equipoVisitante);
 	List<Acta> findByArbitroId(ObjectId arbitro);
-	List<Acta> findByFecha(String fecha);	
+	List<Acta> findByFecha(String fecha);
+	List<Acta> findByAceptadaFalse();
+	List<Acta> findByAceptadaTrue();	
 }
