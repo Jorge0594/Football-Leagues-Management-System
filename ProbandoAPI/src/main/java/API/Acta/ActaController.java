@@ -2,16 +2,13 @@ package API.Acta;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,6 +37,8 @@ import API.Partido.Partido;
 import API.Partido.PartidoRepository;
 import API.Pdfs.PdfCreator;
 import API.Usuario.UsuarioComponent;
+import API.Incidencia.Incidencia;
+import API.Incidencia.IncidenciaRepository;
 
 @RestController
 @CrossOrigin
@@ -47,7 +46,7 @@ import API.Usuario.UsuarioComponent;
 public class ActaController {
 
 	public interface ActaView
-			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Estadio.BasicoAtt, Arbitro.ActaAtt {
+			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt {
 	}
 
 	@Autowired
@@ -67,6 +66,26 @@ public class ActaController {
 	@Autowired
 	PdfCreator pdfCreator;
 
+	IncidenciaRepository incidenciaRepository;
+	
+	@JsonView(ActaView.class)
+	@RequestMapping(value = "/pendientes", method = RequestMethod.GET)
+	public ResponseEntity<List<Acta>> verActasPendientes() {
+		List<Acta> entrada = actaRepository.findByAceptadaFalse();
+		if (entrada.isEmpty()) {
+			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
+	}
+	@JsonView(ActaView.class)
+	@RequestMapping(value = "/aceptadas", method = RequestMethod.GET)
+	public ResponseEntity<List<Acta>> verActasAceptadas() {
+		List<Acta> entrada = actaRepository.findByAceptadaTrue();
+		if (entrada.isEmpty()) {
+			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
+	}
 	@JsonView(ActaView.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActas() {
@@ -277,7 +296,8 @@ public class ActaController {
 			}
 		}
 	}
-	
+
+
 	public void actualizarEquipos(Acta acta) {
 
 		Equipo local = equipoRepository.findById(acta.getEquipoLocal().getId());
