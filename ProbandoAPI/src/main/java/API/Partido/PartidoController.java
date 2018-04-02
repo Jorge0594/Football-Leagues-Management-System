@@ -133,6 +133,16 @@ public class PartidoController {
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
+	@JsonView(PartidoView.class)
+	@RequestMapping(value = "/arbitro/{idArbitro}/estado/{estado}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> verPartidosArbitroEstado(@PathVariable String idArbitro, @PathVariable String estado) {
+		List<Partido> entrada = partidoRepository.findByIdArbitroAndEstado(idArbitro,estado);
+		Collections.sort(entrada);
+		if (entrada.isEmpty()) {
+			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
+	}
 	
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/arbitro/{idArbitro}/{idEquipo}", method = RequestMethod.GET)
