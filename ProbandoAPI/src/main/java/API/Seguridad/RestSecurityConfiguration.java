@@ -25,11 +25,13 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// URLs that need authentication to access to it
 		//Jugadores
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/clave/{email}").permitAll();
+		http.authorizeRequests().antMatchers(HttpMethod.POST, "/juagadores/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/**").hasAnyRole("JUGADOR","ARBITRO","MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/jugadores/**").hasAnyRole("JUGADOR", "MIEMBROCOMITE","ARBITRO","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/jugadores/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		
 		//Equipos
+		http.authorizeRequests().antMatchers(HttpMethod.POST, "/equipos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/**").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/equipos/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/equipos/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
@@ -63,6 +65,10 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/partidos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/partidos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/partidos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		
+		//Usuarios temporales
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/usuariosTemporales/**").hasAnyRole("MIEMBROCOMITE", "ADMIN","TEMPORAL");
+		
 		//Liga
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/ligas/**").hasAnyRole("JUGADOR","ARBITRO","MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/ligas/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");

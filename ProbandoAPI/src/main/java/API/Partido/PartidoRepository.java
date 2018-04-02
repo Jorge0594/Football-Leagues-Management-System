@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface PartidoRepository extends MongoRepository<Partido, String> {
 	Partido findById(String id);
 
-	List<Partido> findByLiga(String liga);
+	List<Partido> findByLigaIgnoreCase(String liga);
 
 	List<Partido> findByJornada(int jornada);
 
