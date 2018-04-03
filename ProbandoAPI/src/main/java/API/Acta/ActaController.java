@@ -1,12 +1,20 @@
 package API.Acta;
 
+
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.itextpdf.text.DocumentException;
 
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
@@ -28,6 +37,7 @@ import API.Liga.Liga;
 import API.Liga.LigaRepository;
 import API.Partido.Partido;
 import API.Partido.PartidoRepository;
+import API.Pdfs.PdfCreator;
 import API.Usuario.UsuarioComponent;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
@@ -59,6 +69,8 @@ public class ActaController {
 	@Autowired
 	UsuarioComponent usuarioComponent;
 	@Autowired
+	PdfCreator pdfCreator;
+
 	IncidenciaRepository incidenciaRepository;
 	@Autowired
 	SancionRepository sancionRepository;
@@ -96,6 +108,44 @@ public class ActaController {
 			return new ResponseEntity<Acta>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
+	}
+	@JsonView(ActaView.class)
+	@RequestMapping(value = "/generaPdf/{id}", method = RequestMethod.GET)
+	public ResponseEntity<InputStreamResource> imprimiPdf(@PathVariable String id) {
+		Acta entrada = actaRepository.findById(id);
+		Partido partidoDelActa = partidoRepository.findById(entrada.getIdPartido());
+		if ((entrada == null) || (partidoDelActa == null)) {
+			return new ResponseEntity<InputStreamResource>(HttpStatus.NOT_FOUND);
+		}
+		else {
+		try {
+			String nFichero=pdfCreator.crearPdf(entrada);
+			if (nFichero!=null) {
+			File fichero = new File("src/main/resources/static/actasGeneradas/"+partidoDelActa.getLiga()+"/"+nFichero);
+			InputStream ficheroStream = new FileInputStream(fichero);
+			  HttpHeaders headers = new HttpHeaders();
+			  headers.setContentType(MediaType.parseMediaType("application/pdf"));
+			  headers.add("Access-Control-Allow-Origin", "*");
+			  headers.add("Access-Control-Allow-Methods", "GET, POST, PUT");
+			  headers.add("Access-Control-Allow-Headers", "Content-Type");
+			  headers.add("Content-Disposition", "filename=" + nFichero);
+			  headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+			  headers.add("Pragma", "no-cache");
+			  headers.add("Expires", "0");
+
+			  ResponseEntity<InputStreamResource> response = new ResponseEntity<InputStreamResource>(
+			    new InputStreamResource(ficheroStream), headers, HttpStatus.OK);
+			  return response;
+			}
+			else {
+				return new ResponseEntity<InputStreamResource>(HttpStatus.NO_CONTENT);
+			}
+		} catch (DocumentException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new ResponseEntity<InputStreamResource>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@JsonView(ActaView.class)
