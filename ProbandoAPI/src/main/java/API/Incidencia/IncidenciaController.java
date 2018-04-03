@@ -50,7 +50,7 @@ public class IncidenciaController {
 		@JsonView(IncidenciaView.class)
 		@RequestMapping(value = "incidencias/partido/{idPartido}", method = RequestMethod.GET)
 		public ResponseEntity<List<Incidencia>> verIncidenciasPartido(@PathVariable String idPartido) {	
-			List<Incidencia> incidencias = incidenciasRepository.findByIdPartidoIgnoreCase(idPartido);
+			List<Incidencia> incidencias = incidenciasRepository.findByIdPartido(idPartido);
 			if (incidencias.isEmpty()) {
 				return new ResponseEntity<List<Incidencia>>(HttpStatus.NOT_FOUND);
 			}
@@ -59,7 +59,7 @@ public class IncidenciaController {
 		@JsonView(IncidenciaView.class)
 		@RequestMapping(value = "incidencias/jugador/{idJugador}", method = RequestMethod.GET)
 		public ResponseEntity<List<Incidencia>> verIncidenciasJugador(@PathVariable String idJugador) {
-			List<Incidencia> incidencias = incidenciasRepository.findByIdJugadorIgnoreCase(idJugador);
+			List<Incidencia> incidencias = incidenciasRepository.findByIdJugador(idJugador);
 			if (incidencias.isEmpty()) {
 				return new ResponseEntity<List<Incidencia>>(HttpStatus.NOT_FOUND);
 			}
@@ -68,7 +68,7 @@ public class IncidenciaController {
 		@JsonView(IncidenciaView.class)
 		@RequestMapping(value = "incidencias/tipo/{tipoIncidencia}", method = RequestMethod.GET)
 		public ResponseEntity<List<Incidencia>> verIncidenciasTipo(@PathVariable String tipoIncidencia) {
-			List<Incidencia> incidencias = incidenciasRepository.findByTipoIgnoreCase(tipoIncidencia);
+			List<Incidencia> incidencias = incidenciasRepository.findByTipo(tipoIncidencia);
 			if (incidencias.isEmpty()) {
 				return new ResponseEntity<List<Incidencia>>(HttpStatus.NOT_FOUND);
 			}

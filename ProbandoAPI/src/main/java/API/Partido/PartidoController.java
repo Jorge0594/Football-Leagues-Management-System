@@ -314,7 +314,7 @@ public class PartidoController {
 			}
 		}
 		Arbitro arbitroDelPartido = arbitroRepository.findById(entrada.getIdArbitro());
-		List<Incidencia> incidenciasDelPartido = incidenciaRepository.findByIdPartidoIgnoreCase(entrada.getId());
+		List<Incidencia> incidenciasDelPartido = incidenciaRepository.findByIdPartido(entrada.getId());
 		//Liga ligaDelPartido = ligaRepository.findByNombreIgnoreCase(entrada.getLiga());
 		if (arbitroDelPartido != null) {
 			// Elimina el partido de los partidos arbitrados del árbitro.

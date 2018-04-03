@@ -72,8 +72,8 @@ public class Liga {
 		}
 	}
 	
-	public void reordenarGoleadoresLista(List<Jugador>juagdores){
-		for(Jugador jugador: juagdores){
+	public void reordenarGoleadoresLista(List<Jugador>jugadores){
+		for(Jugador jugador: jugadores){
 			reordenarGoleadores(jugador);
 		}
 	}

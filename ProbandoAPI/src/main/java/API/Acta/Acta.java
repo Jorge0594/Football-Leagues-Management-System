@@ -42,7 +42,10 @@ public class Acta {
 	private Equipo equipoVisitante;
 
 	@JsonView(ActaAtt.class)
-	private Arbitro arbitro;
+	private String idArbitro;
+	
+	@JsonView(ActaAtt.class)
+	private String nombreArbitro;
 
 	@JsonView(ActaAtt.class)
 	private List<Jugador> convocadosLocal;
@@ -66,7 +69,7 @@ public class Acta {
 	}
 
 	public Acta(String id, String idPartido, String fecha, String hora, Equipo equipoLocal, Equipo equipoVisitante,
-			Arbitro arbitro, List<Jugador> convocadosLocal, List<Jugador> convocadosVisitante, int golesLocal,
+			String idArbitro, String nombreArbitro, List<Jugador> convocadosLocal, List<Jugador> convocadosVisitante, int golesLocal,
 			int golesVisitante, List<Incidencia> incidencias, String observaciones) {
 		super();
 		this.id = id;
@@ -75,7 +78,8 @@ public class Acta {
 		this.hora = hora;
 		this.equipoLocal = equipoLocal;
 		this.equipoVisitante = equipoVisitante;
-		this.arbitro = arbitro;
+		this.idArbitro = idArbitro;
+		this.nombreArbitro = nombreArbitro;
 		this.convocadosLocal = convocadosLocal;
 		this.convocadosVisitante = convocadosVisitante;
 		this.golesLocal = golesLocal;
@@ -148,12 +152,19 @@ public class Acta {
 		this.equipoVisitante = equipoVisitante;
 	}
 
-	public Arbitro getArbitro() {
-		return arbitro;
+	public String getIdArbitro() {
+		return idArbitro;
+	}
+	public String getNombreArbitro() {
+		return nombreArbitro;
 	}
 
-	public void setArbitro(Arbitro arbitro) {
-		this.arbitro = arbitro;
+	public void setIdArbitro(String idArbitro) {
+		this.idArbitro = idArbitro;
+	}
+	
+	public void setNombreArbitro(String nombreArbitro) {
+		this.nombreArbitro = nombreArbitro;
 	}
 
 	public int getGolesLocal() {
@@ -200,7 +211,8 @@ public class Acta {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((arbitro == null) ? 0 : arbitro.hashCode());
+		result = prime * result + ((idArbitro == null) ? 0 : idArbitro.hashCode());
+		result = prime * result + ((nombreArbitro == null) ? 0 : nombreArbitro.hashCode());
 		result = prime * result + ((convocadosLocal == null) ? 0 : convocadosLocal.hashCode());
 		result = prime * result + ((convocadosVisitante == null) ? 0 : convocadosVisitante.hashCode());
 		result = prime * result + ((equipoLocal == null) ? 0 : equipoLocal.hashCode());
@@ -225,10 +237,10 @@ public class Acta {
 		if (getClass() != obj.getClass())
 			return false;
 		Acta other = (Acta) obj;
-		if (arbitro == null) {
-			if (other.arbitro != null)
+		if (idArbitro == null) {
+			if (other.idArbitro != null)
 				return false;
-		} else if (!arbitro.equals(other.arbitro))
+		} else if (!idArbitro.equals(other.idArbitro))
 			return false;
 		if (convocadosLocal == null) {
 			if (other.convocadosLocal != null)

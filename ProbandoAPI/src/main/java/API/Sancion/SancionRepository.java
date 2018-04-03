@@ -3,7 +3,9 @@ package API.Sancion;
 import java.util.Date;
 import java.util.List;
 
+import org.jboss.logging.Param;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import API.Acta.Acta;
 
@@ -15,8 +17,6 @@ public interface SancionRepository extends MongoRepository<Sancion,String>{
 	
 	Sancion findByIdAndSancionadoId(String idSancion, String sancionadoId);
 
-	List<Sancion> findByEnVigor(boolean enVigor);
-
 	List<Sancion> findByInicioSancion(String inicioSancion);
 
 	List<Sancion> findBySancionadoId(String sancionadoId);
@@ -25,4 +25,10 @@ public interface SancionRepository extends MongoRepository<Sancion,String>{
 	
 	List<Sancion>findBySancionadoIdAndEnVigor(String sancionadoId, boolean enVigor);
 	
+	 	/*@Query("SELECT * FROM Sancion s WHERE s.sancionadoId in (idJugadores)")
+	    public List<Sancion> findBySancionadoIdAndEnVigorTrue(List<String> idJugadores);*/
+	 	
+	List<Sancion>findBySancionadoIdAndEnVigorTrue(List<String> jugadoresId);
+	
+	List<Sancion>findByEnVigorTrue();
 }

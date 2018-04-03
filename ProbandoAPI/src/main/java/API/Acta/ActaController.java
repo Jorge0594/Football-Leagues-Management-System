@@ -1,5 +1,6 @@
 package API.Acta;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +31,9 @@ import API.Partido.PartidoRepository;
 import API.Usuario.UsuarioComponent;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
+import API.Sancion.Sancion;
+import API.Sancion.SancionController;
+import API.Sancion.SancionRepository;
 
 @RestController
 @CrossOrigin
@@ -37,7 +41,7 @@ import API.Incidencia.IncidenciaRepository;
 public class ActaController {
 
 	public interface ActaView
-			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt {
+			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Jugador.ClaveAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt, Equipo.PerfilAtt, Sancion.JugadorAtt, Sancion.SancionAtt {
 	}
 
 	@Autowired
@@ -56,6 +60,8 @@ public class ActaController {
 	UsuarioComponent usuarioComponent;
 	@Autowired
 	IncidenciaRepository incidenciaRepository;
+	@Autowired
+	SancionRepository sancionRepository;
 	
 	@JsonView(ActaView.class)
 	@RequestMapping(value = "/pendientes", method = RequestMethod.GET)
@@ -102,10 +108,11 @@ public class ActaController {
 		return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
 	}
 
-	@JsonView(ActaView.class)
-	@RequestMapping(value = "/arbitro/{arbitro}", method = RequestMethod.GET)
-	public ResponseEntity<List<Acta>> verActaArbitro(@PathVariable String arbitro) {
-		List<Acta> entrada = actaRepository.findByArbitroId(new ObjectId(arbitro));
+	
+	 @JsonView(ActaView.class)
+	@RequestMapping(value = "/arbitro/{idArbitro}", method = RequestMethod.GET)
+	public ResponseEntity<List<Acta>> verActaArbitro(@PathVariable String idArbitro) {
+		List<Acta> entrada = actaRepository.findByIdArbitro(idArbitro);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
 		}
@@ -149,19 +156,16 @@ public class ActaController {
 		if (acta == null || acta.isAceptada() || acta.getEquipoLocal() == null || acta.getEquipoVisitante() == null){
 			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		acta.setAceptada(true);
 		
 		Liga liga = ligaRepository.findByNombreIgnoreCase(acta.getEquipoLocal().getLiga());
 		if (liga == null){
 			return new ResponseEntity<Acta>(HttpStatus.BAD_GATEWAY);
 		}
-		
 		actualizarEquipos(acta);
-		
 		Collections.sort(liga.getClasificacion());
-		//falta actualizar a los jugadores
-		//Por cada jugador que haya metido gol llamar a reordenarGoleadores(jugador) o reordenarGoleadoresLista(List<Jugador>jugadores)
-		
+		actualizarJugadores(acta, liga);
+		actualizarPartido(acta);
+		acta.setAceptada(true);
 		ligaRepository.save(liga);
 		actaRepository.save(acta);
 		return new ResponseEntity<Acta>(acta, HttpStatus.OK);
@@ -219,7 +223,7 @@ public class ActaController {
 					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
 			// Si el usuario conectado es un árbitro
 			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
-				if (!arbitroConectado.getId().equals(acta.getArbitro().getId())) {
+				if (!arbitroConectado.getId().equals(acta.getIdArbitro())) {
 					return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
 				} else {
 					acta.setFecha(entrada.getFecha());
@@ -255,7 +259,6 @@ public class ActaController {
 		Equipo visitante = equipoRepository.findById(acta.getEquipoVisitante().getId());
 
 		if (acta.getGolesLocal() > acta.getGolesVisitante()) {
-
 			local.setPartidosGanados(local.getPartidosGanados() + 1);
 			local.setGoles(local.getGoles() + acta.getGolesLocal());
 			local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
@@ -297,5 +300,60 @@ public class ActaController {
 		
 		equipoRepository.save(local);
 		equipoRepository.save(visitante);
+	}
+	
+	public void actualizarJugadores(Acta acta, Liga liga) {
+	
+		for(Incidencia incidencia: acta.getIncidencias()) {
+			Jugador jugador = jugadorRepository.findById(incidencia.getIdJugador());
+			if (incidencia.getTipo().equals("GOL")) {
+				jugador.setGoles(jugador.getGoles()+1);
+			}else if (incidencia.getTipo().equals("AMARILLA")) {
+				jugador.setTarjetasAmarillas(jugador.getTarjetasAmarillas()+1);
+			}else {
+				jugador.setTarjetasRojas(jugador.getTarjetasRojas()+1);
+			}
+			incidenciaRepository.save(incidencia);
+			jugadorRepository.save(jugador);
+			if(incidencia.getTipo().equals("GOL")){
+				liga.reordenarGoleadores(jugador);
+			}
+		}
+		
+		ligaRepository.save(liga);
+		
+		List<Sancion> sancionesActivas = sancionRepository.findByEnVigorTrue();
+		List<String> jugadoresId = new ArrayList<String>();
+		Equipo local = equipoRepository.findById(acta.getEquipoLocal().getId());
+		Equipo visitante = equipoRepository.findById(acta.getEquipoVisitante().getId());
+		
+		for(Jugador jugador: local.getPlantillaEquipo()) {
+			jugadoresId.add(jugador.getId());
+		}
+		
+		for(Jugador jugador: visitante.getPlantillaEquipo()) {
+			jugadoresId.add(jugador.getId());
+		}
+		
+		for(Sancion sancion: sancionesActivas) {
+			for(String idJugador: jugadoresId) {
+				if(sancion.getSancionadoId().equals(idJugador)) {
+					sancion.cumplirPartidoSancion();
+					if(sancion.getPartidosRestantes()==0) 
+						sancion.setEnVigor(false);
+					sancionRepository.save(sancion);
+				}
+			}
+		}
+	}
+	
+	public void actualizarPartido(Acta acta) {
+		Partido partido = partidoRepository.findById(acta.getIdPartido());
+		partido.setEstado("Disputado");
+		partido.setGolesLocal(acta.getGolesLocal());
+		partido.setGolesVisitante(acta.getGolesVisitante());
+		partido.setIncidencias(incidenciaRepository.findByIdPartido(partido.getId()));
+		partido.setIdActa(acta.getId());
+		partidoRepository.save(partido);
 	}
 }

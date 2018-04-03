@@ -53,17 +53,7 @@ public class SancionController {
 		return new ResponseEntity<Sancion>(sancion, HttpStatus.OK);
 
 	}
-
-	@JsonView(SancionView.class)
-	@RequestMapping(value = "/activas/{enVigor}", method = RequestMethod.GET)
-	public ResponseEntity<List<Sancion>> verSancionesEnVigor(@PathVariable boolean enVigor) {
-		List<Sancion> sanciones = sancionRepository.findByEnVigor(enVigor);
-		if (sanciones.isEmpty()) {
-			return new ResponseEntity<List<Sancion>>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<List<Sancion>>(sanciones, HttpStatus.OK);
-	}
-
+    // ******REV******* Añadido por la idea inicial de como iba a funcionar, con la nueva lógica de 
 	@JsonView(SancionView.class)
 	@RequestMapping(value = "/inicio/{inicioSancion}", method = RequestMethod.GET)
 	public ResponseEntity<List<Sancion>> verSancionesInicio(@PathVariable String inicioSancion) {
@@ -86,7 +76,7 @@ public class SancionController {
 	
 	@JsonView(SancionView.class)
 	@RequestMapping(value = "/activas/sancionado/{sancionadoId}", method = RequestMethod.GET)
-	public ResponseEntity<List<Sancion>>serSancionesActivasSancionado(@PathVariable String sancionadoId){
+	public ResponseEntity<List<Sancion>>verSancionesActivasSancionado(@PathVariable String sancionadoId){
 		List<Sancion>sanciones = sancionRepository.findBySancionadoIdAndEnVigor(sancionadoId, true);
 		if (sanciones.isEmpty()){
 			return new ResponseEntity<List<Sancion>>(HttpStatus.NO_CONTENT);
@@ -104,7 +94,7 @@ public class SancionController {
 		return new ResponseEntity<List<Sancion>>(sanciones, HttpStatus.OK);
 	}
 
-	// PUT
+	// ******REV******* Creada pensando que las sanciones venian propuestas desde el árbitro para ser activadas por el comite, borrar más adelante si una vez finalizada la sección de actas no se utiliza
 	@JsonView(SancionView.class)
 	@RequestMapping(value = "/aprobarSancion/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Sancion> modificarEstadoSancion(@PathVariable String id) {
@@ -116,8 +106,7 @@ public class SancionController {
 		return new ResponseEntity<Sancion>(sancion, HttpStatus.OK);
 	}
 
-	// Cuando se apruebe un acta se comprueba si hay jugadores de los equipos
-	// que han jugado con sanciones y se aumentan los dias cumplidos.
+	// ******REV*******  Se hace desde la propia clase, lo dejo por si se añadiese la opción desde el front
 	@JsonView(SancionView.class)
 	@RequestMapping(value = "/partidoCumplido/{idSancion}/{sancionadoId}", method = RequestMethod.PUT)
 	public ResponseEntity<Sancion> cumplirPartidoSancion(@PathVariable String idSancion, @PathVariable String sancionadoId) {

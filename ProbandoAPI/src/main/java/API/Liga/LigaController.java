@@ -35,7 +35,7 @@ public class LigaController {
 	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt {
 	}
 
-	public interface InfoLigaView extends Liga.LigaAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt {
+	public interface InfoLigaView extends Liga.LigaAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt, Arbitro.ActaAtt {
 	}
 
 	@Autowired
@@ -313,20 +313,5 @@ public class LigaController {
 		}
 		return existe;
 	}
-	/*
-	 * //Siempre que se apruebe un acta se deberá llamar a este método. Está sin
-	 * probar hasta que se genere una liga
-	 * 
-	 * @JsonView(ClasificacionView.class)
-	 * 
-	 * @RequestMapping(value = "/{idLiga}/actualizarClasificacion", method =
-	 * RequestMethod.PUT) public ResponseEntity<List<Equipo>>
-	 * actualizarClasificacion (@PathVariable String idLiga){ Liga liga =
-	 * ligaRepository.findById(idLiga); if(liga == null){ return new
-	 * ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT); }
-	 * Collections.sort(liga.getClasificacion());
-	 * 
-	 * return new
-	 * ResponseEntity<List<Equipo>>(liga.getClasificacion(),HttpStatus.OK); }
 	 */
 }

@@ -10,10 +10,10 @@ public interface IncidenciaRepository extends MongoRepository<Incidencia, String
 
 	Incidencia findById(String id);
 
-	List<Incidencia> findByIdPartidoIgnoreCase(String idPartido);
+	List<Incidencia> findByIdPartido(String idPartido);
 
-	List<Incidencia> findByIdJugadorIgnoreCase(String idJugador);
+	List<Incidencia> findByIdJugador(String idJugador);
 
-	List<Incidencia> findByTipoIgnoreCase(String tipoIncidencia);
+	List<Incidencia> findByTipo(String tipoIncidencia);
 
 }
