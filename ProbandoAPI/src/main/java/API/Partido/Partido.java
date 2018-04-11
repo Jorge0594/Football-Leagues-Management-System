@@ -45,10 +45,10 @@ public class Partido implements Comparable<Partido> {
 	private String equipoVisitanteNombre;
 	
 	@JsonView(InfoAtt.class)
-	private Integer golesLocal;
+	private int golesLocal;
 	
 	@JsonView(InfoAtt.class)
-	private Integer golesVisitante;
+	private int golesVisitante;
 	
 	@JsonView(InfoAtt.class)
 	private String idArbitro;
@@ -86,7 +86,7 @@ public class Partido implements Comparable<Partido> {
 	}
 	
 	public Partido(String id, String liga, String equipoLocalId, String equipoLocalNombre, String equipoVisitanteId,
-			String equipoVisitanteNombre, Integer golesLocal, Integer golesVisitante, String idArbitro,
+			String equipoVisitanteNombre, int golesLocal, int golesVisitante, String idArbitro,
 			String fechaPartido, String horaPartido, Estadio estadio, String estado, int jornada,
 			String equipacionLocal, String equipacionVisitante, List<Incidencia> incidencias, String idActa) {
 		super();

@@ -1,5 +1,7 @@
 package API.Acta;
 
+
+import java.util.ArrayList;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,6 +41,9 @@ import API.Pdfs.PdfCreator;
 import API.Usuario.UsuarioComponent;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
+import API.Sancion.Sancion;
+import API.Sancion.SancionController;
+import API.Sancion.SancionRepository;
 
 @RestController
 @CrossOrigin
@@ -46,7 +51,7 @@ import API.Incidencia.IncidenciaRepository;
 public class ActaController {
 
 	public interface ActaView
-			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt {
+			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Jugador.ClaveAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt, Equipo.PerfilAtt, Sancion.JugadorAtt, Sancion.SancionAtt {
 	}
 
 	@Autowired
@@ -65,8 +70,10 @@ public class ActaController {
 	UsuarioComponent usuarioComponent;
 	@Autowired
 	PdfCreator pdfCreator;
-
+	@Autowired
 	IncidenciaRepository incidenciaRepository;
+	@Autowired
+	SancionRepository sancionRepository;
 	
 	@JsonView(ActaView.class)
 	@RequestMapping(value = "/pendientes", method = RequestMethod.GET)
@@ -102,6 +109,7 @@ public class ActaController {
 		}
 		return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
 	}
+	
 	@JsonView(ActaView.class)
 	@RequestMapping(value = "/generaPdf/{id}", method = RequestMethod.GET)
 	public ResponseEntity<InputStreamResource> imprimiPdf(@PathVariable String id) {
@@ -151,10 +159,11 @@ public class ActaController {
 		return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
 	}
 
-	@JsonView(ActaView.class)
-	@RequestMapping(value = "/arbitro/{arbitro}", method = RequestMethod.GET)
-	public ResponseEntity<List<Acta>> verActaArbitro(@PathVariable String arbitro) {
-		List<Acta> entrada = actaRepository.findByArbitroId(new ObjectId(arbitro));
+	
+	 @JsonView(ActaView.class)
+	@RequestMapping(value = "/arbitro/{idArbitro}", method = RequestMethod.GET)
+	public ResponseEntity<List<Acta>> verActaArbitro(@PathVariable String idArbitro) {
+		List<Acta> entrada = actaRepository.findByIdArbitro(idArbitro);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
 		}
@@ -170,8 +179,8 @@ public class ActaController {
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
-
-	@JsonView(ActaView.class)
+// Si fueran necesarios modificar para que busquen por idEquipoLocal y idEquipOVisitante
+	/*@JsonView(ActaView.class)
 	@RequestMapping(value = "/equipoLocal/{equipoLocal}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaEquipoLocal(@PathVariable String equipoLocal) {
 		List<Acta> entrada = actaRepository.findByEquipoLocalId(new ObjectId(equipoLocal));
@@ -179,9 +188,9 @@ public class ActaController {
 			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
-	}
+	}*/
 
-	@JsonView(ActaView.class)
+	/*@JsonView(ActaView.class)
 	@RequestMapping(value = "/equipoVisitante/{equipoVisitante}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaEquipoVisitante(@PathVariable String equipoVisitante) {
 		List<Acta> entrada = actaRepository.findByEquipoVisitanteId(new ObjectId(equipoVisitante));
@@ -189,28 +198,25 @@ public class ActaController {
 			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
-	}
+	}*/
 	
 	@JsonView(ActaView.class)
 	@RequestMapping(value = "/aceptar/{idActa}", method = RequestMethod.PUT)
 	public ResponseEntity<Acta> aceptarActa(@PathVariable(value = "idActa") String idActa) {
 		Acta acta = actaRepository.findById(idActa);
-		if (acta == null || acta.isAceptada() || acta.getEquipoLocal() == null || acta.getEquipoVisitante() == null){
+		if (acta == null || acta.isAceptada() || acta.getIdEquipoLocal() == null || acta.getIdEquipoVisitante() == null){
 			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		acta.setAceptada(true);
-		
-		Liga liga = ligaRepository.findByNombreIgnoreCase(acta.getEquipoLocal().getLiga());
+		Partido partido = partidoRepository.findById(acta.getIdPartido());
+		Liga liga = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
 		if (liga == null){
 			return new ResponseEntity<Acta>(HttpStatus.BAD_GATEWAY);
 		}
-		
 		actualizarEquipos(acta);
-		
 		Collections.sort(liga.getClasificacion());
-		//falta actualizar a los jugadores
-		//Por cada jugador que haya metido gol llamar a reordenarGoleadores(jugador) o reordenarGoleadoresLista(List<Jugador>jugadores)
-		
+		actualizarJugadores(acta, liga);
+		actualizarPartido(acta);
+		acta.setAceptada(true);
 		ligaRepository.save(liga);
 		actaRepository.save(acta);
 		return new ResponseEntity<Acta>(acta, HttpStatus.OK);
@@ -268,7 +274,7 @@ public class ActaController {
 					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
 			// Si el usuario conectado es un árbitro
 			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
-				if (!arbitroConectado.getId().equals(acta.getArbitro().getId())) {
+				if (!arbitroConectado.getId().equals(acta.getIdArbitro())) {
 					return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
 				} else {
 					acta.setFecha(entrada.getFecha());
@@ -300,11 +306,10 @@ public class ActaController {
 
 	public void actualizarEquipos(Acta acta) {
 
-		Equipo local = equipoRepository.findById(acta.getEquipoLocal().getId());
-		Equipo visitante = equipoRepository.findById(acta.getEquipoVisitante().getId());
+		Equipo local = equipoRepository.findById(acta.getIdEquipoLocal());
+		Equipo visitante = equipoRepository.findById(acta.getIdEquipoVisitante());
 
 		if (acta.getGolesLocal() > acta.getGolesVisitante()) {
-
 			local.setPartidosGanados(local.getPartidosGanados() + 1);
 			local.setGoles(local.getGoles() + acta.getGolesLocal());
 			local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
@@ -346,5 +351,60 @@ public class ActaController {
 		
 		equipoRepository.save(local);
 		equipoRepository.save(visitante);
+	}
+	
+	public void actualizarJugadores(Acta acta, Liga liga) {
+	
+		for(Incidencia incidencia: acta.getIncidencias()) {
+			Jugador jugador = jugadorRepository.findById(incidencia.getIdJugador());
+			if (incidencia.getTipo().equals("GOL")) {
+				jugador.setGoles(jugador.getGoles()+1);
+			}else if (incidencia.getTipo().equals("AMARILLA")) {
+				jugador.setTarjetasAmarillas(jugador.getTarjetasAmarillas()+1);
+			}else {
+				jugador.setTarjetasRojas(jugador.getTarjetasRojas()+1);
+			}
+			incidenciaRepository.save(incidencia);
+			jugadorRepository.save(jugador);
+			if(incidencia.getTipo().equals("GOL")){
+				liga.reordenarGoleadores(jugador);
+			}
+		}
+		
+		ligaRepository.save(liga);
+		
+		List<Sancion> sancionesActivas = sancionRepository.findByEnVigorTrue();
+		List<String> jugadoresId = new ArrayList<String>();
+		Equipo local = equipoRepository.findById(acta.getIdEquipoLocal());
+		Equipo visitante = equipoRepository.findById(acta.getIdEquipoVisitante());
+		
+		for(Jugador jugador: local.getPlantillaEquipo()) {
+			jugadoresId.add(jugador.getId());
+		}
+		
+		for(Jugador jugador: visitante.getPlantillaEquipo()) {
+			jugadoresId.add(jugador.getId());
+		}
+		
+		for(Sancion sancion: sancionesActivas) {
+			for(String idJugador: jugadoresId) {
+				if(sancion.getSancionadoId().equals(idJugador)) {
+					sancion.cumplirPartidoSancion();
+					if(sancion.getPartidosRestantes()==0) 
+						sancion.setEnVigor(false);
+					sancionRepository.save(sancion);
+				}
+			}
+		}
+	}
+	
+	public void actualizarPartido(Acta acta) {
+		Partido partido = partidoRepository.findById(acta.getIdPartido());
+		partido.setEstado("Disputado");
+		partido.setGolesLocal(acta.getGolesLocal());
+		partido.setGolesVisitante(acta.getGolesVisitante());
+		partido.setIncidencias(incidenciaRepository.findByIdPartido(partido.getId()));
+		partido.setIdActa(acta.getId());
+		partidoRepository.save(partido);
 	}
 }
