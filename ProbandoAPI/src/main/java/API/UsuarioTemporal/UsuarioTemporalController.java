@@ -1,6 +1,8 @@
 package API.UsuarioTemporal;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +38,9 @@ public class UsuarioTemporalController {
 			return new ResponseEntity<UsuarioTemporal>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		String clave = usuarioTemporal.getClave();
-		String [] equipo = new String[2];
 		
 		usuarioTemporal.setId(null);
-		usuarioTemporal.setEquipo(equipo);
+		usuarioTemporal.setEquipoId("");
 		usuarioTemporal.setClaveEncriptada(usuarioTemporal.getClave());
 		
 		String texto = usuarioTemporal.getNombre() + ";" + usuarioTemporal.getNombreUsuario() + ";" + clave;
@@ -50,6 +51,12 @@ public class UsuarioTemporalController {
 		usuarioRepository.save(usuario);
 		
 		return new ResponseEntity<UsuarioTemporal>(usuarioTemporal, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<List<UsuarioTemporal>>verUsuarios(){
+		return new ResponseEntity<List<UsuarioTemporal>>(temporalRepository.findAll(), HttpStatus.OK);
+				
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -68,7 +75,7 @@ public class UsuarioTemporalController {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 		
-		Equipo equipo = equipoRepository.findById(usuario.getEquipo()[0]);
+		Equipo equipo = equipoRepository.findById(usuario.getEquipoId());
 		
 		if(equipo == null){
 			return new ResponseEntity<Equipo>(HttpStatus.NOT_ACCEPTABLE);
@@ -77,6 +84,17 @@ public class UsuarioTemporalController {
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<UsuarioTemporal>eliminarUsuario(@PathVariable String id){
+		UsuarioTemporal usuario = temporalRepository.findById(id);
+		if(usuario == null){
+			return new ResponseEntity<UsuarioTemporal>(HttpStatus.NO_CONTENT);
+		}
+		
+		temporalRepository.delete(usuario);
+		
+		return new ResponseEntity<UsuarioTemporal>(usuario, HttpStatus.OK);
+	}
 	
 
 }
