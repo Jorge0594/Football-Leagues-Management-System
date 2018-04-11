@@ -64,7 +64,7 @@ public class LigaController {
 	}
 	
 	
-	@RequestMapping(value= "nombres", method = RequestMethod.GET)
+	@RequestMapping(value= "/nombres", method = RequestMethod.GET)
 	public ResponseEntity<List<Liga>> verNombresLigas() {
 		return new ResponseEntity<List<Liga>>(ligaRepository.findCustomNombresliga(), HttpStatus.OK);
 	}

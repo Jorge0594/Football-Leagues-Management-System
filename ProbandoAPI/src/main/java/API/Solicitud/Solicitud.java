@@ -10,20 +10,23 @@ public class Solicitud {
 	private String apellidosSolicitante;
 	private String email;
 	private String nombreEquipo;
-	private int numeroJugadores;
+	private String liga;
 	private String campus;
 	private String masInfo;
 	private String ip;
-
+	
+	public Solicitud(){
+		
+	}
 	public Solicitud(String id, String nombreSolicitante, String apellidosSolicitante, String email,
-			String nombreEquipo, int numeroJugadores, String campus, String masInfo, String ip) {
+			String nombreEquipo, String liga, String campus, String masInfo, String ip) {
 		super();
 		this.id = id;
 		this.nombreSolicitante = nombreSolicitante;
 		this.apellidosSolicitante = apellidosSolicitante;
 		this.email = email;
 		this.nombreEquipo = nombreEquipo;
-		this.numeroJugadores = numeroJugadores;
+		this.liga = liga;
 		this.campus = campus;
 		this.masInfo = masInfo;
 		this.ip = ip;
@@ -77,12 +80,12 @@ public class Solicitud {
 		this.nombreEquipo = nombreEquipo;
 	}
 
-	public int getNumeroJugadores() {
-		return numeroJugadores;
+	public String getLiga() {
+		return this.liga;
 	}
 
-	public void setNumeroJugadores(int numeroJugadores) {
-		this.numeroJugadores = numeroJugadores;
+	public void setLiga(String liga) {
+		this.liga = liga;
 	}
 
 	public String getCampus() {
@@ -100,14 +103,12 @@ public class Solicitud {
 	public void setMasInfo(String masInfo) {
 		this.masInfo = masInfo;
 	}
-
 	@Override
 	public String toString() {
 		return "Solicitud [id=" + id + ", nombreSolicitante=" + nombreSolicitante + ", apellidosSolicitante="
-				+ apellidosSolicitante + ", email=" + email + ", nombreEquipo=" + nombreEquipo + ", numeroJugadores="
-				+ numeroJugadores + ", campus=" + campus + ", masInfo=" + masInfo + ", ip=" + ip + "]";
+				+ apellidosSolicitante + ", email=" + email + ", nombreEquipo=" + nombreEquipo + ", liga=" + liga
+				+ ", campus=" + campus + ", masInfo=" + masInfo + ", ip=" + ip + "]";
 	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -117,13 +118,12 @@ public class Solicitud {
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
+		result = prime * result + ((liga == null) ? 0 : liga.hashCode());
 		result = prime * result + ((masInfo == null) ? 0 : masInfo.hashCode());
 		result = prime * result + ((nombreEquipo == null) ? 0 : nombreEquipo.hashCode());
 		result = prime * result + ((nombreSolicitante == null) ? 0 : nombreSolicitante.hashCode());
-		result = prime * result + numeroJugadores;
 		return result;
 	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -158,6 +158,11 @@ public class Solicitud {
 				return false;
 		} else if (!ip.equals(other.ip))
 			return false;
+		if (liga == null) {
+			if (other.liga != null)
+				return false;
+		} else if (!liga.equals(other.liga))
+			return false;
 		if (masInfo == null) {
 			if (other.masInfo != null)
 				return false;
@@ -173,10 +178,6 @@ public class Solicitud {
 				return false;
 		} else if (!nombreSolicitante.equals(other.nombreSolicitante))
 			return false;
-		if (numeroJugadores != other.numeroJugadores)
-			return false;
 		return true;
 	}
-
-	
 }

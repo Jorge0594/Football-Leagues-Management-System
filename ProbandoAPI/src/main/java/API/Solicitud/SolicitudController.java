@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,14 +39,13 @@ public class SolicitudController {
 	@RequestMapping(method =RequestMethod.POST)
 	public ResponseEntity<Solicitud>crearSolicitud(@RequestBody Solicitud solicitud){
 		
-		solicitud.setId(null);
-		solicitud.setIp(solicitud.getIp().replace("\\.", ""));
-		
 		//No se permitirá mandar mas de dos solicitudes desde una misma ip ni tampoc a ningun usuario del sistema crear solicitudes
-		if(solicitudRepository.findByIp(solicitud.getIp()).size() > 2 || usuarioComponent.getLoggedUser() != null){
+		if(solicitudRepository.findByIp(solicitud.getIp()).size() > 2 || usuarioComponent.getLoggedUser() != null || solicitud.getIp() == null){
 			return new ResponseEntity<Solicitud>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		
+		solicitud.setId(null);
+		solicitud.setIp(solicitud.getIp().replace("\\.", ""));
 		solicitudRepository.save(solicitud);
 		
 		return new ResponseEntity<Solicitud>(solicitud, HttpStatus.CREATED);
@@ -57,7 +57,7 @@ public class SolicitudController {
 	}
 	
 	@RequestMapping(value = "/aceptar/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<UsuarioTemporal>aceptarSolicitud(String id){
+	public ResponseEntity<UsuarioTemporal>aceptarSolicitud(@PathVariable String id){
 		Solicitud solicitud = solicitudRepository.findById(id);
 		if(solicitud == null){
 			return new ResponseEntity<UsuarioTemporal>(HttpStatus.NO_CONTENT);
@@ -83,7 +83,7 @@ public class SolicitudController {
 	}
 	
 	@RequestMapping(value = "/rechazar/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Solicitud>rechazarSolicitud(String id){
+	public ResponseEntity<Solicitud>rechazarSolicitud(@PathVariable String id){
 		Solicitud solicitud = solicitudRepository.findById(id);
 		if(solicitud == null){
 			return new ResponseEntity<Solicitud>(HttpStatus.NOT_ACCEPTABLE);
@@ -96,7 +96,7 @@ public class SolicitudController {
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Solicitud> eleminarSolicitud(String id){
+	public ResponseEntity<Solicitud> eleminarSolicitud(@PathVariable String id){
 		Solicitud solicitud = solicitudRepository.findById(id);
 		
 		if(solicitud == null){
