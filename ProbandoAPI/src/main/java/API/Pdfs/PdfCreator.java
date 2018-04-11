@@ -58,8 +58,8 @@ public class PdfCreator {
 			PdfPTable tablaObservaciones = new PdfPTable(1);
 			PdfPCell celdaEquipo = new PdfPCell();
 			PdfPCell celdaEquipo1 = new PdfPCell();
-			Paragraph nombreLocal = new Paragraph(acta.getEquipoLocal().getNombre());
-			Paragraph nombreVisitante = new Paragraph(acta.getEquipoVisitante().getNombre());
+			//Paragraph nombreLocal = new Paragraph(acta.getEquipoLocal().getNombre());
+			//Paragraph nombreVisitante = new Paragraph(acta.getEquipoVisitante().getNombre());
 			Paragraph golesLocal = new Paragraph(Integer.toString(acta.getGolesLocal()), FontFactory.getFont("arial", // fuente
 					50));
 			Paragraph golesVisitante = new Paragraph(Integer.toString(acta.getGolesVisitante()),
@@ -81,13 +81,13 @@ public class PdfCreator {
 			PdfPCell txtObservaciones = new PdfPCell(new Phrase("Observaciones del partido"));
 			// El nombre del archivo constará del equipo local, el equipo visitante y la
 			// fecha.
-			String nombreArchivo = acta.getEquipoLocal().getNombre() + acta.getEquipoVisitante().getNombre()
-					+ acta.getFecha();
+			//String nombreArchivo = acta.getEquipoLocal().getNombre() + acta.getEquipoVisitante().getNombre()
+					//+ acta.getFecha();
 			File folder = new File ("src/main/resources/static/actasGeneradas/" + partidoDelActa.getLiga());
 			folder.mkdir();
-			FileOutputStream ficheroPDF = new FileOutputStream(
-					"src/main/resources/static/actasGeneradas/" + partidoDelActa.getLiga() + "/" + nombreArchivo);
-			PdfWriter.getInstance(document, ficheroPDF).setInitialLeading(20);
+			//FileOutputStream ficheroPDF = new FileOutputStream(
+			//		"src/main/resources/static/actasGeneradas/" + partidoDelActa.getLiga() + "/" + nombreArchivo);
+			//PdfWriter.getInstance(document, ficheroPDF).setInitialLeading(20);
 			document.open();
 			// Se añade la imagen corporativa de la URJC.
 			Image imagen = Image.getInstance("src/main/resources/static/images/urjc.png");
@@ -113,16 +113,16 @@ public class PdfCreator {
 			tablaDatosIniciales.addCell("Jornada");
 			tablaDatosIniciales.addCell(Integer.toString(partidoDelActa.getJornada()));
 			tablaDatosIniciales.addCell("Árbitro");
-			tablaDatosIniciales.addCell(acta.getArbitro().getNombre());
+			//tablaDatosIniciales.addCell(acta.getArbitro().getNombre());
 			tablaDatosIniciales.setTotalWidth(100);
-			celdaEquipo.addElement(
-					Image.getInstance("src/main/resources/static/images/" + acta.getEquipoLocal().getImagenEquipo()));
-			nombreLocal.setAlignment(Chunk.ALIGN_CENTER);
-			celdaEquipo.addElement(nombreLocal);
-			celdaEquipo1.addElement(Image
-					.getInstance("src/main/resources/static/images/" + acta.getEquipoVisitante().getImagenEquipo()));
-			nombreVisitante.setAlignment(Chunk.ALIGN_CENTER);
-			celdaEquipo1.addElement(nombreVisitante);
+			//celdaEquipo.addElement(
+					//Image.getInstance("src/main/resources/static/images/" + acta.getEquipoLocal().getImagenEquipo()));
+			//nombreLocal.setAlignment(Chunk.ALIGN_CENTER);
+			//celdaEquipo.addElement(nombreLocal);
+			//celdaEquipo1.addElement(Image
+					//.getInstance("src/main/resources/static/images/" + acta.getEquipoVisitante().getImagenEquipo()));
+			//nombreVisitante.setAlignment(Chunk.ALIGN_CENTER);
+			//celdaEquipo1.addElement(nombreVisitante);
 			txtEquipoLocal.setBackgroundColor(BaseColor.GRAY);
 			txtEquipoVisitante.setBackgroundColor(BaseColor.GRAY);
 			txtGoles.setBackgroundColor(BaseColor.GRAY);
@@ -227,7 +227,8 @@ public class PdfCreator {
 				document.add(tablaObservaciones);
 			}
 			document.close();
-			return nombreArchivo;
+			return null;
+			//return nombreArchivo;
 		} else {
 			return null;
 		}

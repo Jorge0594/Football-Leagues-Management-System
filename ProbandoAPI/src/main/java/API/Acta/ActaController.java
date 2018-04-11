@@ -70,7 +70,7 @@ public class ActaController {
 	UsuarioComponent usuarioComponent;
 	@Autowired
 	PdfCreator pdfCreator;
-
+	@Autowired
 	IncidenciaRepository incidenciaRepository;
 	@Autowired
 	SancionRepository sancionRepository;
@@ -109,6 +109,7 @@ public class ActaController {
 		}
 		return new ResponseEntity<Acta>(entrada, HttpStatus.OK);
 	}
+	
 	@JsonView(ActaView.class)
 	@RequestMapping(value = "/generaPdf/{id}", method = RequestMethod.GET)
 	public ResponseEntity<InputStreamResource> imprimiPdf(@PathVariable String id) {
@@ -178,8 +179,8 @@ public class ActaController {
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
-
-	@JsonView(ActaView.class)
+// Si fueran necesarios modificar para que busquen por idEquipoLocal y idEquipOVisitante
+	/*@JsonView(ActaView.class)
 	@RequestMapping(value = "/equipoLocal/{equipoLocal}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaEquipoLocal(@PathVariable String equipoLocal) {
 		List<Acta> entrada = actaRepository.findByEquipoLocalId(new ObjectId(equipoLocal));
@@ -187,9 +188,9 @@ public class ActaController {
 			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
-	}
+	}*/
 
-	@JsonView(ActaView.class)
+	/*@JsonView(ActaView.class)
 	@RequestMapping(value = "/equipoVisitante/{equipoVisitante}", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActaEquipoVisitante(@PathVariable String equipoVisitante) {
 		List<Acta> entrada = actaRepository.findByEquipoVisitanteId(new ObjectId(equipoVisitante));
@@ -197,17 +198,17 @@ public class ActaController {
 			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
-	}
+	}*/
 	
 	@JsonView(ActaView.class)
 	@RequestMapping(value = "/aceptar/{idActa}", method = RequestMethod.PUT)
 	public ResponseEntity<Acta> aceptarActa(@PathVariable(value = "idActa") String idActa) {
 		Acta acta = actaRepository.findById(idActa);
-		if (acta == null || acta.isAceptada() || acta.getEquipoLocal() == null || acta.getEquipoVisitante() == null){
+		if (acta == null || acta.isAceptada() || acta.getIdEquipoLocal() == null || acta.getIdEquipoVisitante() == null){
 			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		
-		Liga liga = ligaRepository.findByNombreIgnoreCase(acta.getEquipoLocal().getLiga());
+		Partido partido = partidoRepository.findById(acta.getIdPartido());
+		Liga liga = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
 		if (liga == null){
 			return new ResponseEntity<Acta>(HttpStatus.BAD_GATEWAY);
 		}
@@ -305,8 +306,8 @@ public class ActaController {
 
 	public void actualizarEquipos(Acta acta) {
 
-		Equipo local = equipoRepository.findById(acta.getEquipoLocal().getId());
-		Equipo visitante = equipoRepository.findById(acta.getEquipoVisitante().getId());
+		Equipo local = equipoRepository.findById(acta.getIdEquipoLocal());
+		Equipo visitante = equipoRepository.findById(acta.getIdEquipoVisitante());
 
 		if (acta.getGolesLocal() > acta.getGolesVisitante()) {
 			local.setPartidosGanados(local.getPartidosGanados() + 1);
@@ -374,8 +375,8 @@ public class ActaController {
 		
 		List<Sancion> sancionesActivas = sancionRepository.findByEnVigorTrue();
 		List<String> jugadoresId = new ArrayList<String>();
-		Equipo local = equipoRepository.findById(acta.getEquipoLocal().getId());
-		Equipo visitante = equipoRepository.findById(acta.getEquipoVisitante().getId());
+		Equipo local = equipoRepository.findById(acta.getIdEquipoLocal());
+		Equipo visitante = equipoRepository.findById(acta.getIdEquipoVisitante());
 		
 		for(Jugador jugador: local.getPlantillaEquipo()) {
 			jugadoresId.add(jugador.getId());

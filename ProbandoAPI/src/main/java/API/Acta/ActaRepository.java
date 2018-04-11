@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface ActaRepository extends MongoRepository<Acta,String>{
 	Acta findById(String id);
 	Acta findByIdPartidoIgnoreCase(String idPartido);
-	List<Acta> findByEquipoLocalId(ObjectId equipoLocal);
-	List<Acta> findByEquipoVisitanteId(ObjectId equipoVisitante);
 	List<Acta> findByIdArbitro(String arbitro);
 	List<Acta> findByFecha(String fecha);
 	List<Acta> findByAceptadaFalse();
