@@ -32,6 +32,7 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		
 		//Equipos
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/equipos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN","TEMPORAL");
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/id/{id}").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/**").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/equipos/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/equipos/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
@@ -68,6 +69,7 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		
 		//Usuarios temporales
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/usuariosTemporales/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/usuariosTemporales/usuario").hasAnyRole("MIEMBROCOMITE", "ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/usuariosTemporales/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/usuariosTemporales/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/usuariosTemporales/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
@@ -81,6 +83,7 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		
 		//Solicitudes
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/solicitudes/**").permitAll();
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/solicitudes/email/{email}").permitAll();
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/solicitudes/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/solicitudes/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		

@@ -6,19 +6,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
 import API.Usuario.Usuario;
+import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
 
-@Controller
+@RestController
 @CrossOrigin
 @RequestMapping("/usuariosTemporales")
 
@@ -30,6 +31,8 @@ public class UsuarioTemporalController {
 	private UsuarioRepository usuarioRepository;
 	@Autowired
 	private EquipoRepository equipoRepository;
+	@Autowired
+	private UsuarioComponent usuarioComponent;
 	
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	public ResponseEntity<UsuarioTemporal>crearUsuarioTemporal(@RequestBody UsuarioTemporal usuarioTemporal){
@@ -59,6 +62,11 @@ public class UsuarioTemporalController {
 				
 	}
 	
+	@RequestMapping(value = "/usuario")
+	public ResponseEntity<UsuarioTemporal>verPerfilUsuariotemporal(){
+		return new ResponseEntity<UsuarioTemporal>(temporalRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario()),HttpStatus.OK);
+	}
+	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<UsuarioTemporal> usuarioId(@PathVariable String id){
 		UsuarioTemporal usuario = temporalRepository.findById(id);
@@ -86,14 +94,21 @@ public class UsuarioTemporalController {
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<UsuarioTemporal>eliminarUsuario(@PathVariable String id){
-		UsuarioTemporal usuario = temporalRepository.findById(id);
+		UsuarioTemporal usuarioTemporal = temporalRepository.findById(id);
+		if(usuarioTemporal == null){
+			return new ResponseEntity<UsuarioTemporal>(HttpStatus.NO_CONTENT);
+		}
+		
+		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(usuarioTemporal.getNombreUsuario());
+		
 		if(usuario == null){
 			return new ResponseEntity<UsuarioTemporal>(HttpStatus.NO_CONTENT);
 		}
 		
-		temporalRepository.delete(usuario);
+		usuarioRepository.delete(usuario);
+		temporalRepository.delete(usuarioTemporal);
 		
-		return new ResponseEntity<UsuarioTemporal>(usuario, HttpStatus.OK);
+		return new ResponseEntity<UsuarioTemporal>(usuarioTemporal, HttpStatus.OK);
 	}
 	
 

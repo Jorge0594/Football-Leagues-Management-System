@@ -6,12 +6,12 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import API.Mails.MailService;
 import API.Usuario.Usuario;
@@ -20,7 +20,7 @@ import API.Usuario.UsuarioRepository;
 import API.UsuarioTemporal.UsuarioTemporal;
 import API.UsuarioTemporal.UsuarioTemporalRepository;
 
-@Controller
+@RestController
 @CrossOrigin
 @RequestMapping("/solicitudes")
 public class SolicitudController {
@@ -39,13 +39,16 @@ public class SolicitudController {
 	@RequestMapping(method =RequestMethod.POST)
 	public ResponseEntity<Solicitud>crearSolicitud(@RequestBody Solicitud solicitud){
 		
-		//No se permitirá mandar mas de dos solicitudes desde una misma ip ni tampoc a ningun usuario del sistema crear solicitudes
-		if(solicitudRepository.findByIp(solicitud.getIp()).size() > 2 || usuarioComponent.getLoggedUser() != null || solicitud.getIp() == null){
+		//No se permitirá mandar mas de dos solicitudes desde una misma ip ni tampoco a ningun usuario del sistema crear solicitudes
+		if( solicitudRepository.findByIp(solicitud.getIp()) != null|| usuarioComponent.getLoggedUser() != null || solicitud.getIp() == null){
 			return new ResponseEntity<Solicitud>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		
+		if(solicitudRepository.findByEmail(solicitud.getEmail())!= null){
+			return new ResponseEntity<Solicitud>(HttpStatus.CONFLICT);
+		}
+		
 		solicitud.setId(null);
-		solicitud.setIp(solicitud.getIp().replace("\\.", ""));
 		solicitudRepository.save(solicitud);
 		
 		return new ResponseEntity<Solicitud>(solicitud, HttpStatus.CREATED);
@@ -54,6 +57,16 @@ public class SolicitudController {
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Solicitud>>verSolicitudes(){
 		return new ResponseEntity<List<Solicitud>>(solicitudRepository.findAll(), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "email/{email}", method = RequestMethod.GET)
+	public ResponseEntity<Solicitud> existeEmail(@PathVariable String email){
+		Solicitud solicitud = solicitudRepository.findByEmail(email);
+		
+		if(solicitud == null){
+			return new ResponseEntity<Solicitud>(HttpStatus.OK);
+		}
+		return new ResponseEntity<Solicitud>(HttpStatus.CONFLICT);
 	}
 	
 	@RequestMapping(value = "/aceptar/{id}", method = RequestMethod.PUT)
@@ -94,6 +107,7 @@ public class SolicitudController {
 		return new ResponseEntity<Solicitud>(solicitud, HttpStatus.OK);
 		
 	}
+	
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Solicitud> eleminarSolicitud(@PathVariable String id){

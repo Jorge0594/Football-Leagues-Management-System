@@ -8,5 +8,7 @@ public interface SolicitudRepository extends MongoRepository<Solicitud, String> 
 	
 	Solicitud findById(String id);
 	
-	List<Solicitud> findByIp(String ip);
+	Solicitud findByEmail(String email);
+	
+	Solicitud findByIp(String ip);
 }

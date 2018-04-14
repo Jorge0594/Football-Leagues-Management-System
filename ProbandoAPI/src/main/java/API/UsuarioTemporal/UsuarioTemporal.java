@@ -33,6 +33,8 @@ public class UsuarioTemporal {
 		this.apellidos = apellidos;
 		this.email = email;
 		this.campus = campus;
+		this.equipoId = "";
+		this.nombreEquipo = "";
 	}
 
 	public String getId() {
