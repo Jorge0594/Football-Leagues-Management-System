@@ -36,13 +36,28 @@ public class Acta {
 	private String hora;
 
 	@JsonView(ActaAtt.class)
-	private Equipo equipoLocal;
+	private String idEquipoLocal;
+	
+	@JsonView(ActaAtt.class)
+	private String nombreEquipoLocal;
+	
+	@JsonView(ActaAtt.class)
+	private String escudoEquipoLocal;
 
 	@JsonView(ActaAtt.class)
-	private Equipo equipoVisitante;
+	private String idEquipoVisitante;
+	
+	@JsonView(ActaAtt.class)
+	private String nombreEquipoVisitante;
+	
+	@JsonView(ActaAtt.class)
+	private String escudoEquipoVisitante;
 
 	@JsonView(ActaAtt.class)
-	private Arbitro arbitro;
+	private String idArbitro;
+	
+	@JsonView(ActaAtt.class)
+	private String nombreArbitro;
 
 	@JsonView(ActaAtt.class)
 	private List<Jugador> convocadosLocal;
@@ -65,17 +80,22 @@ public class Acta {
 	public Acta() {
 	}
 
-	public Acta(String id, String idPartido, String fecha, String hora, Equipo equipoLocal, Equipo equipoVisitante,
-			Arbitro arbitro, List<Jugador> convocadosLocal, List<Jugador> convocadosVisitante, int golesLocal,
+	public Acta(String id, String idPartido, String fecha, String hora, String nombreLocal, String idLocal, String escudoLocal, String nombreVisitante, String idVisitante, String escudoVisitante,
+			String idArbitro, String nombreArbitro, List<Jugador> convocadosLocal, List<Jugador> convocadosVisitante, int golesLocal,
 			int golesVisitante, List<Incidencia> incidencias, String observaciones) {
 		super();
 		this.id = id;
 		this.idPartido = idPartido;
 		this.fecha = fecha;
 		this.hora = hora;
-		this.equipoLocal = equipoLocal;
-		this.equipoVisitante = equipoVisitante;
-		this.arbitro = arbitro;
+		this.nombreEquipoLocal = nombreLocal;
+		this.idEquipoLocal = idLocal;
+		this.escudoEquipoLocal = escudoLocal;
+		this.nombreEquipoVisitante = nombreVisitante;
+		this.escudoEquipoVisitante = escudoVisitante;
+		this.idEquipoVisitante = idVisitante;
+		this.idArbitro = idArbitro;
+		this.nombreArbitro = nombreArbitro;
 		this.convocadosLocal = convocadosLocal;
 		this.convocadosVisitante = convocadosVisitante;
 		this.golesLocal = golesLocal;
@@ -132,28 +152,68 @@ public class Acta {
 		this.hora = hora;
 	}
 
-	public Equipo getEquipoLocal() {
-		return equipoLocal;
+
+	public String getIdEquipoLocal() {
+		return idEquipoLocal;
 	}
 
-	public void setEquipoLocal(Equipo equipoLocal) {
-		this.equipoLocal = equipoLocal;
+	public void setIdEquipoLocal(String idEquipoLocal) {
+		this.idEquipoLocal = idEquipoLocal;
 	}
 
-	public Equipo getEquipoVisitante() {
-		return equipoVisitante;
+	public String getNombreEquipoLocal() {
+		return nombreEquipoLocal;
 	}
 
-	public void setEquipoVisitante(Equipo equipoVisitante) {
-		this.equipoVisitante = equipoVisitante;
+	public void setNombreEquipoLocal(String nombreEquipoLocal) {
+		this.nombreEquipoLocal = nombreEquipoLocal;
 	}
 
-	public Arbitro getArbitro() {
-		return arbitro;
+	public String getEscudoEquipoLocal() {
+		return escudoEquipoLocal;
 	}
 
-	public void setArbitro(Arbitro arbitro) {
-		this.arbitro = arbitro;
+	public void setEscudoEquipoLocal(String escudoEquipoLocal) {
+		this.escudoEquipoLocal = escudoEquipoLocal;
+	}
+
+	public String getIdEquipoVisitante() {
+		return idEquipoVisitante;
+	}
+
+	public void setIdEquipoVisitante(String idEquipoVisitante) {
+		this.idEquipoVisitante = idEquipoVisitante;
+	}
+
+	public String getNombreEquipoVisitante() {
+		return nombreEquipoVisitante;
+	}
+
+	public void setNombreEquipoVisitante(String nombreEquipoVisitante) {
+		this.nombreEquipoVisitante = nombreEquipoVisitante;
+	}
+
+	public String getEscudoEquipoVisitante() {
+		return escudoEquipoVisitante;
+	}
+
+	public void setEscudoEquipoVisitante(String escudoEquipoVisitante) {
+		this.escudoEquipoVisitante = escudoEquipoVisitante;
+	}
+
+	public String getIdArbitro() {
+		return idArbitro;
+	}
+	public String getNombreArbitro() {
+		return nombreArbitro;
+	}
+
+	public void setIdArbitro(String idArbitro) {
+		this.idArbitro = idArbitro;
+	}
+	
+	public void setNombreArbitro(String nombreArbitro) {
+		this.nombreArbitro = nombreArbitro;
 	}
 
 	public int getGolesLocal() {
@@ -200,11 +260,12 @@ public class Acta {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((arbitro == null) ? 0 : arbitro.hashCode());
+		result = prime * result + ((idArbitro == null) ? 0 : idArbitro.hashCode());
+		result = prime * result + ((nombreArbitro == null) ? 0 : nombreArbitro.hashCode());
 		result = prime * result + ((convocadosLocal == null) ? 0 : convocadosLocal.hashCode());
 		result = prime * result + ((convocadosVisitante == null) ? 0 : convocadosVisitante.hashCode());
-		result = prime * result + ((equipoLocal == null) ? 0 : equipoLocal.hashCode());
-		result = prime * result + ((equipoVisitante == null) ? 0 : equipoVisitante.hashCode());
+		result = prime * result + ((idEquipoLocal == null) ? 0 : idEquipoLocal.hashCode());
+		result = prime * result + ((idEquipoVisitante == null) ? 0 : idEquipoVisitante.hashCode());
 		result = prime * result + ((fecha == null) ? 0 : fecha.hashCode());
 		result = prime * result + golesLocal;
 		result = prime * result + golesVisitante;
@@ -225,10 +286,10 @@ public class Acta {
 		if (getClass() != obj.getClass())
 			return false;
 		Acta other = (Acta) obj;
-		if (arbitro == null) {
-			if (other.arbitro != null)
+		if (idArbitro == null) {
+			if (other.idArbitro != null)
 				return false;
-		} else if (!arbitro.equals(other.arbitro))
+		} else if (!idArbitro.equals(other.idArbitro))
 			return false;
 		if (convocadosLocal == null) {
 			if (other.convocadosLocal != null)
@@ -240,15 +301,15 @@ public class Acta {
 				return false;
 		} else if (!convocadosVisitante.equals(other.convocadosVisitante))
 			return false;
-		if (equipoLocal == null) {
-			if (other.equipoLocal != null)
+		if (idEquipoLocal == null) {
+			if (other.idEquipoLocal != null)
 				return false;
-		} else if (!equipoLocal.equals(other.equipoLocal))
+		} else if (!idEquipoLocal.equals(other.idEquipoLocal))
 			return false;
-		if (equipoVisitante == null) {
-			if (other.equipoVisitante != null)
+		if (idEquipoVisitante == null) {
+			if (other.idEquipoVisitante != null)
 				return false;
-		} else if (!equipoVisitante.equals(other.equipoVisitante))
+		} else if (!idEquipoVisitante.equals(other.idEquipoVisitante))
 			return false;
 		if (fecha == null) {
 			if (other.fecha != null)

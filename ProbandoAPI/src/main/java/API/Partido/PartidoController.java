@@ -21,6 +21,7 @@ import API.Acta.ActaRepository;
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
+import API.Equipo.EquipoRepository;
 import API.Estadio.Estadio;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
@@ -51,9 +52,7 @@ public class PartidoController {
 	@Autowired
 	private LigaRepository ligaRepository;
 	@Autowired
-	private JugadorRepository jugadorRepository;
-	@Autowired
-	private UsuarioComponent usuarioComponent;
+	private EquipoRepository equipoRepository;
 
 	@JsonView(PartidoView.class)
 	@RequestMapping(method = RequestMethod.GET)
@@ -76,7 +75,7 @@ public class PartidoController {
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/liga/{liga}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosLiga(@PathVariable String liga) {
-		List<Partido> entrada = partidoRepository.findByLiga(liga);
+		List<Partido> entrada = partidoRepository.findByLigaIgnoreCase(liga);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}
@@ -98,7 +97,7 @@ public class PartidoController {
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/equipoLocal/{equipoLocalId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosEquipoLocal(@PathVariable String equipoLocalId) {
-		List<Partido> entrada = partidoRepository.findByEquipoLocalId(new ObjectId(equipoLocalId));
+		List<Partido> entrada = partidoRepository.findByEquipoLocalId(equipoLocalId);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}
@@ -108,7 +107,7 @@ public class PartidoController {
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/equipoVisitante/{equipoVisitanteId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosEquipoVisitante(@PathVariable String equipoVisitanteId) {
-		List<Partido> entrada = partidoRepository.findByEquipoVisitanteId(new ObjectId(equipoVisitanteId));
+		List<Partido> entrada = partidoRepository.findByEquipoVisitanteId(equipoVisitanteId);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}
@@ -138,7 +137,7 @@ public class PartidoController {
 	@RequestMapping(value = "/arbitro/{idArbitro}/estado/{estado}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosArbitroEstado(@PathVariable String idArbitro,
 			@PathVariable String estado) {
-		List<Partido> entrada = partidoRepository.findByIdArbitroAndEstado(idArbitro, estado);
+		List<Partido> entrada = partidoRepository.findByIdArbitroAndEstadoIgnoreCase(idArbitro, estado);
 		Collections.sort(entrada);
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
@@ -155,7 +154,7 @@ public class PartidoController {
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
 
-	@JsonView(PartidoView.class)
+	/*@JsonView(PartidoView.class)
 	@RequestMapping(value = "/addConvocadoLocal/{id}/{idJugador}", method = RequestMethod.PUT)
 	public ResponseEntity<Partido> nuevoConvocadoLocal(@PathVariable String id, @PathVariable String idJugador) {
 		Partido entrada = partidoRepository.findById(id);
@@ -231,7 +230,7 @@ public class PartidoController {
 			partidoRepository.save(entrada);
 			return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
 		}
-	}
+	}*/
 
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
@@ -255,6 +254,13 @@ public class PartidoController {
 			 */
 			// Borra el partido del anterior árbitro y lo añade al nuevo
 			// árbitro.
+			Equipo equipoLocal = equipoRepository.findById(partido.getEquipoLocalId());
+			Equipo equipoVisitante = equipoRepository.findById(partido.getEquipoVisitanteId());
+			
+			if(equipoLocal == null || equipoVisitante == null){
+				return new ResponseEntity<Partido>(HttpStatus.NOT_ACCEPTABLE);
+			}
+			
 			if (arbitroDelPartido == null) {
 				partido.setIdArbitro("");
 			} else {
@@ -269,6 +275,9 @@ public class PartidoController {
 				}
 			}
 			partido.setId(entrada.getId());
+			//Se asegura que el nombre del equipo y el ID pertenezcan al mismo equipo
+			partido.setEquipoLocalNombre(equipoLocal.getNombre());
+			partido.setEquipoVisitanteNombre(equipoVisitante.getNombre());
 			partidoRepository.save(partido);
 			return new ResponseEntity<Partido>(partido, HttpStatus.OK);
 		}
@@ -281,18 +290,33 @@ public class PartidoController {
 		if (arbitroDelPartido == null) {
 			partido.setIdArbitro("");
 		}
+		Equipo equipoLocal = equipoRepository.findById(partido.getEquipoLocalId());
+		Equipo equipoVisitante = equipoRepository.findById(partido.getEquipoVisitanteId());
+		
+		if(equipoLocal == null || equipoVisitante == null){
+			return new ResponseEntity<Partido>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		
 		partido.setId(null);
+		//Se asegura que el nombre del equipo y el ID pertenezcan al mismo equipo
+		partido.setEquipoLocalNombre(equipoLocal.getNombre());
+		partido.setEquipoVisitanteNombre(equipoVisitante.getNombre());
+		
 		if (ligaRepository.findByNombreIgnoreCase(partido.getLiga()) == null) {
 			partido.setLiga("");
-			// partidoRepository.save(partido);
-		} /*
-			 * else { Liga liga = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
-			 * if (liga == null) { return new
-			 * ResponseEntity<Partido>(HttpStatus.NO_CONTENT); }
-			 * partido.setLiga(liga.getNombre()); partidoRepository.save(partido);
-			 * liga.getPartidos().add(partido); Collections.sort(liga.getPartidos());
-			 * ligaRepository.save(liga); }
-			 */
+
+			//partidoRepository.save(partido);
+		} /*else {
+			Liga liga = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
+			if (liga == null) {
+				return new ResponseEntity<Partido>(HttpStatus.NO_CONTENT);
+			}
+			partido.setLiga(liga.getNombre());
+			partidoRepository.save(partido);
+			liga.getPartidos().add(partido);
+			Collections.sort(liga.getPartidos());
+			ligaRepository.save(liga);
+		}*/
 		partidoRepository.save(partido);
 		if (arbitroDelPartido != null) {
 			arbitroDelPartido.getPartidosArbitrados().add(partido);

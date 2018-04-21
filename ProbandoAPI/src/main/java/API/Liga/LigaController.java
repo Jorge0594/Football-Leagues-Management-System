@@ -7,12 +7,10 @@ import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,7 +33,7 @@ public class LigaController {
 	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt {
 	}
 
-	public interface InfoLigaView extends Liga.LigaAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt {
+	public interface InfoLigaView extends Liga.LigaAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt{
 	}
 
 	@Autowired
@@ -63,6 +61,12 @@ public class LigaController {
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Liga>> verLigas() {
 		return new ResponseEntity<List<Liga>>(ligaRepository.findAll(), HttpStatus.OK);
+	}
+	
+	
+	@RequestMapping(value= "/nombres", method = RequestMethod.GET)
+	public ResponseEntity<List<Liga>> verNombresLigas() {
+		return new ResponseEntity<List<Liga>>(ligaRepository.findCustomNombresliga(), HttpStatus.OK);
 	}
 
 	@JsonView(InfoLigaView.class)
@@ -313,20 +317,5 @@ public class LigaController {
 		}
 		return existe;
 	}
-	/*
-	 * //Siempre que se apruebe un acta se deberá llamar a este método. Está sin
-	 * probar hasta que se genere una liga
-	 * 
-	 * @JsonView(ClasificacionView.class)
-	 * 
-	 * @RequestMapping(value = "/{idLiga}/actualizarClasificacion", method =
-	 * RequestMethod.PUT) public ResponseEntity<List<Equipo>>
-	 * actualizarClasificacion (@PathVariable String idLiga){ Liga liga =
-	 * ligaRepository.findById(idLiga); if(liga == null){ return new
-	 * ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT); }
-	 * Collections.sort(liga.getClasificacion());
-	 * 
-	 * return new
-	 * ResponseEntity<List<Equipo>>(liga.getClasificacion(),HttpStatus.OK); }
 	 */
 }

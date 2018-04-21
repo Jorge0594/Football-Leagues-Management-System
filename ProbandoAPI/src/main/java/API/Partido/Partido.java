@@ -32,19 +32,23 @@ public class Partido implements Comparable<Partido> {
 	@JsonView(InfoAtt.class)
 	private String liga;
 	
-	@DBRef
 	@JsonView(InfoAtt.class)
-	private Equipo equipoLocal;
-	
-	@DBRef
-	@JsonView(InfoAtt.class)
-	private Equipo equipoVisitante;
+	private String equipoLocalId;
 	
 	@JsonView(InfoAtt.class)
-	private Integer golesLocal;
+	private String equipoLocalNombre;
 	
 	@JsonView(InfoAtt.class)
-	private Integer golesVisitante;
+	private String equipoVisitanteId;
+	
+	@JsonView(InfoAtt.class)
+	private String equipoVisitanteNombre;
+	
+	@JsonView(InfoAtt.class)
+	private int golesLocal;
+	
+	@JsonView(InfoAtt.class)
+	private int golesVisitante;
 	
 	@JsonView(InfoAtt.class)
 	private String idArbitro;
@@ -73,14 +77,6 @@ public class Partido implements Comparable<Partido> {
 	
 	@DBRef
 	@JsonView(RestAtt.class)
-	private List<Jugador> convocadosLocal;
-	
-	@DBRef
-	@JsonView(RestAtt.class)
-	private List<Jugador> convocadosVisitante;
-	
-	@DBRef
-	@JsonView(RestAtt.class)
 	private List<Incidencia> incidencias;
 	
 	@JsonView(RestAtt.class)
@@ -88,14 +84,18 @@ public class Partido implements Comparable<Partido> {
 
 	public Partido() {
 	}
-
-	public Partido(String liga, Equipo equipoLocal, Equipo equipoVisitante, int golesLocal, int golesVisitante,
-			String idArbitro, String fechaPartido, String horaPartido, Estadio estadio, String estado, int jornada,
-			String equipacionLocal, String equipacionVisitante) throws ParseException {
+	
+	public Partido(String id, String liga, String equipoLocalId, String equipoLocalNombre, String equipoVisitanteId,
+			String equipoVisitanteNombre, int golesLocal, int golesVisitante, String idArbitro,
+			String fechaPartido, String horaPartido, Estadio estadio, String estado, int jornada,
+			String equipacionLocal, String equipacionVisitante, List<Incidencia> incidencias, String idActa) {
 		super();
+		this.id = id;
 		this.liga = liga;
-		this.equipoLocal = equipoLocal;
-		this.equipoVisitante = equipoVisitante;
+		this.equipoLocalId = equipoLocalId;
+		this.equipoLocalNombre = equipoLocalNombre;
+		this.equipoVisitanteId = equipoVisitanteId;
+		this.equipoVisitanteNombre = equipoVisitanteNombre;
 		this.golesLocal = golesLocal;
 		this.golesVisitante = golesVisitante;
 		this.idArbitro = idArbitro;
@@ -106,6 +106,8 @@ public class Partido implements Comparable<Partido> {
 		this.jornada = jornada;
 		this.equipacionLocal = equipacionLocal;
 		this.equipacionVisitante = equipacionVisitante;
+		this.incidencias = incidencias;
+		this.idActa = idActa;
 	}
 
 	public String getId() {
@@ -124,20 +126,36 @@ public class Partido implements Comparable<Partido> {
 		this.liga = ligaId;
 	}
 
-	public Equipo getEquipoLocal() {
-		return equipoLocal;
+	public String getEquipoLocalId() {
+		return equipoLocalId;
 	}
 
-	public void setEquipoLocal(Equipo equipoLocal) {
-		this.equipoLocal = equipoLocal;
+	public void setEquipoLocalId(String equipoLocalId) {
+		this.equipoLocalId = equipoLocalId;
 	}
 
-	public Equipo getEquipoVisitante() {
-		return equipoVisitante;
+	public String getEquipoLocalNombre() {
+		return equipoLocalNombre;
 	}
 
-	public void setEquipoVisitante(Equipo equipoVisitante) {
-		this.equipoVisitante = equipoVisitante;
+	public void setEquipoLocalNombre(String equipoLocalNombre) {
+		this.equipoLocalNombre = equipoLocalNombre;
+	}
+
+	public String getEquipoVisitanteId() {
+		return equipoVisitanteId;
+	}
+
+	public void setEquipoVisitanteId(String equipoVisitanteId) {
+		this.equipoVisitanteId = equipoVisitanteId;
+	}
+
+	public String getEquipoVisitanteNombre() {
+		return equipoVisitanteNombre;
+	}
+
+	public void setEquipoVisitanteNombre(String equipoVisitanteNombre) {
+		this.equipoVisitanteNombre = equipoVisitanteNombre;
 	}
 
 	public int getGolesLocal() {
@@ -212,23 +230,6 @@ public class Partido implements Comparable<Partido> {
 		this.equipacionVisitante = equipacionVisitante;
 	}
 
-	
-	public List<Jugador> getConvocadosLocal() {
-		return convocadosLocal;
-	}
-
-	public void setConvocadosLocal(List<Jugador> convocadosLocal) {
-		this.convocadosLocal = convocadosLocal;
-	}
-
-	public List<Jugador> getConvocadosVisitante() {
-		return convocadosVisitante;
-	}
-
-	public void setConvocadosVisitante(List<Jugador> convocadosVisitante) {
-		this.convocadosVisitante = convocadosVisitante;
-	}
-
 	public Estadio getEstadio() {
 		return estadio;
 	}
@@ -261,6 +262,17 @@ public class Partido implements Comparable<Partido> {
 			e.printStackTrace();
 		}
 		return -2;
+	}
+
+	@Override
+	public String toString() {
+		return "Partido [id=" + id + ", liga=" + liga + ", equipoLocalId=" + equipoLocalId + ", equipoLocalNombre="
+				+ equipoLocalNombre + ", equipoVisitanteId=" + equipoVisitanteId + ", equipoVisitanteNombre="
+				+ equipoVisitanteNombre + ", golesLocal=" + golesLocal + ", golesVisitante=" + golesVisitante
+				+ ", idArbitro=" + idArbitro + ", fechaPartido=" + fechaPartido + ", horaPartido=" + horaPartido
+				+ ", estadio=" + estadio + ", estado=" + estado + ", jornada=" + jornada + ", equipacionLocal="
+				+ equipacionLocal + ", equipacionVisitante=" + equipacionVisitante + ", incidencias=" + incidencias
+				+ ", idActa=" + idActa + "]";
 	}
 
 	@Override

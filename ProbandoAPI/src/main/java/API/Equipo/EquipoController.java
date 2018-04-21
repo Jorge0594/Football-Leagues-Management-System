@@ -18,6 +18,9 @@ import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
+import API.Usuario.UsuarioComponent;
+import API.UsuarioTemporal.UsuarioTemporal;
+import API.UsuarioTemporal.UsuarioTemporalRepository;
 
 @RestController
 @CrossOrigin
@@ -40,6 +43,10 @@ public class EquipoController {
 	private JugadorRepository jugadorRepository;
 	@Autowired
 	private LigaRepository ligaRepository;
+	@Autowired
+	private UsuarioComponent usuarioComponent;
+	@Autowired
+	private UsuarioTemporalRepository temporalRepository;
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -58,6 +65,17 @@ public class EquipoController {
 		 */
 		//equipo.setLiga("");
 		equipoRepository.save(equipo);
+		if(usuarioComponent.getLoggedUser().getRol().equals("ROLE_TEMPORAL")){
+			UsuarioTemporal usuarioTemporal = temporalRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario());
+			if(usuarioTemporal == null){
+				//Si el equipo lo ha creado un usuario temporal pero no se le encuentra en la BBDD, se borrará el equipo para evitar problemas.
+				equipoRepository.delete(equipo);
+				return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
+			}
+			usuarioTemporal.setEquipoId(equipo.getId());
+			usuarioTemporal.setNombreEquipo(equipo.getNombre());
+			temporalRepository.save(usuarioTemporal);
+		}
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);
 	}
 

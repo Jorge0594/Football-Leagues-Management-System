@@ -147,6 +147,8 @@ public class Sancion {
 		this.descripcion = descripcion;
 	}
 	
-
+	public void cumplirPartidoSancion() {
+		this.setPartidosRestantes(this.getPartidosRestantes()-1);
+	}
 	
 }

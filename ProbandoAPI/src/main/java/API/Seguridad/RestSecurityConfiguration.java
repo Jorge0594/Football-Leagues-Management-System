@@ -25,11 +25,14 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// URLs that need authentication to access to it
 		//Jugadores
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/clave/{email}").permitAll();
+		http.authorizeRequests().antMatchers(HttpMethod.POST, "/juagadores/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/**").hasAnyRole("JUGADOR","ARBITRO","MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/jugadores/**").hasAnyRole("JUGADOR", "MIEMBROCOMITE","ARBITRO","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/jugadores/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		
 		//Equipos
+		http.authorizeRequests().antMatchers(HttpMethod.POST, "/equipos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN","TEMPORAL");
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/id/{id}").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/**").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/equipos/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/equipos/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
@@ -63,11 +66,26 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/partidos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN", "ARBITRO");
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/partidos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/partidos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		
+		//Usuarios temporales
+		http.authorizeRequests().antMatchers(HttpMethod.POST, "/usuariosTemporales/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/usuariosTemporales/usuario").hasAnyRole("MIEMBROCOMITE", "ADMIN","TEMPORAL");
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/usuariosTemporales/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/usuariosTemporales/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/usuariosTemporales/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		
 		//Liga
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/ligas/nombres").permitAll();
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/ligas/**").hasAnyRole("JUGADOR","ARBITRO","MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/ligas/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/ligas/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/ligas/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		
+		//Solicitudes
+		http.authorizeRequests().antMatchers(HttpMethod.POST, "/solicitudes/**").permitAll();
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/solicitudes/email/{email}").permitAll();
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/solicitudes/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/solicitudes/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		
 		http.authorizeRequests().anyRequest().permitAll();
 
