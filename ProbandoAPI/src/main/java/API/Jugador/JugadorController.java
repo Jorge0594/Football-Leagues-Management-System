@@ -66,29 +66,28 @@ public class JugadorController {
 		if (jugadorRepository.findByDniIgnoreCase(jugador.getDni()) != null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		String clave = jugador.getClave();
+		String clave = generarClave();
+		jugador.setClaveEncriptada(clave);
+		jugador.setNombreUsuario(generarNombreUsuario(jugador.getNombre(), jugador.getApellidos()));
 		jugador.setId(null);
 		jugador.setFotoJugador("defaultProfile.jpg");
-		jugador.setNombreUsuario(generarNombreUsuario(jugador.getNombre(), jugador.getApellidos()));
-		jugador.setAceptado(false);
-		jugador.setEquipo("");
-		jugador.setLiga("");
 		jugador.setGoles(0);
 		jugador.setTarjetasAmarillas(0);
 		jugador.setTarjetasRojas(0);
-		jugador.setClaveEncriptada(jugador.getClave());
-		jugador.setSanciones(new ArrayList<>());
-
-		/*
-		 * if (jugador.isAceptado()) { Usuario usuario = new
-		 * Usuario(jugador.getNombreUsuario(), jugador.getClave(),
-		 * "ROLE_JUGADOR");
-		 * 
-		 * usuarioRepository.save(usuario); }
-		 */
+		jugador.setSanciones(new ArrayList<Sancion>());	
+		 /*if (jugador.isAceptado()) { 
+			 Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(),"ROLE_JUGADOR"); usuarioRepository.save(usuario); 
+	    }*/
 		Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
 		usuarioRepository.save(usuario);
 		jugadorRepository.save(jugador);
+		
+		Equipo equipoJugador = equipoRepository.findById(jugador.getEquipo());
+		equipoJugador.getPlantillaEquipo().add(jugador);
+		equipoRepository.save(equipoJugador);
+		
+		
+		
 		String texto = jugador.getNombre() + ";" + jugador.getNombreUsuario() + ";" + clave;
 		// mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de
 		// usuario y contraseña",texto);//Comentado para que no problemas con

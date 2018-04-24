@@ -33,6 +33,12 @@ public class Arbitro {
 	@JsonView(ActaAtt.class)
 	private String nombre;
 	
+	@JsonView(ActaAtt.class)
+	private String apellidos;
+	
+	@JsonView(ActaAtt.class)
+	private String fotoArbitro;
+	
 	@JsonView(PerfilAtt.class)
 	private String nombreUsuario;
 	
@@ -73,12 +79,14 @@ public class Arbitro {
 	public Arbitro() {
 	}
 
-	public Arbitro(String dni, String nombre, String nombreUsuario, String clave, List<Partido> partidosArbitrados,
+	public Arbitro(String dni, String nombre, String apellidos,  String fotoArbitro, String nombreUsuario, String clave, List<Partido> partidosArbitrados,
 			String fechaNacimiento, int edad, String lugarNacimiento, String comite, String categoria, String email,
 			String tlf, boolean internacional, String estado) {
 		super();
 		this.dni = dni;
 		this.nombre = nombre;
+		this.apellidos = apellidos;
+		this.fotoArbitro = fotoArbitro;
 		this.nombreUsuario = nombreUsuario;
 		this.clave = clave;
 		this.partidosArbitrados = partidosArbitrados;
@@ -92,7 +100,24 @@ public class Arbitro {
 		this.internacional = internacional;
 		this.estado = estado;
 	}
+	
+	
+	public String getApellidos() {
+		return apellidos;
+	}
 
+	public void setApellidos(String apellidos) {
+		this.apellidos = apellidos;
+	}
+
+	public String getFotoArbitro() {
+		return fotoArbitro;
+	}
+
+	public void setFotoArbitro(String fotoArbitro) {
+		this.fotoArbitro = fotoArbitro;
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -241,6 +266,8 @@ public class Arbitro {
 		result = prime * result + (internacional ? 1231 : 1237);
 		result = prime * result + ((lugarNacimiento == null) ? 0 : lugarNacimiento.hashCode());
 		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+		result = prime * result + ((apellidos == null) ? 0 : apellidos.hashCode());
+		result = prime * result + ((fotoArbitro == null) ? 0 : fotoArbitro.hashCode());
 		result = prime * result + ((nombreUsuario == null) ? 0 : nombreUsuario.hashCode());
 		result = prime * result + ((partidosArbitrados == null) ? 0 : partidosArbitrados.hashCode());
 		result = prime * result + ((tlf == null) ? 0 : tlf.hashCode());
@@ -309,6 +336,11 @@ public class Arbitro {
 			if (other.nombre != null)
 				return false;
 		} else if (!nombre.equals(other.nombre))
+			return false;
+		if (apellidos == null) {
+			if (other.apellidos != null)
+				return false;
+		} else if (!apellidos.equals(other.apellidos))
 			return false;
 		if (nombreUsuario == null) {
 			if (other.nombreUsuario != null)
