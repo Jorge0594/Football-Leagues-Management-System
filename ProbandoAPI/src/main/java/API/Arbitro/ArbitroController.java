@@ -2,6 +2,7 @@ package API.Arbitro;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.annotation.JsonView;
 import API.Acta.Acta;
 import API.Acta.ActaRepository;
+import API.Equipo.Equipo;
+import API.Jugador.Jugador;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
 import API.Partido.Partido;
@@ -52,23 +55,24 @@ public class ArbitroController {
 	@JsonView(ArbitroView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Arbitro> creaArbitro(@RequestBody Arbitro arbitro) {
-		List<Usuario> usuarios = usuarioRepository.findAll();
-		List<String> nombresUsuarios = new ArrayList<>();
-		for (Usuario us : usuarios) {
-			nombresUsuarios.add(us.getNombreUsuario());
+		if (arbitroRepository.findByDniIgnoreCase(arbitro.getDni()) != null) {
+			return new ResponseEntity<Arbitro>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		// Comprueba si el nombre de usuario no se encuentra ya en el sistema.
-		if (!nombresUsuarios.contains(arbitro.getNombreUsuario())) {
-			arbitro.setId(null);
-			// Se encripta la clave
-			arbitro.setClaveEncriptada(arbitro.getClave());
-			arbitroRepository.save(arbitro);
-			Usuario nuevo = new Usuario(arbitro.getNombreUsuario(), arbitro.getClave(), "ROLE_ARBITRO");
-			usuarioRepository.save(nuevo);
-			return new ResponseEntity<Arbitro>(arbitro, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		}
+		String clave = generarClave();
+		arbitro.setClaveEncriptada(clave);
+		arbitro.setNombreUsuario(generarNombreUsuario(arbitro.getNombre(), arbitro.getApellidos()));
+		arbitro.setId(null);
+		arbitro.setPartidosArbitrados(new ArrayList<Partido>());
+
+		Usuario usuario = new Usuario(arbitro.getNombreUsuario(), arbitro.getClave(), "ROLE_ARBITRO");
+		usuarioRepository.save(usuario);
+		arbitroRepository.save(arbitro);
+		
+		String texto = arbitro.getNombre() + ";" + arbitro.getNombreUsuario() + ";" + clave;
+		// mailService.getMail().mandarEmail(arbitro.getEmail(),"Nombre de
+		// usuario y contraseña",texto);//Comentado para que no problemas con
+		// mails que no existen.
+		return new ResponseEntity<Arbitro>(arbitro, HttpStatus.CREATED);
 	}
 
 	@JsonView(ArbitroView.class)
@@ -96,6 +100,7 @@ public class ArbitroController {
 					entrada.setLugarNacimiento(arbitroModificado.getLugarNacimiento());
 					entrada.setEmail(arbitroModificado.getEmail());
 					entrada.setTlf(arbitroModificado.getTlf());
+					entrada.setFotoArbitro(arbitroModificado.getFotoArbitro());
 					arbitroRepository.save(entrada);
 					// Se realizan los cambios en el listado de Usuarios de la
 					// API.
@@ -129,6 +134,7 @@ public class ArbitroController {
 				entrada.setDni(arbitroModificado.getDni());
 				entrada.setInternacional(arbitroModificado.isInternacional());
 				entrada.setComite(arbitroModificado.getComite());
+				entrada.setFotoArbitro(arbitroModificado.getFotoArbitro());
 				arbitroRepository.save(entrada);
 				// Se realizan los cambios en el listado de Usuarios de la API.
 				modificado.setClave(entrada.getClave());
@@ -172,7 +178,7 @@ public class ArbitroController {
 	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/dni/{dni}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> verArbitroDni(@PathVariable String dni) {
-		Arbitro entrada = arbitroRepository.findByDni(dni);
+		Arbitro entrada = arbitroRepository.findByDniIgnoreCase(dni);
 		if (entrada == null) {
 			return new ResponseEntity<Arbitro>(HttpStatus.NOT_FOUND);
 		}
@@ -242,5 +248,34 @@ public class ArbitroController {
 			return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
 		}
 	}
+	private static String generarClave() {// Genera una clave con caracteres
+		// ASCII aleatorios
+		String clave = "";
+		Random rnd = new Random();
+		for (int i = 0; i < 5; i++) {
+			clave = clave + ((char) (rnd.nextInt(27) + 63));// Caracteres del
+						// '?' a la 'Z'
+			clave = clave + ((char) (rnd.nextInt(25) + 97));// Carateres de la
+						// 'a' a la 'z'
+		}
+		return clave;
+	}
+	
+	private String generarNombreUsuario(String nombre, String apellidos) {
+
+		String apellido[] = apellidos.split(" ");
+
+		String usuario = nombre + apellido[0].toUpperCase();
+
+		while (usuarioRepository.findByNombreUsuarioIgnoreCase(usuario) != null) {
+			Random rnd = new Random();
+			int num = rnd.nextInt(1000);
+			if (usuarioRepository.findByNombreUsuarioIgnoreCase((usuario += num)) == null) {
+				usuario += num;
+			}
+		}
+		return usuario;
+	}
+
 
 }

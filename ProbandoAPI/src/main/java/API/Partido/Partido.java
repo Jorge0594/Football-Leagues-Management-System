@@ -45,6 +45,12 @@ public class Partido implements Comparable<Partido> {
 	private String equipoVisitanteNombre;
 	
 	@JsonView(InfoAtt.class)
+	private String equipoLocalEscudo;
+	
+	@JsonView(InfoAtt.class)
+	private String equipoVisitanteEscudo;
+	
+	@JsonView(InfoAtt.class)
 	private int golesLocal;
 	
 	@JsonView(InfoAtt.class)
@@ -86,7 +92,7 @@ public class Partido implements Comparable<Partido> {
 	}
 	
 	public Partido(String id, String liga, String equipoLocalId, String equipoLocalNombre, String equipoVisitanteId,
-			String equipoVisitanteNombre, int golesLocal, int golesVisitante, String idArbitro,
+			String equipoVisitanteNombre,String equipoLocalEscudo, String equipoVisitanteEscudo, int golesLocal, int golesVisitante, String idArbitro,
 			String fechaPartido, String horaPartido, Estadio estadio, String estado, int jornada,
 			String equipacionLocal, String equipacionVisitante, List<Incidencia> incidencias, String idActa) {
 		super();
@@ -96,6 +102,8 @@ public class Partido implements Comparable<Partido> {
 		this.equipoLocalNombre = equipoLocalNombre;
 		this.equipoVisitanteId = equipoVisitanteId;
 		this.equipoVisitanteNombre = equipoVisitanteNombre;
+		this.equipoLocalEscudo = equipoLocalEscudo;
+		this.equipoVisitanteEscudo = equipoVisitanteEscudo;
 		this.golesLocal = golesLocal;
 		this.golesVisitante = golesVisitante;
 		this.idArbitro = idArbitro;
@@ -121,9 +129,35 @@ public class Partido implements Comparable<Partido> {
 	public String getLiga() {
 		return liga;
 	}
+	
 
 	public void setLiga(String ligaId) {
 		this.liga = ligaId;
+	}
+	 
+	
+	public String getEquipoLocalEscudo() {
+		return equipoLocalEscudo;
+	}
+
+	public void setEquipoLocalEscudo(String equipoLocalEscudo) {
+		this.equipoLocalEscudo = equipoLocalEscudo;
+	}
+
+	public String getEquipoVisitanteEscudo() {
+		return equipoVisitanteEscudo;
+	}
+
+	public void setEquipoVisitanteEscudo(String equipoVisitanteEscudo) {
+		this.equipoVisitanteEscudo = equipoVisitanteEscudo;
+	}
+
+	public void setGolesLocal(int golesLocal) {
+		this.golesLocal = golesLocal;
+	}
+
+	public void setGolesVisitante(int golesVisitante) {
+		this.golesVisitante = golesVisitante;
 	}
 
 	public String getEquipoLocalId() {

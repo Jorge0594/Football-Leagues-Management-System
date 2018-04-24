@@ -282,7 +282,9 @@ public class PartidoController {
 			partido.setId(entrada.getId());
 			//Se asegura que el nombre del equipo y el ID pertenezcan al mismo equipo
 			partido.setEquipoLocalNombre(equipoLocal.getNombre());
+			partido.setEquipoLocalEscudo(equipoLocal.getImagenEquipo());
 			partido.setEquipoVisitanteNombre(equipoVisitante.getNombre());
+			partido.setEquipoVisitanteEscudo(equipoVisitante.getImagenEquipo());
 			partidoRepository.save(partido);
 			return new ResponseEntity<Partido>(partido, HttpStatus.OK);
 		}
@@ -306,7 +308,8 @@ public class PartidoController {
 		//Se asegura que el nombre del equipo y el ID pertenezcan al mismo equipo
 		partido.setEquipoLocalNombre(equipoLocal.getNombre());
 		partido.setEquipoVisitanteNombre(equipoVisitante.getNombre());
-		
+		partido.setEquipoLocalEscudo(equipoLocal.getImagenEquipo());
+		partido.setEquipoVisitanteEscudo(equipoVisitante.getImagenEquipo());
 		if (ligaRepository.findByNombreIgnoreCase(partido.getLiga()) == null) {
 			partido.setLiga("");
 			//partidoRepository.save(partido);
