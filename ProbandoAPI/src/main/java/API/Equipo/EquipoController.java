@@ -106,6 +106,17 @@ public class EquipoController {
 	}
 	
 	@JsonView(PerfilView.class)
+	@RequestMapping(value = "/validar/{nombre}/{liga}", method = RequestMethod.GET)
+	public ResponseEntity<Equipo>disponibleNombreEquipoLiga(@PathVariable (value = "nombre")String nombre, @PathVariable (value = "liga")String liga){
+		Equipo equipo = equipoRepository.findByLigaAndNombreAllIgnoreCase(liga, nombre);
+		if(equipo != null){
+			return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
+		}
+		
+		return new ResponseEntity<Equipo>(HttpStatus.OK);
+	}
+	
+	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Equipo> verEquipoId(@PathVariable String id) {
 		Equipo equipo = equipoRepository.findById(id);

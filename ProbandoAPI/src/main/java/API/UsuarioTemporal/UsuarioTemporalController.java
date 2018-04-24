@@ -15,13 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
+import API.Mails.MailService;
+import API.Solicitud.Solicitud;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/usuariosTemporales")
+@RequestMapping("/temporales")
 
 public class UsuarioTemporalController {
 	
@@ -33,6 +35,8 @@ public class UsuarioTemporalController {
 	private EquipoRepository equipoRepository;
 	@Autowired
 	private UsuarioComponent usuarioComponent;
+	@Autowired
+	private MailService mailService;
 	
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	public ResponseEntity<UsuarioTemporal>crearUsuarioTemporal(@RequestBody UsuarioTemporal usuarioTemporal){
@@ -46,9 +50,10 @@ public class UsuarioTemporalController {
 		usuarioTemporal.setEquipoId("");
 		usuarioTemporal.setClaveEncriptada(usuarioTemporal.getClave());
 		
-		String texto = usuarioTemporal.getNombre() + ";" + usuarioTemporal.getNombreUsuario() + ";" + clave;
+		String crendenciales = usuarioTemporal.getNombreUsuario() + ";" + clave;
+		
 		Usuario usuario = new Usuario(usuarioTemporal.getNombre(), usuarioTemporal.getClave(), "ROLE_TEMPORAL");
-		//mandar Email al usuario temporal
+		mailService.getMail().mandarEmail(usuarioTemporal.getEmail(), "Usuario de acceso a altas de equipo", crendenciales, "temporal");
 		
 		temporalRepository.save(usuarioTemporal);
 		usuarioRepository.save(usuario);
@@ -90,6 +95,48 @@ public class UsuarioTemporalController {
 		}
 		
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "liga/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<UsuarioTemporal> asignarLiga(@PathVariable String id, @RequestBody String liga){
+		UsuarioTemporal temporal = temporalRepository.findById(id);
+		
+		if(temporal == null){
+			return new ResponseEntity<UsuarioTemporal>(HttpStatus.NO_CONTENT);
+		}
+		
+		temporal.setLiga(liga);
+		
+		temporalRepository.save(temporal);
+		
+		return new ResponseEntity<UsuarioTemporal>(temporal, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "usuario/{id}", method = RequestMethod.PUT)
+	private ResponseEntity<UsuarioTemporal>cambiarUsuarioClave(@PathVariable String id, @RequestBody UsuarioTemporal entrada){
+		UsuarioTemporal temporal = temporalRepository.findById(id);
+		
+		if(temporal == null){
+			return new ResponseEntity<UsuarioTemporal>(HttpStatus.NO_CONTENT);
+		}
+		
+		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(temporal.getNombreUsuario());
+		
+		if(usuario == null){
+			return new ResponseEntity<UsuarioTemporal>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		
+		temporal.setNombreUsuario(entrada.getNombreUsuario());
+		temporal.setClaveEncriptada(entrada.getClave());
+		
+		usuario.setNombreUsuario(temporal.getNombreUsuario());
+		usuario.setClave(temporal.getClave());
+		
+		temporalRepository.save(temporal);
+		usuarioRepository.save(usuario);
+		
+		return new ResponseEntity<UsuarioTemporal>(temporal, HttpStatus.OK);
+		
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

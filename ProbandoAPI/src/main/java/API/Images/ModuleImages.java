@@ -75,7 +75,7 @@ public class ModuleImages {
 				ImageIO.write(bImageResize, "jpg", uploadedFile);
 
 			} catch (Exception e) {
-				System.out.println(e);
+				e.printStackTrace();
 				return false;
 			}
 		}
@@ -83,7 +83,7 @@ public class ModuleImages {
 	}
 	
 	public static BufferedImage toBufferedImage(Image image){
-		if(image instanceof BufferedImage){//Si la imagen ya esta contenida en algún buffer de imagenes
+		if(image instanceof BufferedImage){//Si la imagen recibida ya es BufferedImage
 			return (BufferedImage)image;
 		}
 		

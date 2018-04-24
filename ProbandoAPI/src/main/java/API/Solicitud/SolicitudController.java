@@ -40,11 +40,12 @@ public class SolicitudController {
 	public ResponseEntity<Solicitud>crearSolicitud(@RequestBody Solicitud solicitud){
 		
 		//No se permitirá mandar mas de dos solicitudes desde una misma ip ni tampoco a ningun usuario del sistema crear solicitudes
-		if( solicitudRepository.findByIp(solicitud.getIp()) != null|| usuarioComponent.getLoggedUser() != null || solicitud.getIp() == null){
+		if( solicitudRepository.findByIp(solicitud.getIp()) != null || temporalRepository.findByIp(solicitud.getIp())!= null
+				|| usuarioComponent.getLoggedUser() != null || solicitud.getIp() == null){
 			return new ResponseEntity<Solicitud>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		
-		if(solicitudRepository.findByEmail(solicitud.getEmail())!= null){
+		if(solicitudRepository.findByEmail(solicitud.getEmail())!= null || temporalRepository.findByEmail(solicitud.getEmail()) != null){
 			return new ResponseEntity<Solicitud>(HttpStatus.CONFLICT);
 		}
 		
@@ -82,7 +83,7 @@ public class SolicitudController {
 		String crendenciales = nombreUsuario + ";" + clave;
 		
 		UsuarioTemporal usuarioTemporal = new UsuarioTemporal(solicitud.getIp(), nombreUsuario, clave, solicitud.getNombreSolicitante(),
-				solicitud.getApellidosSolicitante(), solicitud.getEmail(), solicitud.getCampus());
+				solicitud.getApellidosSolicitante(), solicitud.getEmail(), solicitud.getCampus(), solicitud.getLiga());
 		//Crear un usuario asociado a este usuario temporal
 		Usuario usuario = new Usuario(nombreUsuario, usuarioTemporal.getClave(), "ROLE_TEMPORAL");
 		
