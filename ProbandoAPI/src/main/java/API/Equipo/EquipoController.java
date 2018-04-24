@@ -72,8 +72,8 @@ public class EquipoController {
 				equipoRepository.delete(equipo);
 				return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 			}
-			usuarioTemporal.getEquipo()[0] = equipo.getId();
-			usuarioTemporal.getEquipo()[1] = equipo.getNombre();
+			usuarioTemporal.setEquipoId(equipo.getId());
+			usuarioTemporal.setNombreEquipo(equipo.getNombre());
 			temporalRepository.save(usuarioTemporal);
 		}
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);

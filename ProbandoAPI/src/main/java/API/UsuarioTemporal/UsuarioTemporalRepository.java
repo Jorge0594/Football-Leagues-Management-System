@@ -8,6 +8,7 @@ public interface UsuarioTemporalRepository extends MongoRepository<UsuarioTempor
 	
 	UsuarioTemporal findByNombreUsuarioIgnoreCase(String nombreuUsuario);
 	
-	UsuarioTemporal findByEmailIgnoreCase(String email);
+	UsuarioTemporal findByEmail(String email);
+	
 
 }

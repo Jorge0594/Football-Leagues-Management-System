@@ -1,9 +1,5 @@
 package API.UsuarioTemporal;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -18,7 +14,8 @@ public class UsuarioTemporal {
 	private String apellidos;
 	private String email;
 	private String campus;
-	private String[] equipo = new String[2]; //0:id 1:nombre
+	private String equipoId;
+	private String nombreEquipo;
 	private String primerAcceso = "";
 	private String fechaCaducidad = "";
 	
@@ -26,17 +23,18 @@ public class UsuarioTemporal {
 		
 	}
 
-	public UsuarioTemporal(String id, String ip, String nombreUsuario, String clave, String nombre, String apellidos,
+	public UsuarioTemporal(String ip, String nombreUsuario, String clave, String nombre, String apellidos,
 			String email, String campus) {
 		super();
-		this.id = id;
 		this.ip = ip;
 		this.nombreUsuario = nombreUsuario;
-		this.clave = clave;
+		setClaveEncriptada(clave);
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.email = email;
 		this.campus = campus;
+		this.equipoId = "";
+		this.nombreEquipo = "";
 	}
 
 	public String getId() {
@@ -107,12 +105,20 @@ public class UsuarioTemporal {
 		this.campus = campus;
 	}
 
-	public String[] getEquipo() {
-		return this.equipo;
+	public String getEquipoId() {
+		return equipoId;
 	}
 
-	public void setEquipo(String[] equipo) {
-		this.equipo = equipo;
+	public void setEquipoId(String equipoId) {
+		this.equipoId = equipoId;
+	}
+
+	public String getNombreEquipo() {
+		return nombreEquipo;
+	}
+
+	public void setNombreEquipo(String nombreEquipo) {
+		this.nombreEquipo = nombreEquipo;
 	}
 
 	public String getPrimerAcceso() {
@@ -130,12 +136,13 @@ public class UsuarioTemporal {
 	public void setFechaCaducidad(String fechaCaducidad) {
 		this.fechaCaducidad = fechaCaducidad;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "UsuarioTemporal [id=" + id + ", ip=" + ip + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave
 				+ ", nombre=" + nombre + ", apellidos=" + apellidos + ", email=" + email + ", campus=" + campus
-				+ ", equipo=" + equipo + ", primerAcceso=" + primerAcceso + ", fechaCaducidad=" + fechaCaducidad + "]";
+				+ ", equipoId=" + equipoId + ", nombreEquipo=" + nombreEquipo + ", primerAcceso=" + primerAcceso
+				+ ", fechaCaducidad=" + fechaCaducidad + "]";
 	}
 
 	@Override
@@ -146,11 +153,14 @@ public class UsuarioTemporal {
 		result = prime * result + ((campus == null) ? 0 : campus.hashCode());
 		result = prime * result + ((clave == null) ? 0 : clave.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((equipo == null) ? 0 : equipo.hashCode());
+		result = prime * result + ((equipoId == null) ? 0 : equipoId.hashCode());
+		result = prime * result + ((fechaCaducidad == null) ? 0 : fechaCaducidad.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
 		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+		result = prime * result + ((nombreEquipo == null) ? 0 : nombreEquipo.hashCode());
 		result = prime * result + ((nombreUsuario == null) ? 0 : nombreUsuario.hashCode());
+		result = prime * result + ((primerAcceso == null) ? 0 : primerAcceso.hashCode());
 		return result;
 	}
 
@@ -183,10 +193,15 @@ public class UsuarioTemporal {
 				return false;
 		} else if (!email.equals(other.email))
 			return false;
-		if (equipo == null) {
-			if (other.equipo != null)
+		if (equipoId == null) {
+			if (other.equipoId != null)
 				return false;
-		} else if (!equipo.equals(other.equipo))
+		} else if (!equipoId.equals(other.equipoId))
+			return false;
+		if (fechaCaducidad == null) {
+			if (other.fechaCaducidad != null)
+				return false;
+		} else if (!fechaCaducidad.equals(other.fechaCaducidad))
 			return false;
 		if (id == null) {
 			if (other.id != null)
@@ -203,13 +218,25 @@ public class UsuarioTemporal {
 				return false;
 		} else if (!nombre.equals(other.nombre))
 			return false;
+		if (nombreEquipo == null) {
+			if (other.nombreEquipo != null)
+				return false;
+		} else if (!nombreEquipo.equals(other.nombreEquipo))
+			return false;
 		if (nombreUsuario == null) {
 			if (other.nombreUsuario != null)
 				return false;
 		} else if (!nombreUsuario.equals(other.nombreUsuario))
 			return false;
+		if (primerAcceso == null) {
+			if (other.primerAcceso != null)
+				return false;
+		} else if (!primerAcceso.equals(other.primerAcceso))
+			return false;
 		return true;
 	}
+
+	
 	
 
 	

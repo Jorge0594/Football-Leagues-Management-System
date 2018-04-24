@@ -188,7 +188,8 @@ public class JugadorController {
 			usuario.setClave(jugador.getClave());
 			usuarioRepository.save(usuario);
 			jugadorRepository.save(jugador);
-			mailService.getMail().mandarContraseña(jugador.getEmail(), jugador.getNombreUsuario(), clave);
+			String credenciales = jugador.getNombreUsuario() + ";" + clave; 
+			mailService.getMail().mandarEmail(jugador.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
 			return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 		}
 	}
@@ -362,7 +363,7 @@ public class JugadorController {
 
 		String apellido[] = apellidos.split(" ");
 
-		String usuario = nombre + apellido[0].toUpperCase();
+		String usuario = nombre + apellido[0];
 
 		while (usuarioRepository.findByNombreUsuarioIgnoreCase(usuario) != null) {
 			Random rnd = new Random();

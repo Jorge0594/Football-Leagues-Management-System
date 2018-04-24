@@ -403,7 +403,7 @@ public class ActaController {
 		partido.setEstado("Disputado");
 		partido.setGolesLocal(acta.getGolesLocal());
 		partido.setGolesVisitante(acta.getGolesVisitante());
-		partido.setIncidencias(incidenciaRepository.findByIdPartido(partido.getId()));
+		partido.setIncidencias(incidenciaRepository.findByIdPartidoIgnoreCase(partido.getId()));
 		partido.setIdActa(acta.getId());
 		partidoRepository.save(partido);
 	}

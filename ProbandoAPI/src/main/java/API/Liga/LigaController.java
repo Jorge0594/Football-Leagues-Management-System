@@ -7,12 +7,10 @@ import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,7 +33,7 @@ public class LigaController {
 	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt {
 	}
 
-	public interface InfoLigaView extends Liga.LigaAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt, Arbitro.ActaAtt {
+	public interface InfoLigaView extends Liga.LigaAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt{
 	}
 
 	@Autowired
@@ -63,6 +61,12 @@ public class LigaController {
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Liga>> verLigas() {
 		return new ResponseEntity<List<Liga>>(ligaRepository.findAll(), HttpStatus.OK);
+	}
+	
+	
+	@RequestMapping(value= "/nombres", method = RequestMethod.GET)
+	public ResponseEntity<List<Liga>> verNombresLigas() {
+		return new ResponseEntity<List<Liga>>(ligaRepository.findCustomNombresliga(), HttpStatus.OK);
 	}
 
 	@JsonView(InfoLigaView.class)

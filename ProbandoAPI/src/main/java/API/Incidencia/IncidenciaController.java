@@ -50,7 +50,7 @@ public class IncidenciaController {
 		@JsonView(IncidenciaView.class)
 		@RequestMapping(value = "incidencias/partido/{idPartido}", method = RequestMethod.GET)
 		public ResponseEntity<List<Incidencia>> verIncidenciasPartido(@PathVariable String idPartido) {	
-			List<Incidencia> incidencias = incidenciasRepository.findByIdPartido(idPartido);
+			List<Incidencia> incidencias = incidenciasRepository.findByIdPartidoIgnoreCase(idPartido);
 			if (incidencias.isEmpty()) {
 				return new ResponseEntity<List<Incidencia>>(HttpStatus.NOT_FOUND);
 			}
