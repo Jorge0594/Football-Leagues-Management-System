@@ -25,8 +25,8 @@ public class Arbitro {
 
 	@JsonView(ActaAtt.class)
 	@Id
-	
 	private String id;
+	
 	@JsonView(PerfilAtt.class)
 	private String dni;
 	

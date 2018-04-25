@@ -1,5 +1,6 @@
 package API.Equipo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,17 +55,21 @@ public class EquipoController {
 		if (equipoRepository.findByNombreIgnoreCase(equipo.getNombre()) != null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NOT_ACCEPTABLE);
 		}
+		equipo.setAceptado(true);
+		equipo.setGoles(0);
+		equipo.setGolesEncajados(0);
+		equipo.setPartidosEmpatados(0); 
+		equipo.setPartidosGanados(0);
+		equipo.setPartidosPerdidos(0);
+		equipo.setPartidosJugados();
+		equipo.setPuntos();
 		equipo.setId(null);
-		equipo.setImagenEquipo("shield.png");
-		equipo.setAceptado(false);
-		// COMENTADO PARA FACILITAR EL TESTING BOPRRAR CUANDO SE PASE A
-		// PRODUCCION
-		/*
-		 * equipo.setPartidosEmpatados(0); equipo.setPartidosGanados(0);
-		 * equipo.setPartidosPerdidos(0);
-		 */
-		//equipo.setLiga("");
+		equipo.setPlantillaEquipo(new ArrayList<Jugador>());
+		Liga ligaEquipo = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());	
+		equipo.setPosicion(ligaEquipo.getClasificacion().size()+1);
 		equipoRepository.save(equipo);
+		ligaEquipo.getClasificacion().add(equipo);
+
 		if(usuarioComponent.getLoggedUser().getRol().equals("ROLE_TEMPORAL")){
 			UsuarioTemporal usuarioTemporal = temporalRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario());
 			if(usuarioTemporal == null){

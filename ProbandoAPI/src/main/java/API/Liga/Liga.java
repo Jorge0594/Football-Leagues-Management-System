@@ -33,12 +33,7 @@ public class Liga {
 	@JsonView(LigaAtt.class)
 	@DBRef
 	private List<Jugador> goleadores = new ArrayList<>(5);
-	/*@JsonView(LigaAtt.class)
-	@DBRef
-	private List<Sancion> sancion = new ArrayList<>();
-	@JsonView(LigaAtt.class)
-	@DBRef
-	private List<Partido> partidos = new ArrayList<>();*/
+
 	
 	
 	

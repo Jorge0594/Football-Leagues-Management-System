@@ -150,25 +150,6 @@ public class LigaController {
 		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
 	}
 
-	/*@JsonView(InfoLigaView.class)
-	@RequestMapping(value = "/{nombre}/partido/{idPartido}", method = RequestMethod.PUT)
-	public ResponseEntity<Liga> añadirPartido(@PathVariable(value = "nombre") String nombre,
-			@PathVariable(value = "idPartido") String idPartido) {
-		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
-		Partido partido = partidoRepository.findById(idPartido);
-		if (liga == null || partido == null || liga.getPartidos().contains(partido)) {
-			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
-		}
-		partido.setLiga(liga.getNombre());
-		liga.getPartidos().add(partido);
-		Collections.sort(liga.getPartidos());
-		
-		partidoRepository.save(partido);
-		ligaRepository.save(liga);
-
-		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
-	}*/
-
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(value = "/{nombre}/arbitro/{idArbitro}", method = RequestMethod.DELETE)
 	public ResponseEntity<Liga> eliminarArbitroLiga(@PathVariable(value = "nombre") String nombre,
@@ -203,24 +184,6 @@ public class LigaController {
 
 		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
 	}
-
-	/*@JsonView(InfoLigaView.class)
-	@RequestMapping(value = "/{nombre}/partido/{idPartido}", method = RequestMethod.DELETE)
-	public ResponseEntity<Liga> eliminarPartido(@PathVariable(value = "nombre") String nombre,
-			@PathVariable(value = "idPartido") String idPartido) {
-		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
-		Partido partido = partidoRepository.findById(idPartido);
-		if (liga == null || partido == null || !liga.getPartidos().contains(partido)) {
-			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
-		}
-		partido.setLiga("");
-		liga.getPartidos().remove(partido);
-
-		partidoRepository.save(partido);
-		ligaRepository.save(liga);
-
-		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
-	}*/
 
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
