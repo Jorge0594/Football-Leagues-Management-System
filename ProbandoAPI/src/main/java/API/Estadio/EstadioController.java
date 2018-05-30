@@ -33,7 +33,7 @@ public class EstadioController {
 	}
 
 	@JsonView(EstadioView.class)
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Estadio> verEstadio(@PathVariable String id) {
 		Estadio entrada = estadioRepository.findById(id);
 		if (entrada == null) {
@@ -44,7 +44,7 @@ public class EstadioController {
 	}
 
 	@JsonView(EstadioView.class)
-	@RequestMapping(value = "/{nombre}", method = RequestMethod.GET)
+	@RequestMapping(value = "/nombre/{nombre}", method = RequestMethod.GET)
 	public ResponseEntity<Estadio> verEstadioNombre(String nombre) {
 		Estadio entrada = estadioRepository.findByNombre(nombre);
 		if (entrada == null) {
