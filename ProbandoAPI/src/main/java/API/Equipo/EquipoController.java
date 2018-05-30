@@ -86,7 +86,6 @@ public class EquipoController {
 		if (usuario == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.UNAUTHORIZED);
 		}
-		System.out.println(equipo);
 		equipo.setId(null);
 		equipo.setLiga(usuario.getLiga());
 		equipo.setAceptado(false);
@@ -115,13 +114,9 @@ public class EquipoController {
 		}
 		
 		equipo.setPlantillaEquipo(listaJugadores);
-		
 		equipoRepository.save(equipo);
 		
-		System.out.println(equipo);
-		
 		usuario.setEquipoId(equipo.getId());
-		
 		temporalRepository.save(usuario);
 
 		return new ResponseEntity<Equipo>(HttpStatus.OK);
@@ -292,30 +287,24 @@ public class EquipoController {
 		if (equipo == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
-		System.out.println("Llega el equipo " + equipo);
 
 		if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
-			System.out.println("Entra en borrado liga");
 			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
 			liga.getGoleadores().removeAll(equipo.getPlantillaEquipo());
 			liga.getClasificacion().remove(equipo);
 			ligaRepository.save(liga);
 		}
 		
-		System.out.println("Llega a borrado de plantilla");
 		
 		if(equipo.getPlantillaEquipo() != null){
-			System.out.println("Entra en borrado jugadores");
 			for (Jugador j : equipo.getPlantillaEquipo()) {
 				j.setEquipo("");
 				jugadorRepository.save(j);
 			}
 		}
 		
-		System.out.println("Llega a borrado del equipo");
 		equipoRepository.delete(equipo);
 		
-		System.out.println("El equipo ha sido borrado");
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 	}
 }
