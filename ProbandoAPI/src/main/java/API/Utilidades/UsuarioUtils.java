@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import API.Jugador.Jugador;
 import API.Usuario.UsuarioRepository;
 @Component
-public class APIUtils {
+public class UsuarioUtils {
 	
 	@Autowired
 	UsuarioRepository usuarioRepository;

@@ -31,7 +31,7 @@ import API.Sancion.Sancion;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
-import API.Utilidades.APIUtils;
+import API.Utilidades.UsuarioUtils;
 
 @RestController
 @CrossOrigin
@@ -60,7 +60,7 @@ public class JugadorController {
 	@Autowired
 	private ImageService imageService;
 	@Autowired
-	private APIUtils utils;
+	private UsuarioUtils utils;
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(method = RequestMethod.POST)

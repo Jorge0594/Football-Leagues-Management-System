@@ -3,10 +3,9 @@ package API.Liga;
 import API.Jugador.*;
 import API.Mails.MailService;
 import API.Partido.Partido;
-import API.Partido.PartidoRepository;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioRepository;
-import API.Utilidades.APIUtils;
+import API.Utilidades.UsuarioUtils;
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.*;
@@ -53,7 +52,7 @@ public class LigaController {
 	@Autowired
 	private MailService mailService;
 	@Autowired
-	private APIUtils utils;
+	private UsuarioUtils utils;
 
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(method = RequestMethod.POST)
