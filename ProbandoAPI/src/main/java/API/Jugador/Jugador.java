@@ -1,5 +1,6 @@
 package API.Jugador;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -92,7 +93,7 @@ public class Jugador implements Comparable<Jugador> {
 	
 	@JsonView(PerfilAtt.class)
 	@DBRef
-	private List<Sancion> sanciones;
+	private List<Sancion> sanciones = new ArrayList<>();
 
 	public Jugador() {
 	};
@@ -172,8 +173,6 @@ public class Jugador implements Comparable<Jugador> {
 		this.clave = new BCryptPasswordEncoder().encode(clave);
 	}
 	
-	
-
 	public String getEquipo() {
 		return equipo;
 	}

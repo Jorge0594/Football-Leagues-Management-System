@@ -1,5 +1,6 @@
 package API.Equipo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
+import API.Sancion.Sancion;
 import API.Usuario.UsuarioComponent;
 import API.UsuarioTemporal.UsuarioTemporal;
 import API.UsuarioTemporal.UsuarioTemporalRepository;
@@ -63,12 +65,15 @@ public class EquipoController {
 		 * equipo.setPartidosEmpatados(0); equipo.setPartidosGanados(0);
 		 * equipo.setPartidosPerdidos(0);
 		 */
-		//equipo.setLiga("");
+		// equipo.setLiga("");
 		equipoRepository.save(equipo);
-		if(usuarioComponent.getLoggedUser().getRol().equals("ROLE_TEMPORAL")){
-			UsuarioTemporal usuarioTemporal = temporalRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario());
-			if(usuarioTemporal == null){
-				//Si el equipo lo ha creado un usuario temporal pero no se le encuentra en la BBDD, se borrará el equipo para evitar problemas.
+		if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_TEMPORAL")) {
+			UsuarioTemporal usuarioTemporal = temporalRepository
+					.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario());
+			if (usuarioTemporal == null) {
+				// Si el equipo lo ha creado un usuario temporal pero no se le
+				// encuentra en la BBDD, se borrará el equipo para evitar
+				// problemas.
 				equipoRepository.delete(equipo);
 				return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 			}
@@ -77,6 +82,55 @@ public class EquipoController {
 			temporalRepository.save(usuarioTemporal);
 		}
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);
+	}
+
+	@JsonView(PerfilView.class)
+	@RequestMapping(value = "/temporal", method = RequestMethod.POST)
+	public ResponseEntity<Equipo> crearEquipoTemporal(@RequestBody Equipo equipo) {
+		UsuarioTemporal usuario = temporalRepository
+				.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario());
+		if (usuario == null) {
+			return new ResponseEntity<Equipo>(HttpStatus.UNAUTHORIZED);
+		}
+		System.out.println(equipo);
+		equipo.setId(null);
+		equipo.setLiga(usuario.getLiga());
+		equipo.setAceptado(false);
+		equipo.setImagenEquipo("shield.png");
+		
+		equipoRepository.save(equipo);
+		
+		List<Jugador>listaJugadores = new ArrayList<>();
+		
+		for(Jugador jugador: equipo.getPlantillaEquipo()){
+			
+			jugador.setEquipo(equipo.getId());
+			jugador.setAceptado(false);
+			jugador.setId(null);
+			jugador.setFotoJugador("defaultProfile.jpg");
+			jugador.setLiga("");
+			jugador.setGoles(0);
+			jugador.setTarjetasAmarillas(0);
+			jugador.setTarjetasRojas(0);
+			jugador.setSanciones(new ArrayList<Sancion>());
+			
+			jugadorRepository.save(jugador);
+			
+			listaJugadores.add(jugador);
+			
+		}
+		
+		equipo.setPlantillaEquipo(listaJugadores);
+		
+		equipoRepository.save(equipo);
+		
+		System.out.println(equipo);
+		
+		usuario.setEquipoId(equipo.getId());
+		
+		temporalRepository.save(usuario);
+
+		return new ResponseEntity<Equipo>(HttpStatus.OK);
 	}
 
 	@JsonView(PerfilView.class)
@@ -104,18 +158,19 @@ public class EquipoController {
 		}
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 	}
-	
+
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/validar/{nombre}/{liga}", method = RequestMethod.GET)
-	public ResponseEntity<Equipo>disponibleNombreEquipoLiga(@PathVariable (value = "nombre")String nombre, @PathVariable (value = "liga")String liga){
+	public ResponseEntity<Equipo> disponibleNombreEquipoLiga(@PathVariable(value = "nombre") String nombre,
+			@PathVariable(value = "liga") String liga) {
 		Equipo equipo = equipoRepository.findByLigaAndNombreAllIgnoreCase(liga, nombre);
-		if(equipo != null){
+		if (equipo != null) {
 			return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
 		}
-		
+
 		return new ResponseEntity<Equipo>(HttpStatus.OK);
 	}
-	
+
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Equipo> verEquipoId(@PathVariable String id) {
@@ -175,11 +230,14 @@ public class EquipoController {
 		if (!jugador.getEquipo().equals("")) {
 			if (!equipo.getPlantillaEquipo().contains(jugador)) {
 				Equipo aux = equipoRepository.findById(jugador.getEquipo());
-				/*if (!aux.getLiga().equals(equipo.getLiga()) && (!aux.getLiga().equals("")) && (aux.isAceptado())) {
-					Liga ligaAux = ligaRepository.findByNombreIgnoreCase(aux.getLiga());
-					ligaAux.getGoleadores().remove(jugador);
-					ligaRepository.save(ligaAux);
-				}*/
+				/*
+				 * if (!aux.getLiga().equals(equipo.getLiga()) &&
+				 * (!aux.getLiga().equals("")) && (aux.isAceptado())) { Liga
+				 * ligaAux =
+				 * ligaRepository.findByNombreIgnoreCase(aux.getLiga());
+				 * ligaAux.getGoleadores().remove(jugador);
+				 * ligaRepository.save(ligaAux); }
+				 */
 				aux.getPlantillaEquipo().remove(jugador);
 				equipoRepository.save(aux);
 			} else {
@@ -208,13 +266,22 @@ public class EquipoController {
 			equipo.getPlantillaEquipo().remove(jugador);
 			jugador.setEquipo("");
 			jugador.setLiga("");
-			
+
 			jugadorRepository.save(jugador);
 			equipoRepository.save(equipo);
-			
+
 			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-			if(liga != null && liga.getGoleadores().contains(jugador)){//Elimina a el jugador si se encuentra entre los goleadores
-				List<Jugador>jugadores = jugadorRepository.findByLigaIgnoreCase(liga.getNombre());
+			if (liga != null && liga.getGoleadores().contains(jugador)) {// Elimina
+																			// a
+																			// el
+																			// jugador
+																			// si
+																			// se
+																			// encuentra
+																			// entre
+																			// los
+																			// goleadores
+				List<Jugador> jugadores = jugadorRepository.findByLigaIgnoreCase(liga.getNombre());
 				liga.crearGoleadores(jugadores);
 				ligaRepository.save(liga);
 			}
@@ -231,19 +298,30 @@ public class EquipoController {
 		if (equipo == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
+		System.out.println("Llega el equipo " + equipo);
 
-		if (!equipo.getLiga().equals("")) {
+		if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
+			System.out.println("Entra en borrado liga");
 			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
 			liga.getGoleadores().removeAll(equipo.getPlantillaEquipo());
 			liga.getClasificacion().remove(equipo);
 			ligaRepository.save(liga);
 		}
-
-		for (Jugador j : equipo.getPlantillaEquipo()) {
-			j.setEquipo("");
-			jugadorRepository.save(j);
+		
+		System.out.println("Llega a borrado de plantilla");
+		
+		if(equipo.getPlantillaEquipo() != null){
+			System.out.println("Entra en borrado jugadores");
+			for (Jugador j : equipo.getPlantillaEquipo()) {
+				j.setEquipo("");
+				jugadorRepository.save(j);
+			}
 		}
+		
+		System.out.println("Llega a borrado del equipo");
 		equipoRepository.delete(equipo);
+		
+		System.out.println("El equipo ha sido borrado");
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 	}
 }
