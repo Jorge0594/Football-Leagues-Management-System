@@ -221,13 +221,15 @@ public class Equipo implements Comparable<Equipo> {
 		this.estadioEquipo = estadioEquipo;
 	}
 
+
 	@Override
 	public String toString() {
-		return "Team [id=" + id + ", nombre=" + nombre + ", liga=" + liga + ", ciudad=" + ciudad + ", imagenEquipo="
-				+ imagenEquipo + ", posicion=" + posicion + ", puntos=" + puntos + ", golesEncajados=" + golesEncajados
-				+ ", goles=" + goles + ", partidosGanados=" + partidosGanados + ", partidosPerdidos=" + partidosPerdidos
-				+ ", partidosEmpatados=" + partidosEmpatados + ", partidosJugados=" + partidosJugados
-				+ ", plantillaEquipo=" + plantillaEquipo + "]";
+		return "Equipo [id=" + id + ", nombre=" + nombre + ", liga=" + liga + ", ciudad=" + ciudad + ", imagenEquipo="
+				+ imagenEquipo + ", aceptado=" + aceptado + ", posicion=" + posicion + ", puntos=" + puntos + ", goles="
+				+ goles + ", golesEncajados=" + golesEncajados + ", partidosGanados=" + partidosGanados
+				+ ", partidosPerdidos=" + partidosPerdidos + ", partidosEmpatados=" + partidosEmpatados
+				+ ", partidosJugados=" + partidosJugados + ", estadioEquipo=" + estadioEquipo + ", plantillaEquipo="
+				+ plantillaEquipo + "]";
 	}
 
 	@Override

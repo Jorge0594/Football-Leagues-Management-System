@@ -19,6 +19,7 @@ import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
+import API.Sancion.Sancion;
 import API.Usuario.UsuarioComponent;
 import API.UsuarioTemporal.UsuarioTemporal;
 import API.UsuarioTemporal.UsuarioTemporalRepository;
@@ -32,7 +33,7 @@ public class EquipoController {
 	public interface RankView extends Equipo.RankAtt {
 	}
 
-	public interface PerfilView extends Equipo.RankAtt, Equipo.PerfilAtt, Jugador.EquipoAtt {
+	public interface PerfilView extends Equipo.RankAtt, Equipo.PerfilAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Sancion.SancionAtt, Sancion.JugadorAtt {
 	}
 
 	public interface JugadorView extends Jugador.PerfilAtt, Jugador.EquipoAtt {
@@ -65,23 +66,60 @@ public class EquipoController {
 		equipo.setPuntos();
 		equipo.setId(null);
 		equipo.setPlantillaEquipo(new ArrayList<Jugador>());
-		Liga ligaEquipo = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());	
+		
+		Liga ligaEquipo = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
+		
 		equipo.setPosicion(ligaEquipo.getClasificacion().size()+1);
 		equipoRepository.save(equipo);
+		
 		ligaEquipo.getClasificacion().add(equipo);
-
-		if(usuarioComponent.getLoggedUser().getRol().equals("ROLE_TEMPORAL")){
-			UsuarioTemporal usuarioTemporal = temporalRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario());
-			if(usuarioTemporal == null){
-				//Si el equipo lo ha creado un usuario temporal pero no se le encuentra en la BBDD, se borrará el equipo para evitar problemas.
-				equipoRepository.delete(equipo);
-				return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
-			}
-			usuarioTemporal.setEquipoId(equipo.getId());
-			usuarioTemporal.setNombreEquipo(equipo.getNombre());
-			temporalRepository.save(usuarioTemporal);
-		}
+		ligaRepository.save(ligaEquipo);
+		
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);
+	}
+
+	@JsonView(PerfilView.class)
+	@RequestMapping(value = "/temporal", method = RequestMethod.POST)
+	public ResponseEntity<Equipo> crearEquipoTemporal(@RequestBody Equipo equipo) {
+		UsuarioTemporal usuario = temporalRepository
+				.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario());
+		if (usuario == null) {
+			return new ResponseEntity<Equipo>(HttpStatus.UNAUTHORIZED);
+		}
+		equipo.setId(null);
+		equipo.setLiga(usuario.getLiga());
+		equipo.setAceptado(false);
+		equipo.setImagenEquipo("shield.png");
+		
+		equipoRepository.save(equipo);
+		
+		List<Jugador>listaJugadores = new ArrayList<>();
+		
+		for(Jugador jugador: equipo.getPlantillaEquipo()){
+			
+			jugador.setEquipo(equipo.getId());
+			jugador.setAceptado(false);
+			jugador.setId(null);
+			jugador.setFotoJugador("defaultProfile.jpg");
+			jugador.setLiga("");
+			jugador.setGoles(0);
+			jugador.setTarjetasAmarillas(0);
+			jugador.setTarjetasRojas(0);
+			jugador.setSanciones(new ArrayList<Sancion>());
+			
+			jugadorRepository.save(jugador);
+			
+			listaJugadores.add(jugador);
+			
+		}
+		
+		equipo.setPlantillaEquipo(listaJugadores);
+		equipoRepository.save(equipo);
+		
+		usuario.setEquipoId(equipo.getId());
+		temporalRepository.save(usuario);
+
+		return new ResponseEntity<Equipo>(HttpStatus.OK);
 	}
 
 	@JsonView(PerfilView.class)
@@ -109,18 +147,19 @@ public class EquipoController {
 		}
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 	}
-	
+
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/validar/{nombre}/{liga}", method = RequestMethod.GET)
-	public ResponseEntity<Equipo>disponibleNombreEquipoLiga(@PathVariable (value = "nombre")String nombre, @PathVariable (value = "liga")String liga){
+	public ResponseEntity<Equipo> disponibleNombreEquipoLiga(@PathVariable(value = "nombre") String nombre,
+			@PathVariable(value = "liga") String liga) {
 		Equipo equipo = equipoRepository.findByLigaAndNombreAllIgnoreCase(liga, nombre);
-		if(equipo != null){
+		if (equipo != null) {
 			return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
 		}
-		
+
 		return new ResponseEntity<Equipo>(HttpStatus.OK);
 	}
-	
+
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Equipo> verEquipoId(@PathVariable String id) {
@@ -180,11 +219,14 @@ public class EquipoController {
 		if (!jugador.getEquipo().equals("")) {
 			if (!equipo.getPlantillaEquipo().contains(jugador)) {
 				Equipo aux = equipoRepository.findById(jugador.getEquipo());
-				/*if (!aux.getLiga().equals(equipo.getLiga()) && (!aux.getLiga().equals("")) && (aux.isAceptado())) {
-					Liga ligaAux = ligaRepository.findByNombreIgnoreCase(aux.getLiga());
-					ligaAux.getGoleadores().remove(jugador);
-					ligaRepository.save(ligaAux);
-				}*/
+				/*
+				 * if (!aux.getLiga().equals(equipo.getLiga()) &&
+				 * (!aux.getLiga().equals("")) && (aux.isAceptado())) { Liga
+				 * ligaAux =
+				 * ligaRepository.findByNombreIgnoreCase(aux.getLiga());
+				 * ligaAux.getGoleadores().remove(jugador);
+				 * ligaRepository.save(ligaAux); }
+				 */
 				aux.getPlantillaEquipo().remove(jugador);
 				equipoRepository.save(aux);
 			} else {
@@ -213,13 +255,22 @@ public class EquipoController {
 			equipo.getPlantillaEquipo().remove(jugador);
 			jugador.setEquipo("");
 			jugador.setLiga("");
-			
+
 			jugadorRepository.save(jugador);
 			equipoRepository.save(equipo);
-			
+
 			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-			if(liga != null && liga.getGoleadores().contains(jugador)){//Elimina a el jugador si se encuentra entre los goleadores
-				List<Jugador>jugadores = jugadorRepository.findByLigaIgnoreCase(liga.getNombre());
+			if (liga != null && liga.getGoleadores().contains(jugador)) {// Elimina
+																			// a
+																			// el
+																			// jugador
+																			// si
+																			// se
+																			// encuentra
+																			// entre
+																			// los
+																			// goleadores
+				List<Jugador> jugadores = jugadorRepository.findByLigaIgnoreCase(liga.getNombre());
 				liga.crearGoleadores(jugadores);
 				ligaRepository.save(liga);
 			}
@@ -237,18 +288,23 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 
-		if (!equipo.getLiga().equals("")) {
+		if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
 			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
 			liga.getGoleadores().removeAll(equipo.getPlantillaEquipo());
 			liga.getClasificacion().remove(equipo);
 			ligaRepository.save(liga);
 		}
-
-		for (Jugador j : equipo.getPlantillaEquipo()) {
-			j.setEquipo("");
-			jugadorRepository.save(j);
+		
+		
+		if(equipo.getPlantillaEquipo() != null){
+			for (Jugador j : equipo.getPlantillaEquipo()) {
+				j.setEquipo("");
+				jugadorRepository.save(j);
+			}
 		}
+		
 		equipoRepository.delete(equipo);
+		
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 	}
 }

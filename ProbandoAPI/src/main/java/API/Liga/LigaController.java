@@ -1,8 +1,11 @@
 package API.Liga;
 
 import API.Jugador.*;
+import API.Mails.MailService;
 import API.Partido.Partido;
-import API.Partido.PartidoRepository;
+import API.Usuario.Usuario;
+import API.Usuario.UsuarioRepository;
+import API.Utilidades.UsuarioUtils;
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.*;
@@ -43,9 +46,13 @@ public class LigaController {
 	@Autowired
 	private ArbitroRepository arbitroRepository;
 	@Autowired
-	private PartidoRepository partidoRepository;
+	private UsuarioRepository usuarioRepository;
 	@Autowired
 	private JugadorRepository jugadorRepository;
+	@Autowired
+	private MailService mailService;
+	@Autowired
+	private UsuarioUtils utils;
 
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -99,7 +106,7 @@ public class LigaController {
 
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(value = "/{nombre}/equipo/{idEquipo}", method = RequestMethod.PUT)
-	public ResponseEntity<Liga> añadirEquipo(@PathVariable(value = "nombre") String nombre, @PathVariable(value = "idEquipo") String idEquipo) {
+	public ResponseEntity<Liga> aceptarEquipo(@PathVariable(value = "nombre") String nombre, @PathVariable(value = "idEquipo") String idEquipo) {
 		Equipo equipo = equipoRepository.findById(idEquipo);
 		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
 		if (liga == null || equipo == null) {
@@ -118,14 +125,26 @@ public class LigaController {
 			equipo.setLiga(liga.getNombre());
 			equipo.setAceptado(true);
 			for(Jugador j : equipo.getPlantillaEquipo()){
+				String clave = utils.generarClave();
+				
 				j.setAceptado(true);
 				j.setLiga(liga.getNombre());
+				j.setNombreUsuario(utils.generarNombreUsuario(j.getNombre(), j.getApellidos()));
+				j.setClaveEncriptada(clave);
+				
+				String texto = j.getNombre() + ";" + j.getNombreUsuario() + ";" + clave;
+				mailService.getMail().mandarEmail(j.getEmail(), "Nombre de usuario y contraseña ", texto, "jugador");
+				
+				Usuario usuario = new Usuario(j.getNombreUsuario(), j.getClave(), "ROLE_JUGADOR");
+				usuarioRepository.save(usuario);
+				
 				jugadorRepository.save(j);
+				
+				
 			}
 			equipoRepository.save(equipo);
 
 			liga.getClasificacion().add(equipo);
-			//liga.getGoleadores().addAll(equipo.getPlantillaEquipo());//No queremos tener a todos los jugadorss en la clasificacion
 
 			ligaRepository.save(liga);
 			return new ResponseEntity<Liga>(liga, HttpStatus.OK);
