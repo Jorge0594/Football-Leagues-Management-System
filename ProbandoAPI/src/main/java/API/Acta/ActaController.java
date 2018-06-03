@@ -199,6 +199,20 @@ public class ActaController {
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}*/
+	@JsonView(ActaView.class)
+	@RequestMapping(value = "/actualizar/{idActa}", method = RequestMethod.PUT)
+	public ResponseEntity<Acta> actualizarActa(@PathVariable(value = "idActa") String idActa, @RequestBody Acta actaEntrada) {
+		Acta acta = actaRepository.findById(idActa);
+		if (acta == null || acta.isAceptada() || acta.getIdEquipoLocal() == null || acta.getIdEquipoVisitante() == null){
+			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		acta.setGolesLocal(actaEntrada.getGolesLocal());
+		acta.setGolesVisitante(actaEntrada.getGolesVisitante());
+		acta.setIncidencias(actaEntrada.getIncidencias());
+		acta.setObservaciones(actaEntrada.getObservaciones());
+		actaRepository.save(acta);
+		return new ResponseEntity<Acta>(acta, HttpStatus.OK);
+	}
 	
 	@JsonView(ActaView.class)
 	@RequestMapping(value = "/aceptar/{idActa}", method = RequestMethod.PUT)

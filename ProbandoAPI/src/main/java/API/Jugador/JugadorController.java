@@ -81,6 +81,7 @@ public class JugadorController {
 		jugador.setGoles(0);
 		jugador.setTarjetasAmarillas(0);
 		jugador.setTarjetasRojas(0);
+		jugador.setFotoJugador("defaultProfile.jpg");
 		jugador.setSanciones(new ArrayList<Sancion>());
 		if (jugador.isAceptado()) {
 			Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
