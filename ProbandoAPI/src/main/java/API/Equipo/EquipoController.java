@@ -36,7 +36,7 @@ public class EquipoController {
 	public interface RankView extends Equipo.RankAtt {
 	}
 
-	public interface PerfilView extends Equipo.RankAtt, Equipo.PerfilAtt, Jugador.EquipoAtt {
+	public interface PerfilView extends Equipo.RankAtt, Equipo.PerfilAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Sancion.SancionAtt, Sancion.JugadorAtt {
 	}
 
 	public interface JugadorView extends Jugador.PerfilAtt, Jugador.EquipoAtt {

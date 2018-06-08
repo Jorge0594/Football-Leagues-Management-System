@@ -74,11 +74,10 @@ public class JugadorController {
 		jugador.setClaveEncriptada(clave);
 		jugador.setNombreUsuario(utils.generarNombreUsuario(jugador.getNombre(), jugador.getApellidos()));
 		jugador.setId(null);
-		jugador.setFotoJugador("defaultProfile.jpg");
-		jugador.setLiga("");
 		jugador.setGoles(0);
 		jugador.setTarjetasAmarillas(0);
 		jugador.setTarjetasRojas(0);
+		jugador.setFotoJugador("defaultProfile.jpg");
 		jugador.setSanciones(new ArrayList<Sancion>());
 		if (jugador.isAceptado()) {
 			Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
@@ -225,8 +224,9 @@ public class JugadorController {
 			usuario.setClave(jugador.getClave());
 			usuarioRepository.save(usuario);
 			jugadorRepository.save(jugador);
-			String credenciales = jugador.getNombreUsuario() + ";" + clave;
-			mailService.getMail().mandarEmail(jugador.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
+			String credenciales = jugador.getNombreUsuario() + ";" + clave; 
+			//Deshabilitado de momento
+			//mailService.getMail().mandarEmail(jugador.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
 			return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 		}
 	}
@@ -252,7 +252,6 @@ public class JugadorController {
 		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario());
 		switch (usuarioComponent.getLoggedUser().getRol()) {
 		case "ROLE_JUGADOR":
-
 			if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())) {
 
 				jugador.setNombre(entrada.getNombre());
@@ -294,33 +293,57 @@ public class JugadorController {
 			} else {
 				return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 			}
-		case "ROLE_ADMIN":
-		case "ROLE_MIEMBROCOMITE":
+		case "ROLE_ADMIN":		
 			jugador.setNombre(entrada.getNombre());
 			jugador.setApellidos(entrada.getApellidos());
 			jugador.setCapitan(entrada.isCapitan());
+			jugador.setEdad(entrada.getEdad());
 			jugador.setEmail(entrada.getEmail());
 			jugador.setDni(entrada.getDni());
-			jugador.setNombreUsuario(entrada.getNombreUsuario());
-
-			if (!jugador.getClave().equals(entrada.getClave()) && entrada.getClave() != null) {
-				jugador.setClaveEncriptada(entrada.getClave());
-				usuario.setClave(jugador.getClave());
-			}
 			jugador.setDorsal(entrada.getDorsal());
 			jugador.setGoles(entrada.getGoles());
 			jugador.setSanciones(entrada.getSanciones());
 			jugador.setNacionalidad(entrada.getNacionalidad());
 			jugador.setEstado(entrada.getEstado());
 			jugador.setPosicion(entrada.getPosicion());
-			jugador.setGoles(entrada.getGoles());
 			jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
 			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
 			jugador.setFechaNacimiento(entrada.getFechaNacimiento());
 			jugador.setLugarNacimiento(entrada.getLugarNacimiento());
-
-			usuario.setNombreUsuario(jugador.getNombreUsuario());
-			usuarioRepository.save(usuario);
+			if(!jugador.getEquipo().equals(entrada.getEquipo())) {
+				Equipo antiguo = equipoRepository.findById(jugador.getEquipo());
+				antiguo.getPlantillaEquipo().remove(jugador);
+				equipoRepository.save(antiguo);
+				Equipo nuevo = equipoRepository.findById(entrada.getEquipo());
+				nuevo.getPlantillaEquipo().add(jugador);
+				equipoRepository.save(nuevo);
+			}
+		case "ROLE_MIEMBROCOMITE":
+			jugador.setNombre(entrada.getNombre());
+			jugador.setApellidos(entrada.getApellidos());
+			jugador.setEdad(entrada.getEdad());
+			jugador.setCapitan(entrada.isCapitan());
+			jugador.setEmail(entrada.getEmail());
+			jugador.setDni(entrada.getDni());
+			jugador.setNombreUsuario(entrada.getNombreUsuario());
+			jugador.setDorsal(entrada.getDorsal());
+			jugador.setGoles(entrada.getGoles());
+			jugador.setSanciones(entrada.getSanciones());
+			jugador.setNacionalidad(entrada.getNacionalidad());
+			jugador.setEstado(entrada.getEstado());
+			jugador.setPosicion(entrada.getPosicion());
+			jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
+			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
+			jugador.setFechaNacimiento(entrada.getFechaNacimiento());
+			jugador.setLugarNacimiento(entrada.getLugarNacimiento());
+			if(!jugador.getEquipo().equals(entrada.getEquipo())) {
+				Equipo antiguo = equipoRepository.findById(jugador.getEquipo());
+				antiguo.getPlantillaEquipo().remove(jugador);
+				equipoRepository.save(antiguo);
+				Equipo nuevo = equipoRepository.findById(entrada.getEquipo());
+				nuevo.getPlantillaEquipo().add(jugador);
+				equipoRepository.save(nuevo);
+			}
 			break;
 		default:
 			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
@@ -344,14 +367,14 @@ public class JugadorController {
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}/foto", method = RequestMethod.PUT)
-	public ResponseEntity<Jugador> modificarImagenPerfil(@PathVariable String id,
+	public  ResponseEntity<Jugador> modificarImagenPerfil(@PathVariable String id,
 			@RequestParam("File") MultipartFile file) {
 		Jugador jugador = jugadorRepository.findById(id);
 		if (jugador == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
 		if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())
-				|| usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE")) {
+				|| usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") ||  usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
 				jugador.setFotoJugador(imageService.getImg().getFileName());
@@ -366,6 +389,30 @@ public class JugadorController {
 		}
 	}
 
+	@JsonView(ProfileView.class)
+	@RequestMapping(value = "dni/{dni}/foto", method = RequestMethod.PUT)
+	public ResponseEntity<Jugador> modificarImagenPerfilDni(@PathVariable String dni,
+			@RequestParam("File") MultipartFile file) {
+		Jugador jugador = jugadorRepository.findByDniIgnoreCase(dni);
+		if (jugador == null) {
+			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
+		}
+		if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())
+				|| usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") ||  usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
+			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
+			if (cambioFoto) {
+				jugador.setFotoJugador(imageService.getImg().getFileName());
+				jugadorRepository.save(jugador);
+				return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
+			}
+
+		} else {
+			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
+		}
+	}
+	
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Jugador> eliminarJugador(@PathVariable String id) {
