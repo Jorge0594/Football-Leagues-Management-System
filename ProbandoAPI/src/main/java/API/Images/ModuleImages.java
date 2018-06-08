@@ -82,7 +82,7 @@ public class ModuleImages {
 		return true;
 	}
 	
-	public static BufferedImage toBufferedImage(Image image){
+	private static BufferedImage toBufferedImage(Image image){
 		if(image instanceof BufferedImage){//Si la imagen recibida ya es BufferedImage
 			return (BufferedImage)image;
 		}

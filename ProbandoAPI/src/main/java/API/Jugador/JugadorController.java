@@ -65,12 +65,8 @@ public class JugadorController {
 	@JsonView(ProfileView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Jugador> crearJugador(@RequestBody Jugador jugador) {
-		System.out.println("Llego aqui " + jugador);
-		System.out.println("DNI: " + jugadorRepository.findByDniIgnoreCase(jugador.getDni()));
-		System.out.println("Email " + jugadorRepository.findByEmailIgnoreCase(jugador.getEmail()));
 		if (jugadorRepository.findByDniIgnoreCase(jugador.getDni()) != null
 				|| jugadorRepository.findByEmailIgnoreCase(jugador.getEmail()) != null) {
-			System.out.println("Entro aqui");
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		
