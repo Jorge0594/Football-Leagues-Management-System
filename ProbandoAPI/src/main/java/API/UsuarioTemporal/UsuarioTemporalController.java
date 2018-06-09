@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
 import API.Mails.MailService;
-import API.Solicitud.Solicitud;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
@@ -44,6 +43,7 @@ public class UsuarioTemporalController {
 				usuarioRepository.findByNombreUsuarioIgnoreCase(usuarioTemporal.getNombreUsuario())!= null){
 			return new ResponseEntity<UsuarioTemporal>(HttpStatus.NOT_ACCEPTABLE);
 		}
+		//A efectos de testing no se genera automaticamente la clave ni el usuario
 		String clave = usuarioTemporal.getClave();
 		
 		usuarioTemporal.setId(null);

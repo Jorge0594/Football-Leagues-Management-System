@@ -30,7 +30,8 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/clave/{email}").permitAll();
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/validar/email/{email}").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/validar/dni/{dni}").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN","TEMPORAL");
-		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/**").hasAnyRole("JUGADOR","ARBITRO","MIEMBROCOMITE","ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/{id}/foto").hasAnyRole("TEMPORAL","MIEMBROCOMITE","ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/jugadores/**").hasAnyRole("JUGADOR", "MIEMBROCOMITE","ARBITRO","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/jugadores/**").hasAnyRole("JUGADOR", "MIEMBROCOMITE","ARBITRO","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/jugadores/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		
@@ -40,6 +41,7 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/validar/{nombre}/{liga}").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/id/{id}").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/**").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/equipos//imagen/{id}").hasAnyRole("TEMPORAL","MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/equipos/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/equipos/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		

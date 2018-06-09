@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.Images.ImageService;
 import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
 import API.Liga.Liga;
@@ -49,6 +52,8 @@ public class EquipoController {
 	private UsuarioComponent usuarioComponent;
 	@Autowired
 	private UsuarioTemporalRepository temporalRepository;
+	@Autowired
+	private ImageService imageService;
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -180,6 +185,26 @@ public class EquipoController {
 
 		return new ResponseEntity<List<Jugador>>(equipo.getPlantillaEquipo(), HttpStatus.OK);
 	}
+	
+	@JsonView(PerfilView.class)
+	@RequestMapping(value = "/imagen/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Equipo>cambiarImagenEquipo(@PathVariable String id, @RequestParam("File")MultipartFile file){
+		Equipo equipo = equipoRepository.findById(id);
+		if(equipo == null){
+			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
+		}
+		
+		if(imageService.getImg().cambiarFoto(equipo.getNombre() + equipo.getLiga(), file)){
+			equipo.setImagenEquipo(imageService.getImg().getFileName());
+			
+			equipoRepository.save(equipo);
+		} else {
+			return new ResponseEntity<Equipo>(HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
+		
+	}
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT)
@@ -295,14 +320,26 @@ public class EquipoController {
 			ligaRepository.save(liga);
 		}
 		
+		//Testing
 		
-		if(equipo.getPlantillaEquipo() != null){
-			for (Jugador j : equipo.getPlantillaEquipo()) {
-				j.setEquipo("");
-				jugadorRepository.save(j);
+		UsuarioTemporal usuarioTemporal = temporalRepository.findByEquipoId(id);
+		if(usuarioTemporal != null){
+			System.out.println("Borrado de jugadores del equipo de usuario temporal");
+			usuarioTemporal.setEquipoId("");
+			temporalRepository.save(usuarioTemporal);
+			
+			for(Jugador j : equipo.getPlantillaEquipo()){
+				jugadorRepository.delete(j);
+			}
+		} else {
+			if(equipo.getPlantillaEquipo() != null){
+				for (Jugador j : equipo.getPlantillaEquipo()) {
+					j.setEquipo("");
+					jugadorRepository.save(j);
+				}
 			}
 		}
-		
+	
 		equipoRepository.delete(equipo);
 		
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);

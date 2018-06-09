@@ -11,4 +11,6 @@ public interface UsuarioTemporalRepository extends MongoRepository<UsuarioTempor
 	UsuarioTemporal findByEmail(String email);
 	
 	UsuarioTemporal findByIp(String ip);
+	
+	UsuarioTemporal findByEquipoId(String equipoId);
 }
