@@ -13,12 +13,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonView;
 import API.Acta.Acta;
 import API.Acta.ActaRepository;
 import API.Equipo.Equipo;
 import API.Jugador.Jugador;
+import API.Jugador.JugadorController.ProfileView;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
 import API.Partido.Partido;
@@ -28,7 +32,9 @@ import API.Sancion.SancionRepository;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
-
+import API.Images.ImageService;
+import API.Utilidades.UsuarioUtils;
+import API.Mails.MailService;
 @RestController
 @CrossOrigin
 @RequestMapping("/arbitros")
@@ -51,16 +57,22 @@ public class ArbitroController {
 	PartidoRepository partidoRepository;
 	@Autowired
 	SancionRepository sancionRepository;
-
+	@Autowired
+	private ImageService imageService;
+	@Autowired
+	private UsuarioUtils utils;
+	@Autowired
+	private MailService mailService;
+	
 	@JsonView(ArbitroView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Arbitro> creaArbitro(@RequestBody Arbitro arbitro) {
 		if (arbitroRepository.findByDniIgnoreCase(arbitro.getDni()) != null) {
 			return new ResponseEntity<Arbitro>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		String clave = generarClave();
+		String clave = utils.generarClave();
 		arbitro.setClaveEncriptada(clave);
-		arbitro.setNombreUsuario(generarNombreUsuario(arbitro.getNombre(), arbitro.getApellidos()));
+		arbitro.setNombreUsuario(utils.generarNombreUsuario(arbitro.getNombre(), arbitro.getApellidos()));
 		arbitro.setId(null);
 		arbitro.setPartidosArbitrados(new ArrayList<Partido>());
 
@@ -69,9 +81,8 @@ public class ArbitroController {
 		arbitroRepository.save(arbitro);
 		
 		String texto = arbitro.getNombre() + ";" + arbitro.getNombreUsuario() + ";" + clave;
-		// mailService.getMail().mandarEmail(arbitro.getEmail(),"Nombre de
-		// usuario y contraseña",texto);//Comentado para que no problemas con
-		// mails que no existen.
+		/*mailService.getMail().mandarEmail(arbitro.getEmail(),"Nombre de usuario y contraseña",texto, "jugador");*/
+		
 		return new ResponseEntity<Arbitro>(arbitro, HttpStatus.CREATED);
 	}
 
@@ -248,34 +259,54 @@ public class ArbitroController {
 			return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
 		}
 	}
-	private static String generarClave() {// Genera una clave con caracteres
-		// ASCII aleatorios
-		String clave = "";
-		Random rnd = new Random();
-		for (int i = 0; i < 5; i++) {
-			clave = clave + ((char) (rnd.nextInt(27) + 63));// Caracteres del
-						// '?' a la 'Z'
-			clave = clave + ((char) (rnd.nextInt(25) + 97));// Carateres de la
-						// 'a' a la 'z'
+	
+	@JsonView(ProfileView.class)
+	@RequestMapping(value = "dni/{dni}/foto", method = RequestMethod.PUT)
+	public ResponseEntity<Arbitro> modificarImagenPerfilDni(@PathVariable String dni,
+			@RequestParam("File") MultipartFile file) {
+		Arbitro arbitro = arbitroRepository.findByDniIgnoreCase(dni);
+		if (arbitro == null) {
+			return new ResponseEntity<Arbitro>(HttpStatus.NO_CONTENT);
 		}
-		return clave;
+		if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(arbitro.getNombreUsuario())
+				|| usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") ||  usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
+			boolean cambioFoto = imageService.getImg().cambiarFoto(arbitro.getDni(), file);
+			if (cambioFoto) {
+				arbitro.setFotoArbitro(imageService.getImg().getFileName());
+				arbitroRepository.save(arbitro);
+				return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Arbitro>(HttpStatus.NOT_ACCEPTABLE);
+			}
+
+		} else {
+			return new ResponseEntity<Arbitro>(HttpStatus.UNAUTHORIZED);
+		}
 	}
 	
-	private String generarNombreUsuario(String nombre, String apellidos) {
-
-		String apellido[] = apellidos.split(" ");
-
-		String usuario = nombre + apellido[0].toUpperCase();
-
-		while (usuarioRepository.findByNombreUsuarioIgnoreCase(usuario) != null) {
-			Random rnd = new Random();
-			int num = rnd.nextInt(1000);
-			if (usuarioRepository.findByNombreUsuarioIgnoreCase((usuario += num)) == null) {
-				usuario += num;
+	@JsonView(ProfileView.class)
+	@RequestMapping(value = "clave/{email:.+}", method = RequestMethod.GET)
+	public ResponseEntity<Arbitro> claveOlvidada(@PathVariable String email) {
+		Arbitro arbitro = arbitroRepository.findByEmailIgnoreCase(email);
+		if (arbitro == null) {
+			return new ResponseEntity<Arbitro>(HttpStatus.NOT_ACCEPTABLE);
+		} else {
+			Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(arbitro.getNombreUsuario());
+			if (usuario == null) {
+				return new ResponseEntity<Arbitro>(HttpStatus.NOT_ACCEPTABLE);
 			}
+			String clave = utils.generarClave();
+			arbitro.setClaveEncriptada(clave);
+			usuario.setClave(arbitro.getClave());
+			usuarioRepository.save(usuario);
+			arbitroRepository.save(arbitro);
+			String credenciales = arbitro.getNombreUsuario() + ";" + clave; 
+			//Deshabilitado de momento
+			//mailService.getMail().mandarEmail(arbitro.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
+			return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
 		}
-		return usuario;
 	}
+	
 
 
 }
