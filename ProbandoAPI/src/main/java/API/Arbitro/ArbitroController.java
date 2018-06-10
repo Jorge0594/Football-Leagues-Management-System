@@ -272,7 +272,7 @@ public class ArbitroController {
 				|| usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") ||  usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(arbitro.getDni(), file);
 			if (cambioFoto) {
-				arbitro.setFotoArbitro(imageService.getImg().getFileName());
+				arbitro.setFotoArbitro(imageService.getImg().getNombreFichero());
 				arbitroRepository.save(arbitro);
 				return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
 			} else {
