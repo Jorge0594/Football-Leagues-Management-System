@@ -377,7 +377,7 @@ public class JugadorController {
 				|| usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") ||  usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
-				jugador.setFotoJugador(imageService.getImg().getFileName());
+				jugador.setFotoJugador(imageService.getImg().getNombreFichero());
 				jugadorRepository.save(jugador);
 				return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 			} else {
@@ -401,7 +401,7 @@ public class JugadorController {
 				|| usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") ||  usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
-				jugador.setFotoJugador(imageService.getImg().getFileName());
+				jugador.setFotoJugador(imageService.getImg().getNombreFichero());
 				jugadorRepository.save(jugador);
 				return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 			} else {

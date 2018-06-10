@@ -195,7 +195,7 @@ public class EquipoController {
 		}
 		
 		if(imageService.getImg().cambiarFoto(equipo.getNombre() + equipo.getLiga(), file)){
-			equipo.setImagenEquipo(imageService.getImg().getFileName());
+			equipo.setImagenEquipo(imageService.getImg().getNombreFichero());
 			
 			equipoRepository.save(equipo);
 		} else {

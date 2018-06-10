@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ImageService {
-
+	
 	@Autowired
 	ModuleImages img;
 	
@@ -22,5 +22,5 @@ public class ImageService {
 	public void setImg(ModuleImages img) {
 		this.img = img;
 	}
-	 
+
 }
