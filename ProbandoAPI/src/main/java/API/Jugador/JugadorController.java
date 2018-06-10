@@ -106,9 +106,8 @@ public class JugadorController {
 		
 		jugadorRepository.save(jugador);
 
-
 		String texto = jugador.getNombre() + ";" + jugador.getNombreUsuario() + ";" + clave;
-		mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de usuario y contraseña",texto, "jugador");
+		/*mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de usuario y contraseña",texto, "jugador");*/
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.CREATED);
 	}
 

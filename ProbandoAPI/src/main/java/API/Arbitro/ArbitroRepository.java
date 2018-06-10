@@ -10,5 +10,6 @@ public interface ArbitroRepository extends MongoRepository<Arbitro,String>{
 	Arbitro findByNombreUsuario(String nombreUsuario);
 	List<Arbitro> findByComite(String comite);
 	List<Arbitro> findByNombre(String nombre);
+	Arbitro findByEmailIgnoreCase(String email);
 	
 }
