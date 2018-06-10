@@ -85,6 +85,7 @@ public class ModuleImages {
 			File file = conversorFicheros(multipartFile);
 			redimensionadorImagen(file);
 			clienteAmazon.putObject(new PutObjectRequest(nombreBucket, nombreFichero, file).withCannedAcl(CannedAccessControlList.PublicRead));
+			file.delete();
 			
 			return true;
 		} catch (Exception e) {
@@ -159,9 +160,9 @@ public class ModuleImages {
 	}
 
 	private File conversorFicheros(MultipartFile multipartFile) throws IOException {
-		try {
-			File file = new File(multipartFile.getOriginalFilename());
-			FileOutputStream fos = new FileOutputStream(file);
+		File file = new File(multipartFile.getOriginalFilename());
+		try (FileOutputStream fos = new FileOutputStream(file)){
+			
 			fos.write(multipartFile.getBytes());
 			fos.close();
 
