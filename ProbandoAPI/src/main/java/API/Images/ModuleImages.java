@@ -6,38 +6,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import API.ConexionesAmazon.AmazonBucket;
 
 @Component
 @ComponentScan
 @EnableAutoConfiguration
 public class ModuleImages {
 
-	@Value("${amazonProperties.endpointUrl}")
-	private String url;
-	@Value("${amazonProperties.accessKey}")
-	private String claveAccesoS3;
-	@Value("${amazonProperties.secretKey}")
-	private String claveSecretaS3;
-	@Value("${amazonProperties.bucketName}")
-	private String nombreBucket;
-	private AmazonS3 clienteAmazon;
+	@Autowired
+	private AmazonBucket amazonBucket;
 	private String nombreFichero;
 
 	public ModuleImages() {
@@ -84,7 +68,7 @@ public class ModuleImages {
 		try {
 			File file = conversorFicheros(multipartFile);
 			redimensionadorImagen(file);
-			clienteAmazon.putObject(new PutObjectRequest(nombreBucket, nombreFichero, file).withCannedAcl(CannedAccessControlList.PublicRead));
+			amazonBucket.añadirFichero(nombreFichero, file);
 			file.delete();
 			
 			return true;
@@ -95,7 +79,7 @@ public class ModuleImages {
 	
 	public boolean eleminarFoto(String nombre){
 		try {
-			clienteAmazon.deleteObject(new DeleteObjectRequest(nombreBucket + "/", nombre));
+			amazonBucket.eliminarFichero(nombre);
 			return true;
 		}catch (Exception e) {
 			return false;
@@ -108,44 +92,6 @@ public class ModuleImages {
 
 	public void setNombreFichero(String nombreFichero) {
 		this.nombreFichero = nombreFichero;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public String getClaveAccesoS3() {
-		return claveAccesoS3;
-	}
-
-	public void setClaveAccesoS3(String claveAccesoS3) {
-		this.claveAccesoS3 = claveAccesoS3;
-	}
-
-	public String getClaveSecreta() {
-		return claveSecretaS3;
-	}
-
-	public void setClaveSecreta(String claveSecretaS3) {
-		this.claveSecretaS3 = claveSecretaS3;
-	}
-
-	public String getNombreBucket() {
-		return nombreBucket;
-	}
-
-	public void setNombreBucket(String nombreBucket) {
-		this.nombreBucket = nombreBucket;
-	}
-
-	@PostConstruct
-	private void iniciarAmazon() {
-		AWSCredentials credenciales = new BasicAWSCredentials(claveAccesoS3, claveSecretaS3);
-		clienteAmazon = AmazonS3ClientBuilder.standard().withRegion("eu-west-2").withCredentials(new AWSStaticCredentialsProvider(credenciales)).build();
 	}
 
 	private BufferedImage toBufferedImage(Image image) {

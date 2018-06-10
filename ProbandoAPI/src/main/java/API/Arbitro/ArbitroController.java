@@ -2,9 +2,7 @@ package API.Arbitro;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import API.Acta.Acta;
 import API.Acta.ActaRepository;
-import API.Equipo.Equipo;
-import API.Jugador.Jugador;
 import API.Jugador.JugadorController.ProfileView;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
@@ -35,6 +30,7 @@ import API.Usuario.UsuarioRepository;
 import API.Images.ImageService;
 import API.Utilidades.UsuarioUtils;
 import API.Mails.MailService;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/arbitros")
