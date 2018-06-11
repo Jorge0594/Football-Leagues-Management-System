@@ -65,11 +65,10 @@ public class JugadorController {
 	@JsonView(ProfileView.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Jugador> crearJugador(@RequestBody Jugador jugador) {
-		if (jugadorRepository.findByDniIgnoreCase(jugador.getDni()) != null
-				|| jugadorRepository.findByEmailIgnoreCase(jugador.getEmail()) != null) {
+		if (jugadorRepository.findByDniIgnoreCase(jugador.getDni()) != null || jugadorRepository.findByEmailIgnoreCase(jugador.getEmail()) != null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		
+
 		String clave = utils.generarClave();
 		jugador.setClaveEncriptada(clave);
 		jugador.setNombreUsuario(utils.generarNombreUsuario(jugador.getNombre(), jugador.getApellidos()));
@@ -86,28 +85,31 @@ public class JugadorController {
 
 		Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
 		usuarioRepository.save(usuario);
-		
-		if(jugador.getEquipo()!= null && !jugador.getEquipo().equals("")){
+
+		if (jugador.getEquipo() != null && !jugador.getEquipo().equals("")) {
 
 			Equipo equipo = equipoRepository.findById(jugador.getEquipo());
-			
-			if(equipo == null){
+
+			if (equipo == null) {
 				return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 			}
-			
-			if(!equipo.getLiga().equals("") && equipo.isAceptado()){
+
+			if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
 				jugador.setLiga(equipo.getLiga());
 			}
-			
+
 			equipo.getPlantillaEquipo().add(jugador);
 			equipoRepository.save(equipo);
-			
+
 		}
-		
+
 		jugadorRepository.save(jugador);
 
 		String texto = jugador.getNombre() + ";" + jugador.getNombreUsuario() + ";" + clave;
-		/*mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de usuario y contraseña",texto, "jugador");*/
+		/*
+		 * mailService.getMail().mandarEmail(jugador.getEmail()
+		 * ,"Nombre de usuario y contraseña",texto, "jugador");
+		 */
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.CREATED);
 	}
 
@@ -130,15 +132,12 @@ public class JugadorController {
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/usuario", method = RequestMethod.GET)
 	public ResponseEntity<Jugador> verPerfilJugadorUsuario() {
-		return new ResponseEntity<Jugador>(
-				jugadorRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario()),
-				HttpStatus.OK);
+		return new ResponseEntity<Jugador>(jugadorRepository.findByNombreUsuarioIgnoreCase(usuarioComponent.getLoggedUser().getNombreUsuario()), HttpStatus.OK);
 	}
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{nombre}/{apellidos}", method = RequestMethod.GET)
-	public ResponseEntity<Jugador> verJugadorApellidos(@PathVariable(value = "nombre") String nombre,
-			@PathVariable(value = "apellidos") String apellidos) {
+	public ResponseEntity<Jugador> verJugadorApellidos(@PathVariable(value = "nombre") String nombre, @PathVariable(value = "apellidos") String apellidos) {
 		Jugador jugador = jugadorRepository.findByNombreAndApellidosAllIgnoreCase(nombre, apellidos);
 		if (jugador == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_FOUND);
@@ -178,8 +177,7 @@ public class JugadorController {
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/estado/{estado}/{equipo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Jugador>> verJugadorEstadoEquipo(@PathVariable(value = "estado") String estado,
-			@PathVariable(value = "equipo") String equipo) {
+	public ResponseEntity<List<Jugador>> verJugadorEstadoEquipo(@PathVariable(value = "estado") String estado, @PathVariable(value = "equipo") String equipo) {
 		List<Jugador> jugadores = jugadorRepository.findByEstadoAndEquipoAllIgnoreCase(estado, equipo);
 		if (jugadores.isEmpty()) {
 			return new ResponseEntity<List<Jugador>>(HttpStatus.NO_CONTENT);
@@ -223,9 +221,10 @@ public class JugadorController {
 			usuario.setClave(jugador.getClave());
 			usuarioRepository.save(usuario);
 			jugadorRepository.save(jugador);
-			String credenciales = jugador.getNombreUsuario() + ";" + clave; 
-			//Deshabilitado de momento
-			//mailService.getMail().mandarEmail(jugador.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
+			String credenciales = jugador.getNombreUsuario() + ";" + clave;
+			// Deshabilitado de momento
+			// mailService.getMail().mandarEmail(jugador.getEmail(), "Nueva
+			// contraseña", credenciales, "claveusuario");
 			return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 		}
 	}
@@ -242,8 +241,7 @@ public class JugadorController {
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Jugador> actualizaJugadorId(@PathVariable(value = "id") String id,
-			@RequestBody Jugador entrada) {
+	public ResponseEntity<Jugador> actualizaJugadorId(@PathVariable(value = "id") String id, @RequestBody Jugador entrada) {
 		Jugador jugador = jugadorRepository.findById(id);
 		if (jugador == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
@@ -281,10 +279,8 @@ public class JugadorController {
 			 * jugador.setTarjetasRojas(entrada.getTarjetasRojas()); } else {
 			 * return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED); }
 			 */
-			Arbitro arbitro = arbitroRepository
-					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
-			if (!partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(arbitro.getId(),
-					jugador.getEquipo(), jugador.getEquipo()).isEmpty()) {
+			Arbitro arbitro = arbitroRepository.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
+			if (!partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(arbitro.getId(), jugador.getEquipo(), jugador.getEquipo()).isEmpty()) {
 				jugador.setGoles(entrada.getGoles());
 				jugador.setTarjetasAmarillas(entrada.getTarjetasAmarillas());
 				jugador.setTarjetasRojas(entrada.getTarjetasRojas());
@@ -292,7 +288,7 @@ public class JugadorController {
 			} else {
 				return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 			}
-		case "ROLE_ADMIN":		
+		case "ROLE_ADMIN":
 			jugador.setNombre(entrada.getNombre());
 			jugador.setApellidos(entrada.getApellidos());
 			jugador.setCapitan(entrada.isCapitan());
@@ -309,7 +305,7 @@ public class JugadorController {
 			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
 			jugador.setFechaNacimiento(entrada.getFechaNacimiento());
 			jugador.setLugarNacimiento(entrada.getLugarNacimiento());
-			if(!jugador.getEquipo().equals(entrada.getEquipo())) {
+			if (!jugador.getEquipo().equals(entrada.getEquipo())) {
 				Equipo antiguo = equipoRepository.findById(jugador.getEquipo());
 				antiguo.getPlantillaEquipo().remove(jugador);
 				equipoRepository.save(antiguo);
@@ -335,7 +331,7 @@ public class JugadorController {
 			jugador.setTarjetasRojas(entrada.getTarjetasRojas());
 			jugador.setFechaNacimiento(entrada.getFechaNacimiento());
 			jugador.setLugarNacimiento(entrada.getLugarNacimiento());
-			if(!jugador.getEquipo().equals(entrada.getEquipo())) {
+			if (!jugador.getEquipo().equals(entrada.getEquipo())) {
 				Equipo antiguo = equipoRepository.findById(jugador.getEquipo());
 				antiguo.getPlantillaEquipo().remove(jugador);
 				equipoRepository.save(antiguo);
@@ -366,14 +362,12 @@ public class JugadorController {
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}/foto", method = RequestMethod.PUT)
-	public  ResponseEntity<Jugador> modificarImagenPerfil(@PathVariable String id,
-			@RequestParam("File") MultipartFile file) {
+	public ResponseEntity<Jugador> modificarImagenPerfil(@PathVariable String id, @RequestParam("File") MultipartFile file) {
 		Jugador jugador = jugadorRepository.findById(id);
 		if (jugador == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
-		if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())
-				|| usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") ||  usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
+		if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario()) || usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") || usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
 				jugador.setFotoJugador(imageService.getImg().getNombreFichero());
@@ -390,14 +384,12 @@ public class JugadorController {
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "dni/{dni}/foto", method = RequestMethod.PUT)
-	public ResponseEntity<Jugador> modificarImagenPerfilDni(@PathVariable String dni,
-			@RequestParam("File") MultipartFile file) {
+	public ResponseEntity<Jugador> modificarImagenPerfilDni(@PathVariable String dni, @RequestParam("File") MultipartFile file) {
 		Jugador jugador = jugadorRepository.findByDniIgnoreCase(dni);
 		if (jugador == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
-		if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario())
-				|| usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") ||  usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
+		if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario()) || usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") || usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
 				jugador.setFotoJugador(imageService.getImg().getNombreFichero());
@@ -411,7 +403,7 @@ public class JugadorController {
 			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 		}
 	}
-	
+
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Jugador> eliminarJugador(@PathVariable String id) {
