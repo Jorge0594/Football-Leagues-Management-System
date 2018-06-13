@@ -12,7 +12,6 @@ import API.Equipo.*;
 
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +60,7 @@ public class LigaController {
 			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		liga.setId(null);
+		liga.setNombre(liga.getNombre().toUpperCase());
 		ligaRepository.save(liga);
 		return new ResponseEntity<Liga>(liga, HttpStatus.CREATED);
 	}
@@ -70,10 +70,9 @@ public class LigaController {
 		return new ResponseEntity<List<Liga>>(ligaRepository.findAll(), HttpStatus.OK);
 	}
 	
-	
 	@RequestMapping(value= "/nombres", method = RequestMethod.GET)
 	public ResponseEntity<List<Liga>> verNombresLigas() {
-		return new ResponseEntity<List<Liga>>(ligaRepository.findCustomNombresliga(), HttpStatus.OK);
+		return new ResponseEntity<List<Liga>>(ligaRepository.findCustomNombresLiga(), HttpStatus.OK);
 	}
 
 	@JsonView(InfoLigaView.class)
@@ -82,22 +81,21 @@ public class LigaController {
 		return new ResponseEntity<Liga>(ligaRepository.findByNombreIgnoreCase(nombre), HttpStatus.OK);
 	}
 
-	@JsonView(ClasificacionView.class)
+	@JsonView(InfoLigaView.class)
 	@RequestMapping(value = "/{nombre}/clasificacion", method = RequestMethod.GET)
-	public ResponseEntity<List<Equipo>> verClasificacion(@PathVariable String nombre) {
-		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
+	public ResponseEntity<Liga> verClasificacion(@PathVariable String nombre) {
+		Liga liga = ligaRepository.findCustomLigaClasificacion(nombre);
 		if (liga == null) {
-			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Liga>(HttpStatus.NO_CONTENT);
 		}
-		//Collections.sort(liga.getClasificacion());
 
-		return new ResponseEntity<List<Equipo>>(liga.getClasificacion(), HttpStatus.OK);
+		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
 	}
 
 	@JsonView(GoleadoresView.class)
 	@RequestMapping(value = "/{nombre}/goleadores", method = RequestMethod.GET)
 	public ResponseEntity<List<Jugador>> verGoleadores(@PathVariable String nombre) {
-		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
+		Liga liga = ligaRepository.findCustomLigaGoleadores(nombre);
 		if (liga == null) {
 			return new ResponseEntity<List<Jugador>>(HttpStatus.NO_CONTENT);
 		}
