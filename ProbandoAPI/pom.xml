@@ -4,8 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>ProbandoAPI</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>FootballLeagueManagmentAPI</artifactId>
 	<packaging>jar</packaging>
 	<name>ProbandoAPI</name>
 	<description>API Rest with MongoDB</description>
@@ -78,4 +77,5 @@
 	</build>
 
 
+	<version>3</version>
 </project>
