@@ -246,7 +246,6 @@ public class ActaController {
 		if (partidoDelActa == null) {
 			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
 		} else {
-			// Si el usuario conectado es un árbitro.
 			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
 				Arbitro arbitroConectado = arbitroRepository.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
 				// Si un árbitro intenta crear un acta que no sea de un partido
@@ -318,7 +317,7 @@ public class ActaController {
 	}
 
 
-	public void actualizarEquipos(Acta acta) {
+	private void actualizarEquipos(Acta acta) {
 
 		Equipo local = equipoRepository.findById(acta.getIdEquipoLocal());
 		Equipo visitante = equipoRepository.findById(acta.getIdEquipoVisitante());
@@ -367,7 +366,7 @@ public class ActaController {
 		equipoRepository.save(visitante);
 	}
 	
-	public void actualizarJugadores(Acta acta, Liga liga) {
+	private void actualizarJugadores(Acta acta, Liga liga) {
 	
 		for(Incidencia incidencia: acta.getIncidencias()) {
 			Jugador jugador = jugadorRepository.findById(incidencia.getIdJugador());
@@ -412,7 +411,7 @@ public class ActaController {
 		}
 	}
 	
-	public void actualizarPartido(Acta acta) {
+	private void actualizarPartido(Acta acta) {
 		Partido partido = partidoRepository.findById(acta.getIdPartido());
 		partido.setEstado("Disputado");
 		partido.setGolesLocal(acta.getGolesLocal());

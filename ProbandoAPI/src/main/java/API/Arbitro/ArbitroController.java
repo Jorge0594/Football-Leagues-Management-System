@@ -153,9 +153,31 @@ public class ArbitroController {
 			else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
-
 		}
-
+	}
+	
+	@JsonView(ArbitroView.class)
+	@RequestMapping(value = "/clave/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Arbitro>cambiarClave(@PathVariable String id, @RequestBody String clave){
+		Arbitro arbitro = arbitroRepository.findById(id);
+		
+		if(arbitro == null){
+			return new ResponseEntity<Arbitro>(HttpStatus.NO_CONTENT);
+		}
+		
+		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(arbitro.getNombreUsuario());
+		
+		if(usuario == null){
+			return new ResponseEntity<Arbitro>(HttpStatus.NO_CONTENT);
+		}
+		
+		arbitro.setClaveEncriptada(clave);
+		usuario.setClave(arbitro.getClave());
+		
+		arbitroRepository.save(arbitro);
+		usuarioRepository.save(usuario);
+		
+		return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
 	}
 
 	@JsonView(ArbitroView.class)

@@ -84,7 +84,7 @@ public class LigaController {
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(value = "/{nombre}/clasificacion", method = RequestMethod.GET)
 	public ResponseEntity<Liga> verClasificacion(@PathVariable String nombre) {
-		Liga liga = ligaRepository.findCustomLigaClasificacion(nombre);
+		Liga liga = ligaRepository.findCustomLigaClasificacion(nombre.toUpperCase());
 		if (liga == null) {
 			return new ResponseEntity<Liga>(HttpStatus.NO_CONTENT);
 		}

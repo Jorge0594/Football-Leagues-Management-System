@@ -156,7 +156,7 @@ public class JugadorController {
 	}
 
 	@JsonView(PerfilView.class)
-	@RequestMapping(value = "validar/dni/{dni}")
+	@RequestMapping(value = "validar/dni/{dni}", method = RequestMethod.GET)
 	public ResponseEntity<Jugador> dniDisponible(@PathVariable String dni) {
 		Jugador jugador = jugadorRepository.findByDniIgnoreCase(dni);
 		if (jugador != null) {
@@ -223,8 +223,7 @@ public class JugadorController {
 			jugadorRepository.save(jugador);
 			String credenciales = jugador.getNombreUsuario() + ";" + clave;
 			// Deshabilitado de momento
-			// mailService.getMail().mandarEmail(jugador.getEmail(), "Nueva
-			// contraseña", credenciales, "claveusuario");
+			 mailService.getMail().mandarEmail(jugador.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
 			return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 		}
 	}
@@ -402,6 +401,24 @@ public class JugadorController {
 		} else {
 			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 		}
+	}
+	
+	@JsonView(PerfilView.class)
+	@RequestMapping(value = "/clave/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Jugador> cambiarClave(@PathVariable String id, @RequestBody String clave) {
+		Jugador jugador = jugadorRepository.findById(id);
+		if (jugador == null) {
+			return new ResponseEntity<Jugador>(HttpStatus.CONFLICT);
+		}
+		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario());
+		
+		jugador.setClaveEncriptada(clave);
+		usuario.setClave(jugador.getClave());
+		
+		usuarioRepository.save(usuario);
+		jugadorRepository.save(jugador);
+		
+		return new ResponseEntity<Jugador>(HttpStatus.OK);
 	}
 
 	@JsonView(ProfileView.class)

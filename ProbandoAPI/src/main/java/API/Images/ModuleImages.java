@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import API.ConexionesAmazon.AmazonBucket;
 
 @Component
-@ComponentScan
 @EnableAutoConfiguration
 public class ModuleImages {
 

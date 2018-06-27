@@ -3,7 +3,6 @@ package API.Partido;
 import java.util.Collections;
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import API.Acta.Acta;
-import API.Acta.ActaRepository;
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
@@ -26,11 +23,8 @@ import API.Estadio.Estadio;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
 import API.Jugador.Jugador;
-import API.Jugador.JugadorRepository;
-import API.Liga.Liga;
 import API.Liga.LigaRepository;
 import API.Sancion.Sancion;
-import API.Usuario.UsuarioComponent;
 
 @RestController
 @CrossOrigin
@@ -45,8 +39,6 @@ public class PartidoController {
 	private PartidoRepository partidoRepository;
 	@Autowired
 	private ArbitroRepository arbitroRepository;
-	@Autowired
-	private ActaRepository actaRepository;
 	@Autowired
 	private IncidenciaRepository incidenciaRepository;
 	@Autowired

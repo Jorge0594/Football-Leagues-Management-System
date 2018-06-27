@@ -10,11 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import API.Acta.Acta;
-import API.Equipo.Equipo;
 import API.Estadio.Estadio;
 import API.Incidencia.Incidencia;
-import API.Jugador.Jugador;
 
 @Document(collection = "Partido")
 public class Partido implements Comparable<Partido> {
