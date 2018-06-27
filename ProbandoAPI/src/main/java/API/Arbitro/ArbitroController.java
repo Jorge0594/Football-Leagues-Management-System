@@ -303,7 +303,7 @@ public class ArbitroController {
 	}
 	
 	@JsonView(ProfileView.class)
-	@RequestMapping(value = "clave/{email:.+}", method = RequestMethod.GET)
+	@RequestMapping(value = "/clave/{email:.+}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> claveOlvidada(@PathVariable String email) {
 		Arbitro arbitro = arbitroRepository.findByEmailIgnoreCase(email);
 		if (arbitro == null) {
@@ -320,7 +320,7 @@ public class ArbitroController {
 			arbitroRepository.save(arbitro);
 			String credenciales = arbitro.getNombreUsuario() + ";" + clave; 
 			//Deshabilitado de momento
-			//mailService.getMail().mandarEmail(arbitro.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
+			mailService.getMail().mandarEmail(arbitro.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
 			return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
 		}
 	}
