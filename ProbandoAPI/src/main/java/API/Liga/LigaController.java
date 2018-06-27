@@ -13,6 +13,7 @@ import API.Equipo.*;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -80,16 +81,18 @@ public class LigaController {
 	public ResponseEntity<Liga> verLigaNombre(@PathVariable String nombre) {
 		return new ResponseEntity<Liga>(ligaRepository.findByNombreIgnoreCase(nombre), HttpStatus.OK);
 	}
+	
 
 	@JsonView(InfoLigaView.class)
-	@RequestMapping(value = "/{nombre}/clasificacion", method = RequestMethod.GET)
-	public ResponseEntity<Liga> verClasificacion(@PathVariable String nombre) {
-		Liga liga = ligaRepository.findCustomLigaClasificacion(nombre.toUpperCase());
-		if (liga == null) {
-			return new ResponseEntity<Liga>(HttpStatus.NO_CONTENT);
+	@RequestMapping(value = "{nombre}/clasificacion")
+	public ResponseEntity<List<Equipo>> verClasificacion(@PathVariable String nombre) {
+		Sort sort = new Sort(Sort.Direction.DESC, "puntos");
+		List<Equipo> equipos = equipoRepository.findCustomClasificacion(nombre.toUpperCase(), sort);
+		if (equipos == null) {
+			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
 		}
 
-		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
+		return new ResponseEntity<List<Equipo>>(equipos, HttpStatus.OK);
 	}
 
 	@JsonView(GoleadoresView.class)
