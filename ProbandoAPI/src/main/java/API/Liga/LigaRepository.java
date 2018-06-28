@@ -14,6 +14,6 @@ public interface LigaRepository extends MongoRepository<Liga, String> {
 	@Query(value = "{}", fields = "{'nombre':1}")
 	List<Liga> findCustomNombresLiga();
 	
-	@Query(value = "{'nombre':?0}", fields = "{'_id':0, 'goleadores': 1}")
+	@Query(value = "{'nombre':?0}", fields = "{'goleadores': 1}")
 	Liga findCustomLigaGoleadores(String nombre);
 }
