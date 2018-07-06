@@ -2,6 +2,7 @@ package API.Liga;
 
 import API.Jugador.*;
 import API.Mails.MailService;
+import API.MongoBulk.MongoBulk;
 import API.Partido.Partido;
 import API.Partido.PartidoRepository;
 import API.Usuario.Usuario;
@@ -11,6 +12,7 @@ import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -61,6 +63,8 @@ public class LigaController {
 	private MailService mailService;
 	@Autowired
 	private UsuarioUtils utils;
+	@Autowired
+	private MongoBulk<Partido> mongoBulk;
 
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -235,7 +239,12 @@ public class LigaController {
 
 			List<Partido> partidos = generarCalendarioLiga(mapaEquipos, fechaInicio, nombreLiga, Integer.parseInt(duracionJornada));
 
-			partidos.forEach(p -> partidoRepository.save(p));
+			try {
+				mongoBulk.insertarBloque(partidos, "Partido");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
+			}
 
 			return new ResponseEntity<List<Partido>>(partidos, HttpStatus.OK);
 
@@ -243,12 +252,12 @@ public class LigaController {
 	}
 
 	private List<Partido> generarCalendarioLiga(Map<String, Equipo> mapaEquipos, String fechaInicio, String nombreLiga, int duracionJornada) {
-
-		List<String> idEquipos = mapaEquipos.keySet().stream().collect(Collectors.toList());
+		
+		List<String> idEquipos  = new ArrayList<>();
+		idEquipos.addAll(mapaEquipos.keySet());
 
 		TournamentCalendar generadorCalendario = new TournamentCalendar(idEquipos, fechaInicio, duracionJornada);
 		List<Round> calendario = generadorCalendario.getSchedule();
-	
 		
 		return calendario.stream()
 				.map(round -> {
