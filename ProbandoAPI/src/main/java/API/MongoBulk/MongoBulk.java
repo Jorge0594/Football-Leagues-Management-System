@@ -9,13 +9,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MongoBulk<T> {
+public class MongoBulk {
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
 	
-	public void insertarBloque(List<T>documentos, String nombreColeccion) throws Exception{
+	public void insertarBloque(List<? extends Object>documentos, String nombreColeccion) throws Exception{
 		try {
+			
 			BulkOperations bulk = mongoTemplate.bulkOps(BulkMode.UNORDERED, nombreColeccion);
 			bulk.insert(documentos);
 			

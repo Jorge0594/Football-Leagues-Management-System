@@ -64,7 +64,7 @@ public class LigaController {
 	@Autowired
 	private UsuarioUtils utils;
 	@Autowired
-	private MongoBulk<Partido> mongoBulk;
+	private MongoBulk mongoBulk;
 
 	@JsonView(InfoLigaView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -96,7 +96,7 @@ public class LigaController {
 	}
 
 	@JsonView(InfoLigaView.class)
-	@RequestMapping(value = "{nombre}/clasificacion")
+	@RequestMapping(value = "{nombre}/clasificacion" , method = RequestMethod.GET)
 	public ResponseEntity<List<Equipo>> verClasificacion(@PathVariable String nombre) {
 		Sort sort = new Sort(Sort.Direction.DESC, "puntos");
 		List<Equipo> equipos = equipoRepository.findCustomClasificacion(nombre.toUpperCase(), sort);
@@ -105,6 +105,28 @@ public class LigaController {
 		}
 
 		return new ResponseEntity<List<Equipo>>(equipos, HttpStatus.OK);
+	}
+	
+	@JsonView(InfoLigaView.class)
+	@RequestMapping(value = "/{nombreLiga}/generarCalendario/{fechaInicio}/{duracionJornada}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> generarCalendario(@PathVariable(value = "nombreLiga") String nombreLiga, @PathVariable(value = "fechaInicio") String fechaInicio, @PathVariable(value = "duracionJornada") String duracionJornada) {
+	
+			List<Equipo> equipos = equipoRepository.findCustomEquiposLiga(nombreLiga.toUpperCase(), true);
+			Map<String, Equipo> mapaEquipos = equipos.stream()
+					.collect(Collectors.toMap(Equipo::getId, Function.identity()));
+
+			List<Partido> partidos = generarCalendarioLiga(mapaEquipos, fechaInicio, nombreLiga, Integer.parseInt(duracionJornada));
+
+			try {
+				mongoBulk.insertarBloque(partidos, "Partido");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
+			}
+
+			return new ResponseEntity<List<Partido>>(partidos, HttpStatus.OK);
+
+		
 	}
 
 	@JsonView(GoleadoresView.class)
@@ -227,28 +249,6 @@ public class LigaController {
 		}
 		ligaRepository.delete(liga);
 		return new ResponseEntity<Liga>(liga, HttpStatus.OK);
-	}
-
-	@JsonView(InfoLigaView.class)
-	@RequestMapping(value = "/{nombreLiga}/generarCalendario/{fechaInicio}/{duracionJornada}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> generarCalendario(@PathVariable(value = "nombreLiga") String nombreLiga, @PathVariable(value = "fechaInicio") String fechaInicio, @PathVariable(value = "duracionJornada") String duracionJornada) {
-	
-			List<Equipo> equipos = equipoRepository.findCustomEquiposLiga(nombreLiga.toUpperCase(), true);
-			Map<String, Equipo> mapaEquipos = equipos.stream()
-					.collect(Collectors.toMap(Equipo::getId, Function.identity()));
-
-			List<Partido> partidos = generarCalendarioLiga(mapaEquipos, fechaInicio, nombreLiga, Integer.parseInt(duracionJornada));
-
-			try {
-				mongoBulk.insertarBloque(partidos, "Partido");
-			} catch (Exception e) {
-				e.printStackTrace();
-				return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
-			}
-
-			return new ResponseEntity<List<Partido>>(partidos, HttpStatus.OK);
-
-		
 	}
 
 	private List<Partido> generarCalendarioLiga(Map<String, Equipo> mapaEquipos, String fechaInicio, String nombreLiga, int duracionJornada) {
