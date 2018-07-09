@@ -86,17 +86,6 @@ public class PartidoController {
 	}
 
 	@JsonView(PartidoView.class)
-	@RequestMapping(value = "/jornadaOpt/{jornada}/{nombreLiga}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> verPartidosJornadaOpt(@PathVariable(value = "jornada") int jornada, @PathVariable(value = "nombreLiga") String nombreLiga) {
-		Sort sort = new Sort(Sort.Direction.DESC, "fechaPartido", "horaPartido");
-		List<Partido> entrada = partidoRepository.findCustomPartidosJornada(jornada, nombreLiga.toUpperCase(), sort);
-		if (entrada.isEmpty()) {
-			return new ResponseEntity<List<Partido>>(HttpStatus.NO_CONTENT);
-		}
-		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
-	}
-
-	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/equipoLocal/{equipoLocalId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Partido>> verPartidosEquipoLocal(@PathVariable String equipoLocalId) {
 		List<Partido> entrada = partidoRepository.findByEquipoLocalId(equipoLocalId);

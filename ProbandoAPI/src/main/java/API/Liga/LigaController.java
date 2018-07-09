@@ -12,6 +12,8 @@ import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -51,8 +55,6 @@ public class LigaController {
 	private EquipoRepository equipoRepository;
 	@Autowired
 	private LigaRepository ligaRepository;
-	@Autowired
-	private PartidoRepository partidoRepository;
 	@Autowired
 	private ArbitroRepository arbitroRepository;
 	@Autowired
@@ -262,7 +264,7 @@ public class LigaController {
 		return calendario.stream()
 				.map(round -> {
 					return new Partido(nombreLiga, round.getLocalId(), mapaEquipos.get(round.getLocalId()).getNombre(), round.getVisitorId(),
-							mapaEquipos.get(round.getLocalId()).getNombre(), mapaEquipos.get(round.getVisitorId()).getImagenEquipo(),
+							mapaEquipos.get(round.getVisitorId()).getNombre(), mapaEquipos.get(round.getLocalId()).getImagenEquipo(),
 								mapaEquipos.get(round.getVisitorId()).getImagenEquipo(), round.getDate(), round.getRoundNum());
 		}).collect(Collectors.toList());
 
