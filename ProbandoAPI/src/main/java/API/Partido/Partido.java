@@ -115,6 +115,19 @@ public class Partido implements Comparable<Partido> {
 		this.idActa = idActa;
 	}
 
+	public Partido(String liga, String equipoLocalId, String equipoLocalNombre, String equipoVisitanteId, String equipoVisitanteNombre, String equipoLocalEscudo, String equipoVisitanteEscudo, String fechaPartido, int jornada) {
+		super();
+		this.liga = liga;
+		this.equipoLocalId = equipoLocalId;
+		this.equipoLocalNombre = equipoLocalNombre;
+		this.equipoVisitanteId = equipoVisitanteId;
+		this.equipoVisitanteNombre = equipoVisitanteNombre;
+		this.equipoLocalEscudo = equipoLocalEscudo;
+		this.equipoVisitanteEscudo = equipoVisitanteEscudo;
+		this.fechaPartido = fechaPartido;
+		this.jornada = jornada;
+	}
+
 	public String getId() {
 		return id;
 	}

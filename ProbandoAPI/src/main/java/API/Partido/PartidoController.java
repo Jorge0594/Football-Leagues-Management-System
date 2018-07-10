@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,8 +32,7 @@ import API.Sancion.Sancion;
 @RequestMapping("/partidos")
 public class PartidoController {
 
-	public interface PartidoView extends Estadio.BasicoAtt, Estadio.DatosAtt, Partido.InfoAtt, Partido.RestAtt,
-			Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Sancion.JugadorAtt, Sancion.SancionAtt {
+	public interface PartidoView extends Estadio.BasicoAtt, Estadio.DatosAtt, Partido.InfoAtt, Partido.RestAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Sancion.JugadorAtt, Sancion.SancionAtt {
 	}
 
 	@Autowired
@@ -76,8 +76,7 @@ public class PartidoController {
 
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/jornada/{jornada}/{nombreLiga}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> verPartidosJornada(@PathVariable(value = "jornada") int jornada,
-			@PathVariable(value = "nombreLiga") String nombreLiga) {
+	public ResponseEntity<List<Partido>> verPartidosJornada(@PathVariable(value = "jornada") int jornada, @PathVariable(value = "nombreLiga") String nombreLiga) {
 		List<Partido> entrada = partidoRepository.findByJornadaAndLigaIgnoreCase(jornada, nombreLiga);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NO_CONTENT);
@@ -127,8 +126,7 @@ public class PartidoController {
 
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/arbitro/{idArbitro}/estado/{estado}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> verPartidosArbitroEstado(@PathVariable String idArbitro,
-			@PathVariable String estado) {
+	public ResponseEntity<List<Partido>> verPartidosArbitroEstado(@PathVariable String idArbitro, @PathVariable String estado) {
 		List<Partido> entrada = partidoRepository.findByIdArbitroAndEstadoIgnoreCase(idArbitro, estado);
 		Collections.sort(entrada);
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
@@ -136,93 +134,71 @@ public class PartidoController {
 
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/arbitro/{idArbitro}/{idEquipo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> verPartidosArbitroEquipo(@PathVariable String idArbitro,
-			@PathVariable String idEquipo) {
-		List<Partido> entrada = partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(idArbitro,
-				idEquipo, idEquipo);
+	public ResponseEntity<List<Partido>> verPartidosArbitroEquipo(@PathVariable String idArbitro, @PathVariable String idEquipo) {
+		List<Partido> entrada = partidoRepository.findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(idArbitro, idEquipo, idEquipo);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
 	}
 
-	/*@JsonView(PartidoView.class)
-	@RequestMapping(value = "/addConvocadoLocal/{id}/{idJugador}", method = RequestMethod.PUT)
-	public ResponseEntity<Partido> nuevoConvocadoLocal(@PathVariable String id, @PathVariable String idJugador) {
-		Partido entrada = partidoRepository.findById(id);
-		// Si el partido no existe.
-		if (entrada == null) {
-			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
-		}
-		Jugador jugadorEntrada = jugadorRepository.findById(idJugador);
-		// Si no existe el jugador
-		if (jugadorEntrada == null) {
-			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
-		}
-		// Si el partido y el jugador existen.
-		// Si el usuario conectado es un árbitro.
-		if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
-			Arbitro arbitroConectado = arbitroRepository
-					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
-			// Si el árbitro conectado es el árbitro del partido.
-			if (arbitroConectado.getId().equals(entrada.getIdArbitro())) {
-				if (!entrada.getConvocadosLocal().contains(jugadorEntrada)) {
-					entrada.getConvocadosLocal().add(jugadorEntrada);
-				}
-				partidoRepository.save(entrada);
-				return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<Partido>(HttpStatus.FORBIDDEN);
-			}
-		}
-		// Si el usuario conectado no es un árbitro.
-		else {
-			if (!entrada.getConvocadosLocal().contains(jugadorEntrada)) {
-				entrada.getConvocadosLocal().add(jugadorEntrada);
-			}
-			partidoRepository.save(entrada);
-			return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
-		}
-	}
-
-	@JsonView(PartidoView.class)
-	@RequestMapping(value = "/addConvocadoVisitante/{id}/{idJugador}", method = RequestMethod.PUT)
-	public ResponseEntity<Partido> nuevoConvocadoVisitante(@PathVariable String id, @PathVariable String idJugador) {
-		Partido entrada = partidoRepository.findById(id);
-		// Si el partido no existe.
-		if (entrada == null) {
-			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
-		}
-		Jugador jugadorEntrada = jugadorRepository.findById(idJugador);
-		// Si no existe el jugador
-		if (jugadorEntrada == null) {
-			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
-		}
-		// Si el partido y el jugador existen.
-		// Si el usuario conectado es un árbitro.
-		if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
-			Arbitro arbitroConectado = arbitroRepository
-					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
-			// Si el árbitro conectado es el árbitro del partido.
-			if (arbitroConectado.getId().equals(entrada.getIdArbitro())) {
-				if (!entrada.getConvocadosVisitante().contains(jugadorEntrada)) {
-					entrada.getConvocadosVisitante().add(jugadorEntrada);
-				}
-				partidoRepository.save(entrada);
-				return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<Partido>(HttpStatus.FORBIDDEN);
-			}
-		}
-		// Si el usuario conectado no es un árbitro.
-		else {
-			if (!entrada.getConvocadosVisitante().contains(jugadorEntrada)) {
-				entrada.getConvocadosVisitante().add(jugadorEntrada);
-			}
-			partidoRepository.save(entrada);
-			return new ResponseEntity<Partido>(entrada, HttpStatus.OK);
-		}
-	}*/
+	/*
+	 * @JsonView(PartidoView.class)
+	 * 
+	 * @RequestMapping(value = "/addConvocadoLocal/{id}/{idJugador}", method =
+	 * RequestMethod.PUT) public ResponseEntity<Partido>
+	 * nuevoConvocadoLocal(@PathVariable String id, @PathVariable String
+	 * idJugador) { Partido entrada = partidoRepository.findById(id); // Si el
+	 * partido no existe. if (entrada == null) { return new
+	 * ResponseEntity<Partido>(HttpStatus.NOT_FOUND); } Jugador jugadorEntrada =
+	 * jugadorRepository.findById(idJugador); // Si no existe el jugador if
+	 * (jugadorEntrada == null) { return new
+	 * ResponseEntity<Partido>(HttpStatus.NOT_FOUND); } // Si el partido y el
+	 * jugador existen. // Si el usuario conectado es un árbitro. if
+	 * (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
+	 * Arbitro arbitroConectado = arbitroRepository
+	 * .findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario())
+	 * ; // Si el árbitro conectado es el árbitro del partido. if
+	 * (arbitroConectado.getId().equals(entrada.getIdArbitro())) { if
+	 * (!entrada.getConvocadosLocal().contains(jugadorEntrada)) {
+	 * entrada.getConvocadosLocal().add(jugadorEntrada); }
+	 * partidoRepository.save(entrada); return new
+	 * ResponseEntity<Partido>(entrada, HttpStatus.OK); } else { return new
+	 * ResponseEntity<Partido>(HttpStatus.FORBIDDEN); } } // Si el usuario
+	 * conectado no es un árbitro. else { if
+	 * (!entrada.getConvocadosLocal().contains(jugadorEntrada)) {
+	 * entrada.getConvocadosLocal().add(jugadorEntrada); }
+	 * partidoRepository.save(entrada); return new
+	 * ResponseEntity<Partido>(entrada, HttpStatus.OK); } }
+	 * 
+	 * @JsonView(PartidoView.class)
+	 * 
+	 * @RequestMapping(value = "/addConvocadoVisitante/{id}/{idJugador}", method
+	 * = RequestMethod.PUT) public ResponseEntity<Partido>
+	 * nuevoConvocadoVisitante(@PathVariable String id, @PathVariable String
+	 * idJugador) { Partido entrada = partidoRepository.findById(id); // Si el
+	 * partido no existe. if (entrada == null) { return new
+	 * ResponseEntity<Partido>(HttpStatus.NOT_FOUND); } Jugador jugadorEntrada =
+	 * jugadorRepository.findById(idJugador); // Si no existe el jugador if
+	 * (jugadorEntrada == null) { return new
+	 * ResponseEntity<Partido>(HttpStatus.NOT_FOUND); } // Si el partido y el
+	 * jugador existen. // Si el usuario conectado es un árbitro. if
+	 * (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
+	 * Arbitro arbitroConectado = arbitroRepository
+	 * .findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario())
+	 * ; // Si el árbitro conectado es el árbitro del partido. if
+	 * (arbitroConectado.getId().equals(entrada.getIdArbitro())) { if
+	 * (!entrada.getConvocadosVisitante().contains(jugadorEntrada)) {
+	 * entrada.getConvocadosVisitante().add(jugadorEntrada); }
+	 * partidoRepository.save(entrada); return new
+	 * ResponseEntity<Partido>(entrada, HttpStatus.OK); } else { return new
+	 * ResponseEntity<Partido>(HttpStatus.FORBIDDEN); } } // Si el usuario
+	 * conectado no es un árbitro. else { if
+	 * (!entrada.getConvocadosVisitante().contains(jugadorEntrada)) {
+	 * entrada.getConvocadosVisitante().add(jugadorEntrada); }
+	 * partidoRepository.save(entrada); return new
+	 * ResponseEntity<Partido>(entrada, HttpStatus.OK); } }
+	 */
 
 	@JsonView(PartidoView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
@@ -235,24 +211,24 @@ public class PartidoController {
 			return new ResponseEntity<Partido>(HttpStatus.NOT_FOUND);
 		} else {
 			/*
-			 * if (ligaDelPartido == null) { partido.setLiga(""); } else { // Borra el
-			 * partido de la anterior Liga y lo añade a la nueva // Liga. if
-			 * (!ligaDelPartido.getNombre().equals(entrada.getLiga())) {
-			 * ligaDelPartido.getPartidos().add(partido);
+			 * if (ligaDelPartido == null) { partido.setLiga(""); } else { //
+			 * Borra el partido de la anterior Liga y lo añade a la nueva //
+			 * Liga. if (!ligaDelPartido.getNombre().equals(entrada.getLiga()))
+			 * { ligaDelPartido.getPartidos().add(partido);
 			 * ligaRepository.save(ligaDelPartido); } } Liga antigua =
-			 * ligaRepository.findByNombreIgnoreCase(entrada.getLiga()); if (antigua !=
-			 * null) { antigua.getPartidos().remove(entrada); ligaRepository.save(antigua);
-			 * }
+			 * ligaRepository.findByNombreIgnoreCase(entrada.getLiga()); if
+			 * (antigua != null) { antigua.getPartidos().remove(entrada);
+			 * ligaRepository.save(antigua); }
 			 */
 			// Borra el partido del anterior árbitro y lo añade al nuevo
 			// árbitro.
 			Equipo equipoLocal = equipoRepository.findById(partido.getEquipoLocalId());
 			Equipo equipoVisitante = equipoRepository.findById(partido.getEquipoVisitanteId());
-			
-			if(equipoLocal == null || equipoVisitante == null){
+
+			if (equipoLocal == null || equipoVisitante == null) {
 				return new ResponseEntity<Partido>(HttpStatus.NOT_ACCEPTABLE);
 			}
-			
+
 			if (arbitroDelPartido == null) {
 				partido.setIdArbitro("");
 			} else {
@@ -267,7 +243,8 @@ public class PartidoController {
 				}
 			}
 			partido.setId(entrada.getId());
-			//Se asegura que el nombre del equipo y el ID pertenezcan al mismo equipo
+			// Se asegura que el nombre del equipo y el ID pertenezcan al mismo
+			// equipo
 			partido.setEquipoLocalNombre(equipoLocal.getNombre());
 			partido.setEquipoLocalEscudo(equipoLocal.getImagenEquipo());
 			partido.setEquipoVisitanteNombre(equipoVisitante.getNombre());
@@ -286,24 +263,28 @@ public class PartidoController {
 		}
 		Equipo equipoLocal = equipoRepository.findById(partido.getEquipoLocalId());
 		Equipo equipoVisitante = equipoRepository.findById(partido.getEquipoVisitanteId());
-		
-		if(equipoLocal == null || equipoVisitante == null){
+
+		if (equipoLocal == null || equipoVisitante == null) {
 			return new ResponseEntity<Partido>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		
+
 		partido.setId(null);
-		//Se asegura que el nombre del equipo y el ID pertenezcan al mismo equipo
+		// Se asegura que el nombre del equipo y el ID pertenezcan al mismo
+		// equipo
 		partido.setEquipoLocalNombre(equipoLocal.getNombre());
 		partido.setEquipoVisitanteNombre(equipoVisitante.getNombre());
 		partido.setEquipoLocalEscudo(equipoLocal.getImagenEquipo());
 		partido.setEquipoVisitanteEscudo(equipoVisitante.getImagenEquipo());
 		if (ligaRepository.findByNombreIgnoreCase(partido.getLiga()) == null) {
 			partido.setLiga("");
-		} 
+		}
 		partido.setJornada(0);
 		/*
-		 * Falta asignar la jornada según la fecha del partido, eso se hará una vez hayamos hecho los métodos para crear el calendario, 
-		 * aunque hay que tener en cuenta que este método nos se va usar casi nunca es por dar la opción de añadir un partido desde la app*/
+		 * Falta asignar la jornada según la fecha del partido, eso se hará una
+		 * vez hayamos hecho los métodos para crear el calendario, aunque hay
+		 * que tener en cuenta que este método nos se va usar casi nunca es por
+		 * dar la opción de añadir un partido desde la app
+		 */
 		partidoRepository.save(partido);
 		if (arbitroDelPartido != null) {
 			arbitroDelPartido.getPartidosArbitrados().add(partido);

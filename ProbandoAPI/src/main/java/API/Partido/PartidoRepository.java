@@ -2,9 +2,7 @@ package API.Partido;
 
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 
 public interface PartidoRepository extends MongoRepository<Partido, String> {
 	Partido findById(String id);
@@ -31,6 +29,4 @@ public interface PartidoRepository extends MongoRepository<Partido, String> {
 	
 	List<Partido> findByIdArbitroAndEstadoIgnoreCase(String idArbitro, String estado);
 	
-	@Query(value = "{'jornada':?0, 'liga':?1,}", fields = "{'equipoLocalNombre':1, 'equipoVisitanteNombre':1, 'golesLocal':1, 'golesVisitante':1, 'fechaPartido':1, 'horaPartido':1, 'jornada':1}")
-	List<Partido> findCustomPartidosJornada(int jornada, String liga, Sort sort);
 }
