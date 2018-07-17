@@ -92,7 +92,6 @@ public class Partido implements Comparable<Partido> {
 			String equipoVisitanteNombre,String equipoLocalEscudo, String equipoVisitanteEscudo, int golesLocal, int golesVisitante, String idArbitro,
 			String fechaPartido, String horaPartido, Estadio estadio, String estado, int jornada,
 			String equipacionLocal, String equipacionVisitante, List<Incidencia> incidencias, String idActa) {
-		super();
 		this.id = id;
 		this.liga = liga;
 		this.equipoLocalId = equipoLocalId;
@@ -297,7 +296,7 @@ public class Partido implements Comparable<Partido> {
 	public void setIncidencias(List<Incidencia> incidencias) {
 		this.incidencias = incidencias;
 	}
-
+	
 	public int compareTo(Partido partido2) {
 		SimpleDateFormat formateador = new SimpleDateFormat("dd-MM-yyyy");
 		try {

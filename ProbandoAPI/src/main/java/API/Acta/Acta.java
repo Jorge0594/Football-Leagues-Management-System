@@ -25,10 +25,10 @@ public class Acta {
 
 	@JsonView(ActaAtt.class)
 	private String idPartido;
-	
+
 	@JsonView(ActaAtt.class)
 	private boolean aceptada;
-	
+
 	@JsonView(ActaAtt.class)
 	private String fecha;
 
@@ -37,25 +37,37 @@ public class Acta {
 
 	@JsonView(ActaAtt.class)
 	private String idEquipoLocal;
-	
+
 	@JsonView(ActaAtt.class)
 	private String nombreEquipoLocal;
-	
+
 	@JsonView(ActaAtt.class)
 	private String escudoEquipoLocal;
 
 	@JsonView(ActaAtt.class)
 	private String idEquipoVisitante;
-	
+
 	@JsonView(ActaAtt.class)
 	private String nombreEquipoVisitante;
-	
+
 	@JsonView(ActaAtt.class)
 	private String escudoEquipoVisitante;
 
 	@JsonView(ActaAtt.class)
 	private String idArbitro;
+
+	@JsonView(ActaAtt.class)
+	private String idCapitanLocal;
 	
+	@JsonView(ActaAtt.class)
+	private String idCapitanVisitante;
+	
+	@JsonView(ActaAtt.class)
+	private List<String> idsPorterosLocal;
+	
+	@JsonView(ActaAtt.class)
+	private List<String> idsPorterosVisitante;
+
 	@JsonView(ActaAtt.class)
 	private String nombreArbitro;
 
@@ -80,8 +92,9 @@ public class Acta {
 	public Acta() {
 	}
 
-	public Acta(String id, String idPartido, String fecha, String hora, String nombreLocal, String idLocal, String escudoLocal, String nombreVisitante, String idVisitante, String escudoVisitante,
-			String idArbitro, String nombreArbitro, List<Jugador> convocadosLocal, List<Jugador> convocadosVisitante, int golesLocal,
+	public Acta(String id, String idPartido, String fecha, String hora, String nombreLocal, String idLocal,
+			String escudoLocal, String nombreVisitante, String idVisitante, String escudoVisitante, String idArbitro,
+			String idCapitanLocal, String idCapitanVisitante, List<String> idsPorterosLocal, List<String> idsPorterosVisitante, String nombreArbitro, List<Jugador> convocadosLocal, List<Jugador> convocadosVisitante, int golesLocal,
 			int golesVisitante, List<Incidencia> incidencias, String observaciones) {
 		super();
 		this.id = id;
@@ -95,6 +108,10 @@ public class Acta {
 		this.escudoEquipoVisitante = escudoVisitante;
 		this.idEquipoVisitante = idVisitante;
 		this.idArbitro = idArbitro;
+		this.idCapitanLocal = idCapitanLocal;
+		this.idCapitanVisitante = idCapitanVisitante;
+		this.idsPorterosLocal = idsPorterosLocal;
+		this.idsPorterosVisitante = idsPorterosVisitante;
 		this.nombreArbitro = nombreArbitro;
 		this.convocadosLocal = convocadosLocal;
 		this.convocadosVisitante = convocadosVisitante;
@@ -152,7 +169,6 @@ public class Acta {
 		this.hora = hora;
 	}
 
-
 	public String getIdEquipoLocal() {
 		return idEquipoLocal;
 	}
@@ -204,6 +220,7 @@ public class Acta {
 	public String getIdArbitro() {
 		return idArbitro;
 	}
+
 	public String getNombreArbitro() {
 		return nombreArbitro;
 	}
@@ -212,6 +229,39 @@ public class Acta {
 		this.idArbitro = idArbitro;
 	}
 	
+
+	public String getIdCapitanLocal() {
+		return idCapitanLocal;
+	}
+
+	public void setIdCapitanLocal(String idCapitanLocal) {
+		this.idCapitanLocal = idCapitanLocal;
+	}
+
+	public String getIdCapitanVisitante() {
+		return idCapitanVisitante;
+	}
+
+	public void setIdCapitanVisitante(String idCapitanVisitante) {
+		this.idCapitanVisitante = idCapitanVisitante;
+	}
+
+	public List<String> getIdsPorterosLocal() {
+		return idsPorterosLocal;
+	}
+
+	public void setIdsPorterosLocal(List<String> idsPorterosLocal) {
+		this.idsPorterosLocal = idsPorterosLocal;
+	}
+
+	public List<String> getIdsPorterosVisitante() {
+		return idsPorterosVisitante;
+	}
+
+	public void setIdsPorterosVisitante(List<String> idsPorterosVisitante) {
+		this.idsPorterosVisitante = idsPorterosVisitante;
+	}
+
 	public void setNombreArbitro(String nombreArbitro) {
 		this.nombreArbitro = nombreArbitro;
 	}
@@ -247,7 +297,7 @@ public class Acta {
 	public void setObservaciones(String observaciones) {
 		this.observaciones = observaciones;
 	}
-	
+
 	public boolean isAceptada() {
 		return aceptada;
 	}
