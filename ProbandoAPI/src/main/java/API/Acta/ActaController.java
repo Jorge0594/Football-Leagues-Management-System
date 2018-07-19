@@ -299,6 +299,10 @@ public class ActaController {
 					acta.setGolesVisitante(entrada.getGolesVisitante());
 					acta.setIncidencias(entrada.getIncidencias());
 					acta.setObservaciones(entrada.getObservaciones());
+					acta.setIdCapitanLocal(entrada.getIdCapitanLocal());
+					acta.setIdCapitanVisitante(entrada.getIdCapitanVisitante());
+					acta.setIdsPorterosLocal(entrada.getIdsPorterosLocal());
+					acta.setIdsPorterosVisitante(entrada.getIdsPorterosVisitante());
 					actaRepository.save(acta);
 					partidoDelActa.setIdActa(acta.getId());
 					partidoRepository.save(partidoDelActa);
