@@ -110,6 +110,7 @@ public class EquipoController {
 			jugador.setGoles(0);
 			jugador.setTarjetasAmarillas(0);
 			jugador.setTarjetasRojas(0);
+			jugador.setEstado("");
 			jugador.setSanciones(new ArrayList<Sancion>());
 			
 			jugadorRepository.save(jugador);

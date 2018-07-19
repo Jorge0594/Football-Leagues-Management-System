@@ -126,6 +126,7 @@ public class Partido implements Comparable<Partido> {
 		this.equipoVisitanteEscudo = equipoVisitanteEscudo;
 		this.fechaPartido = fechaPartido;
 		this.jornada = jornada;
+		this.estado = "Pendiente";
 	}
 
 	public String getId() {
