@@ -38,14 +38,14 @@ import com.tournament.generator.TournamentCalendar;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/ligas")
+@RequestMapping(value = "/grupos")
 public class GrupoController {
 
 
 	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt {
 	}
 
-	public interface InfoLigaView extends Grupo.LigaAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt {
+	public interface InfoGrupoView extends Grupo.GrupoAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt {
 	}
 
 	@Autowired
@@ -66,9 +66,9 @@ public class GrupoController {
 	@Autowired
 	private MongoBulk mongoBulk;
 
-	@JsonView(InfoLigaView.class)
+	@JsonView(InfoGrupoView.class)
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Grupo> crearLiga(@RequestBody Grupo grupo) {	
+	public ResponseEntity<Grupo> crearGrupo(@RequestBody Grupo grupo) {	
 		grupo.setId(null);
 		grupo.setNombre(grupo.getNombre().toUpperCase());
 		grupoRepository.save(grupo);
@@ -79,24 +79,24 @@ public class GrupoController {
 		return new ResponseEntity<Grupo>(grupo, HttpStatus.CREATED);
 	}
 
-	@JsonView(InfoLigaView.class)
+	@JsonView(InfoGrupoView.class)
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<Grupo>> verLigas() {
+	public ResponseEntity<List<Grupo>> verGrupos() {
 		return new ResponseEntity<List<Grupo>>(grupoRepository.findAll(), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/nombres", method = RequestMethod.GET)
-	public ResponseEntity<List<Grupo>> verNombresLigas() {
-		return new ResponseEntity<List<Grupo>>(grupoRepository.findCustomNombresLiga(), HttpStatus.OK);
+	public ResponseEntity<List<Grupo>> verNombresGrupos() {
+		return new ResponseEntity<List<Grupo>>(grupoRepository.findCustomNombresGrupo(), HttpStatus.OK);
 	}
 
-	@JsonView(InfoLigaView.class)
+	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "/{nombre}", method = RequestMethod.GET)
-	public ResponseEntity<Grupo> verLigaNombre(@PathVariable String nombre) {
+	public ResponseEntity<Grupo> verGrupoNombre(@PathVariable String nombre) {
 		return new ResponseEntity<Grupo>(grupoRepository.findByNombreIgnoreCase(nombre), HttpStatus.OK);
 	}
 
-	@JsonView(InfoLigaView.class)
+	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "{nombre}/clasificacion" , method = RequestMethod.GET)
 	public ResponseEntity<List<Equipo>> verClasificacion(@PathVariable String nombre) {
 		Sort sort = new Sort(Sort.Direction.DESC, "puntos");
@@ -108,15 +108,15 @@ public class GrupoController {
 		return new ResponseEntity<List<Equipo>>(equipos, HttpStatus.OK);
 	}
 	
-	@JsonView(InfoLigaView.class)
-	@RequestMapping(value = "/{nombreLiga}/generarCalendario/{fechaInicio}/{duracionJornada}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> generarCalendario(@PathVariable(value = "nombreLiga") String nombreLiga, @PathVariable(value = "fechaInicio") String fechaInicio, @PathVariable(value = "duracionJornada") String duracionJornada) {
+	@JsonView(InfoGrupoView.class)
+	@RequestMapping(value = "/{nombreGrupo}/generarCalendario/{fechaInicio}/{duracionJornada}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> generarCalendario(@PathVariable(value = "nombreGrupo") String nombreGrupo, @PathVariable(value = "fechaInicio") String fechaInicio, @PathVariable(value = "duracionJornada") String duracionJornada) {
 	
-			List<Equipo> equipos = equipoRepository.findCustomEquiposLiga(nombreLiga.toUpperCase(), true);
+			List<Equipo> equipos = equipoRepository.findCustomEquiposGrupo(nombreGrupo.toUpperCase(), true);
 			Map<String, Equipo> mapaEquipos = equipos.stream()
 					.collect(Collectors.toMap(Equipo::getId, Function.identity()));
 
-			List<Partido> partidos = generarCalendarioLiga(mapaEquipos, fechaInicio, nombreLiga, Integer.parseInt(duracionJornada));
+			List<Partido> partidos = generarCalendarioGrupo(mapaEquipos, fechaInicio, nombreGrupo, Integer.parseInt(duracionJornada));
 
 			try {
 				mongoBulk.insertarBloque(partidos, "Partido");
@@ -130,7 +130,7 @@ public class GrupoController {
 		
 	}
 
-	@JsonView(InfoLigaView.class)
+	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "/{nombre}/equipo/{idEquipo}", method = RequestMethod.PUT)
 	public ResponseEntity<Grupo> aceptarEquipo(@PathVariable(value = "nombre") String nombre, @PathVariable(value = "idEquipo") String idEquipo) {
 		Equipo equipo = equipoRepository.findById(idEquipo);
@@ -178,9 +178,9 @@ public class GrupoController {
 		}
 	}
 
-	@JsonView(InfoLigaView.class)
+	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "/{nombre}/equipo/{idEquipo}", method = RequestMethod.DELETE)
-	public ResponseEntity<Grupo> eliminarEquipoLiga(@PathVariable(value = "nombre") String nombre, @PathVariable(value = "idEquipo") String idEquipo) {
+	public ResponseEntity<Grupo> eliminarEquipoGrupo(@PathVariable(value = "nombre") String nombre, @PathVariable(value = "idEquipo") String idEquipo) {
 		Grupo grupo = grupoRepository.findByNombreIgnoreCase(nombre);
 		Equipo equipo = equipoRepository.findById(idEquipo);
 		if (grupo == null || equipo == null || !grupo.getClasificacion().contains(equipo)) {
@@ -195,9 +195,9 @@ public class GrupoController {
 		return new ResponseEntity<Grupo>(grupo, HttpStatus.OK);
 	}
 
-	@JsonView(InfoLigaView.class)
+	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Grupo> eliminarLiga(@PathVariable String id) {
+	public ResponseEntity<Grupo> eliminarGrupo(@PathVariable String id) {
 		Grupo grupo = grupoRepository.findById(id);
 		if (grupo == null) {
 			return new ResponseEntity<Grupo>(HttpStatus.NO_CONTENT);
@@ -210,7 +210,7 @@ public class GrupoController {
 		return new ResponseEntity<Grupo>(grupo, HttpStatus.OK);
 	}
 
-	private List<Partido> generarCalendarioLiga(Map<String, Equipo> mapaEquipos, String fechaInicio, String nombreLiga, int duracionJornada) {
+	private List<Partido> generarCalendarioGrupo(Map<String, Equipo> mapaEquipos, String fechaInicio, String nombreGrupo, int duracionJornada) {
 		
 		List<String> idEquipos  = new ArrayList<>();
 		idEquipos.addAll(mapaEquipos.keySet());
@@ -220,7 +220,7 @@ public class GrupoController {
 		
 		return calendario.stream()
 				.map(round -> {
-					return new Partido(nombreLiga, round.getLocalId(), mapaEquipos.get(round.getLocalId()).getNombre(), round.getVisitorId(),
+					return new Partido(nombreGrupo, round.getLocalId(), mapaEquipos.get(round.getLocalId()).getNombre(), round.getVisitorId(),
 							mapaEquipos.get(round.getVisitorId()).getNombre(), mapaEquipos.get(round.getLocalId()).getImagenEquipo(),
 								mapaEquipos.get(round.getVisitorId()).getImagenEquipo(), round.getDate(), round.getRoundNum());
 		}).collect(Collectors.toList());

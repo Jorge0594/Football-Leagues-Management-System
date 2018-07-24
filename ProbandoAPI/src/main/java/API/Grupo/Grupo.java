@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-@Document(collection = "Liga")
+@Document(collection = "Grupo")
 public class Grupo {
 
 	public interface LigaAtt {}
