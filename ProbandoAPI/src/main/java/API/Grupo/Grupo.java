@@ -23,6 +23,8 @@ public class Grupo {
 	private String id;
 	@JsonView(GrupoAtt.class)
 	private String nombre;
+	@JsonView(GrupoAtt.class)
+	private int jornadaActual;
 	@DBRef
 	@JsonView(GrupoAtt.class)
 	private List<Equipo> clasificacion = new ArrayList<>();
@@ -33,6 +35,7 @@ public class Grupo {
 		this.id = id;
 		this.nombre = nombre;
 		this.clasificacion = clasificacion;
+		this.jornadaActual = 0;
 	}
 
 	public Grupo() {
@@ -49,6 +52,14 @@ public class Grupo {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public int getJornadaActual() {
+		return jornadaActual;
+	}
+
+	public void setJornadaActual(int jornadaActual) {
+		this.jornadaActual = jornadaActual;
 	}
 
 	public String getNombre() {
@@ -67,6 +78,9 @@ public class Grupo {
 		this.clasificacion = clasificacion;
 	}
 
+	public void aumentaJornadaActual() {
+		this.jornadaActual++;
+	}
 	@Override
 	public String toString() {
 		return "Liga [id=" + id + ", nombre=" + nombre + ", clasificacion=" + clasificacion;
