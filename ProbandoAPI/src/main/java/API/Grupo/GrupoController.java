@@ -9,6 +9,8 @@ import API.Usuario.Usuario;
 import API.Usuario.UsuarioRepository;
 import API.Utilidades.UsuarioUtils;
 import API.Equipo.*;
+import API.Grupo.*;
+import API.Grupo.Grupo.GrupoAtt;
 import API.VistaGrupo.*;
 
 import java.time.LocalDate;
@@ -45,7 +47,7 @@ public class GrupoController {
 	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt {
 	}
 
-	public interface InfoGrupoView extends Grupo.GrupoAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt {
+	public interface InfoGrupoView extends GrupoAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt {
 	}
 
 	@Autowired

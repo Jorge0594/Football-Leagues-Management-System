@@ -23,5 +23,5 @@ public interface EquipoRepository extends MongoRepository<Equipo, String> {
 	List<Equipo> findCustomClasificacion(String grupo, Sort sort);
 	
 	@Query(value = "{'grupo':?0, 'aceptado':?1}", fields = "{'id':1, 'nombre':1, 'imagenEquipo':1}")
-	List<Equipo>findCustomEquiposLiga(String grupo, boolean aceptado);
+	List<Equipo>findCustomEquiposGrupo(String grupo, boolean aceptado);
 }

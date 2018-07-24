@@ -10,7 +10,7 @@ public interface GrupoRepository extends MongoRepository<Grupo, String> {
 	Grupo findById(String id);
 	
 	@Query(value = "{}", fields = "{'nombre':1}")
-	List<Grupo> findCustomNombresLiga();
+	List<Grupo> findCustomNombresGrupo();
 	
 	@Query(value = "{'nombre':?0}", fields = "{'goleadores': 1}")
 	Grupo findCustomLigaGoleadores(String nombre);

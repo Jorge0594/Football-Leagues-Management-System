@@ -16,15 +16,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Document(collection = "Grupo")
 public class Grupo {
 
-	public interface LigaAtt {}
+	public interface GrupoAtt {}
 
 	@Id
-	@JsonView(LigaAtt.class)
+	@JsonView(GrupoAtt.class)
 	private String id;
-	@JsonView(LigaAtt.class)
+	@JsonView(GrupoAtt.class)
 	private String nombre;
 	@DBRef
-	@JsonView(LigaAtt.class)
+	@JsonView(GrupoAtt.class)
 	private List<Equipo> clasificacion = new ArrayList<>();
 
 
