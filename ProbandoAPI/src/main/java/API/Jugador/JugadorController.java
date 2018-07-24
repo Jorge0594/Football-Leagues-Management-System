@@ -22,9 +22,9 @@ import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
 import API.Equipo.EquipoController.PerfilView;
+import API.Grupo.Grupo;
+import API.Grupo.GrupoRepository;
 import API.Images.ImageService;
-import API.Liga.Liga;
-import API.Liga.LigaRepository;
 import API.Mails.MailService;
 import API.Partido.PartidoRepository;
 import API.Sancion.Sancion;
@@ -46,7 +46,7 @@ public class JugadorController {
 	@Autowired
 	private EquipoRepository equipoRepository;
 	@Autowired
-	private LigaRepository ligaRepository;
+	private GrupoRepository grupoRepository;
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	@Autowired
@@ -94,8 +94,8 @@ public class JugadorController {
 				return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 			}
 
-			if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
-				jugador.setLiga(equipo.getLiga());
+			if (!equipo.getGrupo().equals("") && equipo.isAceptado()) {
+				jugador.setGrupo(equipo.getGrupo());
 			}
 
 			equipo.getPlantillaEquipo().add(jugador);
@@ -432,11 +432,10 @@ public class JugadorController {
 		Equipo equipo = equipoRepository.findById(jugador.getEquipo());
 		if (equipo != null) {
 			equipo.getPlantillaEquipo().remove(jugador);
-			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-			if (liga != null) {
-				liga.getGoleadores().remove(jugador);
+			Grupo grupo = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
+			if (grupo != null) {
 				equipo.getPlantillaEquipo().remove(jugador);
-				ligaRepository.save(liga);
+				grupoRepository.save(grupo);
 				equipoRepository.save(equipo);
 			}
 

@@ -32,10 +32,10 @@ import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
 import API.Estadio.Estadio;
+import API.Grupo.Grupo;
+import API.Grupo.GrupoRepository;
 import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
-import API.Liga.Liga;
-import API.Liga.LigaRepository;
 import API.Partido.Partido;
 import API.Partido.PartidoRepository;
 import API.Pdfs.PdfCreator;
@@ -62,7 +62,7 @@ public class ActaController {
 	@Autowired
 	JugadorRepository jugadorRepository;
 	@Autowired
-	LigaRepository ligaRepository;
+	GrupoRepository grupoRepository;
 	@Autowired
 	PartidoRepository partidoRepository;
 	@Autowired
@@ -223,16 +223,16 @@ public class ActaController {
 			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		Partido partido = partidoRepository.findById(acta.getIdPartido());
-		Liga liga = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
-		if (liga == null){
+		Grupo grupo = grupoRepository.findByNombreIgnoreCase(partido.getLiga());
+		if (grupo == null){
 			return new ResponseEntity<Acta>(HttpStatus.BAD_GATEWAY);
 		}
 		actualizarEquipos(acta);
-		Collections.sort(liga.getClasificacion());
-		actualizarJugadores(acta, liga);
+		Collections.sort(grupo.getClasificacion());
+		actualizarJugadores(acta, grupo);
 		actualizarPartido(acta);
 		acta.setAceptada(true);
-		ligaRepository.save(liga);
+		grupoRepository.save(grupo);
 		actaRepository.save(acta);
 		return new ResponseEntity<Acta>(acta, HttpStatus.OK);
 	}
@@ -371,7 +371,7 @@ public class ActaController {
 		equipoRepository.save(visitante);
 	}
 	
-	private void actualizarJugadores(Acta acta, Liga liga) {
+	private void actualizarJugadores(Acta acta, Grupo grupo) {
 	
 		for(Incidencia incidencia: acta.getIncidencias()) {
 			Jugador jugador = jugadorRepository.findById(incidencia.getIdJugador());
@@ -384,12 +384,9 @@ public class ActaController {
 			}
 			incidenciaRepository.save(incidencia);
 			jugadorRepository.save(jugador);
-			if(incidencia.getTipo().equals("GOL")){
-				liga.reordenarGoleadores(jugador);
-			}
 		}
 		
-		ligaRepository.save(liga);
+		grupoRepository.save(grupo);
 		
 		List<Sancion> sancionesActivas = sancionRepository.findByEnVigorTrue();
 		List<String> jugadoresId = new ArrayList<String>();

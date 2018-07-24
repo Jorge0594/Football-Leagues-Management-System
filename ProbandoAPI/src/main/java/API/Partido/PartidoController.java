@@ -21,10 +21,10 @@ import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
 import API.Estadio.Estadio;
+import API.Grupo.GrupoRepository;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
 import API.Jugador.Jugador;
-import API.Liga.LigaRepository;
 import API.Sancion.Sancion;
 
 @RestController
@@ -42,7 +42,7 @@ public class PartidoController {
 	@Autowired
 	private IncidenciaRepository incidenciaRepository;
 	@Autowired
-	private LigaRepository ligaRepository;
+	private GrupoRepository grupoRepository;
 	@Autowired
 	private EquipoRepository equipoRepository;
 
@@ -275,7 +275,7 @@ public class PartidoController {
 		partido.setEquipoVisitanteNombre(equipoVisitante.getNombre());
 		partido.setEquipoLocalEscudo(equipoLocal.getImagenEquipo());
 		partido.setEquipoVisitanteEscudo(equipoVisitante.getImagenEquipo());
-		if (ligaRepository.findByNombreIgnoreCase(partido.getLiga()) == null) {
+		if (grupoRepository.findByNombreIgnoreCase(partido.getLiga()) == null) {
 			partido.setLiga("");
 		}
 		partido.setJornada(0);

@@ -1,4 +1,4 @@
-package API.Liga;
+package API.Temporada;
 
 
 
@@ -15,41 +15,41 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import API.Temporada.*;
+import API.Grupo.*;
 
 
 @RestController
 @CrossOrigin
-@RequestMapping("/ligas")
-public class LigaController {
+@RequestMapping("/temporadas")
+public class TemporadaController {
 
-	public interface LigaAtt {
+	public interface TemporadaAtt {
 	}
 
 
 	@Autowired
-	LigaRepository ligaRepository;
-	@Autowired
 	TemporadaRepository temporadaRepository;
+	@Autowired
+	GrupoRepository grupoRepository;
 
-	@JsonView(LigaAtt.class)
+	@JsonView(TemporadaAtt.class)
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<Liga>> verLigas() {
-		return new ResponseEntity<List<Liga>>(ligaRepository.findAll(), HttpStatus.OK);
+	public ResponseEntity<List<Temporada>> verTemporadas() {
+		return new ResponseEntity<List<Temporada>>(temporadaRepository.findAll(), HttpStatus.OK);
 
 	}
 	
 
-	@JsonView(LigaAtt.class)
+	@JsonView(TemporadaAtt.class)
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Liga> crearLiga(@RequestBody Liga entrada) {
-		if(ligaRepository.findByNombre(entrada.getNombre()) != null) {
-			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
+	public ResponseEntity<Temporada> crearTemporada(@RequestBody Temporada entrada) {
+		if(temporadaRepository.findByNombre(entrada.getNombre()) != null) {
+			return new ResponseEntity<Temporada>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		else {
 			entrada.setId(null);
-			ligaRepository.save(entrada);
+			temporadaRepository.save(entrada);
 		}
-		return new ResponseEntity<Liga>(entrada, HttpStatus.OK);
+		return new ResponseEntity<Temporada>(entrada, HttpStatus.OK);
 	}
 	}

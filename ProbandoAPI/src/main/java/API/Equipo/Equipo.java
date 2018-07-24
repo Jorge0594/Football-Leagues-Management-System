@@ -29,7 +29,7 @@ public class Equipo implements Comparable<Equipo> {
 	private String nombre;
 
 	@JsonView(RankAtt.class)
-	private String liga;
+	private String grupo;
 
 	@JsonView(PerfilAtt.class)
 	private String ciudad;
@@ -75,13 +75,13 @@ public class Equipo implements Comparable<Equipo> {
 	public Equipo() {
 	}
 
-	public Equipo(String id, String nombre, String liga, String ciudad, int posicion, int golesEncajados, int goles,
+	public Equipo(String id, String nombre, String grupo, String ciudad, int posicion, int golesEncajados, int goles,
 			List<Jugador> plantillaEquipo) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.aceptado = false;
-		this.liga = liga;
+		this.grupo = grupo;
 		this.ciudad = ciudad;
 		this.posicion = posicion;
 		this.puntos = partidosGanados * 3 + partidosEmpatados;
@@ -107,12 +107,12 @@ public class Equipo implements Comparable<Equipo> {
 		this.nombre = nombre;
 	}
 
-	public String getLiga() {
-		return liga;
+	public String getGrupo() {
+		return grupo;
 	}
 
-	public void setLiga(String liga) {
-		this.liga = liga;
+	public void setGrupo(String grupo) {
+		this.grupo = grupo;
 	}
 
 	public String getCiudad() {
@@ -224,7 +224,7 @@ public class Equipo implements Comparable<Equipo> {
 
 	@Override
 	public String toString() {
-		return "Equipo [id=" + id + ", nombre=" + nombre + ", liga=" + liga + ", ciudad=" + ciudad + ", imagenEquipo="
+		return "Equipo [id=" + id + ", nombre=" + nombre + ", grupo=" + grupo + ", ciudad=" + ciudad + ", imagenEquipo="
 				+ imagenEquipo + ", aceptado=" + aceptado + ", posicion=" + posicion + ", puntos=" + puntos + ", goles="
 				+ goles + ", golesEncajados=" + golesEncajados + ", partidosGanados=" + partidosGanados
 				+ ", partidosPerdidos=" + partidosPerdidos + ", partidosEmpatados=" + partidosEmpatados
@@ -241,7 +241,7 @@ public class Equipo implements Comparable<Equipo> {
 		result = prime * result + golesEncajados;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((imagenEquipo == null) ? 0 : imagenEquipo.hashCode());
-		result = prime * result + ((liga == null) ? 0 : liga.hashCode());
+		result = prime * result + ((grupo == null) ? 0 : grupo.hashCode());
 		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
 		result = prime * result + partidosEmpatados;
 		result = prime * result + partidosGanados;
@@ -281,10 +281,10 @@ public class Equipo implements Comparable<Equipo> {
 				return false;
 		} else if (!imagenEquipo.equals(other.imagenEquipo))
 			return false;
-		if (liga == null) {
-			if (other.liga != null)
+		if (grupo == null) {
+			if (other.grupo != null)
 				return false;
-		} else if (!liga.equals(other.liga))
+		} else if (!grupo.equals(other.grupo))
 			return false;
 		if (nombre == null) {
 			if (other.nombre != null)

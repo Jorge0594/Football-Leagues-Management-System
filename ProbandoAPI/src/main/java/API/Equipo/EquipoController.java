@@ -17,11 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.Grupo.Grupo;
+import API.Grupo.GrupoRepository;
 import API.Images.ImageService;
 import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
-import API.Liga.Liga;
-import API.Liga.LigaRepository;
 import API.Sancion.Sancion;
 import API.Usuario.UsuarioComponent;
 import API.UsuarioTemporal.UsuarioTemporal;
@@ -47,7 +47,7 @@ public class EquipoController {
 	@Autowired
 	private JugadorRepository jugadorRepository;
 	@Autowired
-	private LigaRepository ligaRepository;
+	private GrupoRepository grupoRepository;
 	@Autowired
 	private UsuarioComponent usuarioComponent;
 	@Autowired
@@ -72,13 +72,13 @@ public class EquipoController {
 		equipo.setId(null);
 		equipo.setPlantillaEquipo(new ArrayList<Jugador>());
 		
-		Liga ligaEquipo = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
+		Grupo grupoEquipo = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
 		
-		equipo.setPosicion(ligaEquipo.getClasificacion().size()+1);
+		equipo.setPosicion(grupoEquipo.getClasificacion().size()+1);
 		equipoRepository.save(equipo);
 		
-		ligaEquipo.getClasificacion().add(equipo);
-		ligaRepository.save(ligaEquipo);
+		grupoEquipo.getClasificacion().add(equipo);
+		grupoRepository.save(grupoEquipo);
 		
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);
 	}
@@ -92,7 +92,7 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.UNAUTHORIZED);
 		}
 		equipo.setId(null);
-		equipo.setLiga(usuario.getLiga());
+		equipo.setGrupo(usuario.getGrupo());
 		equipo.setAceptado(false);
 		equipo.setImagenEquipo("shield.png");
 		
@@ -106,7 +106,7 @@ public class EquipoController {
 			jugador.setAceptado(false);
 			jugador.setId(null);
 			jugador.setFotoJugador("defaultProfile.jpg");
-			jugador.setLiga("");
+			jugador.setGrupo("");
 			jugador.setGoles(0);
 			jugador.setTarjetasAmarillas(0);
 			jugador.setTarjetasRojas(0);
@@ -135,9 +135,9 @@ public class EquipoController {
 	}
 
 	@JsonView(RankView.class)
-	@RequestMapping(value = "/liga/{liga}", method = RequestMethod.GET)
-	public ResponseEntity<List<Equipo>> verEquiposLiga(@PathVariable String liga) {
-		List<Equipo> equipos = equipoRepository.findByLigaIgnoreCase(liga);
+	@RequestMapping(value = "/grupo/{grupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Equipo>> verEquiposGrupo(@PathVariable String grupo) {
+		List<Equipo> equipos = equipoRepository.findByGrupoIgnoreCase(grupo);
 		if (equipos.isEmpty()) {
 			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
 		}
@@ -155,10 +155,10 @@ public class EquipoController {
 	}
 
 	@JsonView(PerfilView.class)
-	@RequestMapping(value = "/validar/{nombre}/{liga}", method = RequestMethod.GET)
-	public ResponseEntity<Equipo> disponibleNombreEquipoLiga(@PathVariable(value = "nombre") String nombre,
-			@PathVariable(value = "liga") String liga) {
-		Equipo equipo = equipoRepository.findByLigaAndNombreAllIgnoreCase(liga, nombre);
+	@RequestMapping(value = "/validar/{nombre}/{grupo}", method = RequestMethod.GET)
+	public ResponseEntity<Equipo> disponibleNombreEquipoGrupo(@PathVariable(value = "nombre") String nombre,
+			@PathVariable(value = "grupo") String grupo) {
+		Equipo equipo = equipoRepository.findByGrupoAndNombreAllIgnoreCase(grupo, nombre);
 		if (equipo != null) {
 			return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
 		}
@@ -195,7 +195,7 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 		
-		if(imageService.getImg().cambiarFoto(equipo.getNombre() + equipo.getLiga(), file)){
+		if(imageService.getImg().cambiarFoto(equipo.getNombre() + equipo.getGrupo(), file)){
 			equipo.setImagenEquipo(imageService.getImg().getNombreFichero());
 			
 			equipoRepository.save(equipo);
@@ -239,19 +239,19 @@ public class EquipoController {
 		if (equipo == null || jugador == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
-		if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
-			jugador.setLiga(equipo.getLiga());
+		if (!equipo.getGrupo().equals("") && equipo.isAceptado()) {
+			jugador.setGrupo(equipo.getGrupo());
 		}
 		if (!jugador.getEquipo().equals("")) {
 			if (!equipo.getPlantillaEquipo().contains(jugador)) {
 				Equipo aux = equipoRepository.findById(jugador.getEquipo());
 				/*
-				 * if (!aux.getLiga().equals(equipo.getLiga()) &&
-				 * (!aux.getLiga().equals("")) && (aux.isAceptado())) { Liga
-				 * ligaAux =
-				 * ligaRepository.findByNombreIgnoreCase(aux.getLiga());
-				 * ligaAux.getGoleadores().remove(jugador);
-				 * ligaRepository.save(ligaAux); }
+				 * if (!aux.getGrupo().equals(equipo.getGrupo()) &&
+				 * (!aux.getGrupo().equals("")) && (aux.isAceptado())) { Grupo
+				 * grupoAux =
+				 * grupoRepository.findByNombreIgnoreCase(aux.getGrupo());
+				 * grupoAux.getGoleadores().remove(jugador);
+				 * grupoRepository.save(grupoAux); }
 				 */
 				aux.getPlantillaEquipo().remove(jugador);
 				equipoRepository.save(aux);
@@ -280,26 +280,10 @@ public class EquipoController {
 
 			equipo.getPlantillaEquipo().remove(jugador);
 			jugador.setEquipo("");
-			jugador.setLiga("");
+			jugador.setGrupo("");
 
 			jugadorRepository.save(jugador);
 			equipoRepository.save(equipo);
-
-			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-			if (liga != null && liga.getGoleadores().contains(jugador)) {// Elimina
-																			// a
-																			// el
-																			// jugador
-																			// si
-																			// se
-																			// encuentra
-																			// entre
-																			// los
-																			// goleadores
-				List<Jugador> jugadores = jugadorRepository.findByLigaIgnoreCase(liga.getNombre());
-				liga.crearGoleadores(jugadores);
-				ligaRepository.save(liga);
-			}
 
 			return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 		}
@@ -314,11 +298,10 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 
-		if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
-			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-			liga.getGoleadores().removeAll(equipo.getPlantillaEquipo());
-			liga.getClasificacion().remove(equipo);
-			ligaRepository.save(liga);
+		if (!equipo.getGrupo().equals("") && equipo.isAceptado()) {
+			Grupo grupo = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
+			grupo.getClasificacion().remove(equipo);
+			grupoRepository.save(grupo);
 		}
 		
 		//Testing
