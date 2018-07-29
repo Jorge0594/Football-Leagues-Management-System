@@ -29,10 +29,13 @@ public class MiembroComite {
 	private String comite;
 	@JsonView(PerfilMCAtt.class)
 	private String email;
+	@JsonView(PerfilMCAtt.class)
+	private String idLiga;
 	
+
 	public MiembroComite() {}
 	
-	public MiembroComite(String id, String nombre, String apellidos, String usuario, String clave, String comite, String email) {
+	public MiembroComite(String id, String nombre, String apellidos, String usuario, String clave, String comite, String email, String idLiga) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -41,8 +44,16 @@ public class MiembroComite {
 		this.clave = clave;
 		this.comite = comite;
 		this.email = email;
+		this.idLiga = idLiga;
 	}
 	
+	public String getIdLiga() {
+		return idLiga;
+	}
+
+	public void setIdLiga(String idLiga) {
+		this.idLiga = idLiga;
+	}
 	
 	public String getEmail() {
 		return email;
@@ -120,7 +131,7 @@ public class MiembroComite {
 	@Override
 	public String toString() {
 		return "MiembroComite [Id= " + id + ", Nombre= " + nombre + ", Apellidos= " + apellidos +", Usuario= " + usuario + ", Contraseña= " + clave
-				+ ", Comite=" + comite + "]";
+				+ ", Comite=" + comite + "Liga="+ idLiga+"]";
 	}
 	
 
