@@ -190,7 +190,7 @@ public class JugadorController {
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/capitan/{equipo}", method = RequestMethod.GET)
 	public ResponseEntity<Jugador> verCapitanEquipo(@PathVariable String equipo) {
-		Jugador capitan = jugadorRepository.findByCapitanAndEquipo(true, equipo);
+		Jugador capitan = jugadorRepository.findByDelegadoAndEquipo(true, equipo);
 		if (capitan == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
 		}
@@ -292,7 +292,7 @@ public class JugadorController {
 		case "ROLE_ADMIN":
 			jugador.setNombre(entrada.getNombre());
 			jugador.setApellidos(entrada.getApellidos());
-			jugador.setCapitan(entrada.isCapitan());
+			jugador.setDelegado(entrada.isDelegado());
 			jugador.setEdad(entrada.getEdad());
 			jugador.setEmail(entrada.getEmail());
 			jugador.setDni(entrada.getDni());
@@ -318,7 +318,7 @@ public class JugadorController {
 			jugador.setNombre(entrada.getNombre());
 			jugador.setApellidos(entrada.getApellidos());
 			jugador.setEdad(entrada.getEdad());
-			jugador.setCapitan(entrada.isCapitan());
+			jugador.setDelegado(entrada.isDelegado());
 			jugador.setEmail(entrada.getEmail());
 			jugador.setDni(entrada.getDni());
 			jugador.setNombreUsuario(entrada.getNombreUsuario());

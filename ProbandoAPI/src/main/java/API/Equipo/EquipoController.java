@@ -337,7 +337,7 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 
-		if (!equipo.getGrupo().equals("") && equipo.isAceptado()) {
+		if (equipo.getGrupo() != null && !equipo.getGrupo().equals("") && equipo.isAceptado()) {
 			Grupo grupo = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
 			grupo.getClasificacion().remove(equipo);
 			grupoRepository.save(grupo);
@@ -424,7 +424,7 @@ public class EquipoController {
 		jugador.setNacionalidad((String) jsonJugador.get("nacionalidad"));
 		jugador.setDorsal((int) (long) jsonJugador.get("dorsal"));
 		jugador.setFotoJugador((String) jsonJugador.get("fotoJugador"));
-		jugador.setCapitan((boolean) jsonJugador.get("capitan"));
+		jugador.setDelegado((boolean) jsonJugador.get("capitan"));
 		jugadorRepository.save(jugador);
 	}
 }

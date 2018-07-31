@@ -105,7 +105,7 @@ public class UsuarioTemporalController {
 			return new ResponseEntity<UsuarioTemporal>(HttpStatus.NO_CONTENT);
 		}
 		
-		temporal.setGrupo(liga);
+		temporal.setLiga(liga);
 		
 		temporalRepository.save(temporal);
 		

@@ -89,7 +89,7 @@ public class Jugador implements Comparable<Jugador> {
 	private int tarjetasRojas;
 
 	@JsonView(EquipoAtt.class)
-	private boolean capitan;
+	private boolean delegado;
 	
 	@JsonView(PerfilAtt.class)
 	@DBRef
@@ -102,7 +102,7 @@ public class Jugador implements Comparable<Jugador> {
 	public Jugador(String id, String nombre, String apellidos, int edad, boolean aceptado, String fechaNacimiento,
 			String dni, String nombreUsuario, String clave, String email, String fotoJugador, String equipo,
 			String posicion, String estado, String lugarNacimiento, String nacionalidad, int dorsal, int goles,
-			int tarjetasAmarillas, int tarjetasRojas, boolean capitan, List<Sancion> sanciones, String grupo) {
+			int tarjetasAmarillas, int tarjetasRojas, boolean delegado, List<Sancion> sanciones, String grupo) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -124,11 +124,11 @@ public class Jugador implements Comparable<Jugador> {
 		this.goles = goles;
 		this.tarjetasAmarillas = tarjetasAmarillas;
 		this.tarjetasRojas = tarjetasRojas;
-		this.capitan = capitan;
+		this.delegado = delegado;
 		this.sanciones = sanciones;
 	}
 	
-	public Jugador(String nombre, String apellidos, String fechaNacimiento, String dni, String email, String fotoJugador, String posicion, String lugarNacimiento, String nacionalidad, int dorsal, boolean capitan) {
+	public Jugador(String nombre, String apellidos, String fechaNacimiento, String dni, String email, String fotoJugador, String posicion, String lugarNacimiento, String nacionalidad, int dorsal, boolean delegado) {
 		super();
 		this.nombre = nombre;
 		this.apellidos = apellidos;
@@ -140,7 +140,7 @@ public class Jugador implements Comparable<Jugador> {
 		this.lugarNacimiento = lugarNacimiento;
 		this.nacionalidad = nacionalidad;
 		this.dorsal = dorsal;
-		this.capitan = capitan;
+		this.delegado = delegado;
 		this.aceptado = false;
 		this.fotoJugador = "defaultProfile.jpg";
 	}
@@ -265,12 +265,12 @@ public class Jugador implements Comparable<Jugador> {
 		this.nacionalidad = nacionalidad;
 	}
 
-	public boolean isCapitan() {
-		return capitan;
+	public boolean isDelegado() {
+		return delegado;
 	}
 
-	public void setCapitan(boolean capitan) {
-		this.capitan = capitan;
+	public void setDelegado(boolean delegado) {
+		this.delegado = delegado;
 	}
 
 	public String getDni() {
@@ -347,7 +347,7 @@ public class Jugador implements Comparable<Jugador> {
 				+ fotoJugador + ", equipo=" + equipo + ", grupo=" + grupo + ", posicion=" + posicion + ", estado="
 				+ estado + ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad + ", dorsal="
 				+ dorsal + ", goles=" + goles + ", tarjetasAmarillas=" + tarjetasAmarillas + ", tarjetasRojas="
-				+ tarjetasRojas + ", capitan=" + capitan + ", sanciones=" + sanciones + "]";
+				+ tarjetasRojas + ", delegado=" + delegado + ", sanciones=" + sanciones + "]";
 	}
 
 	@Override
@@ -356,7 +356,7 @@ public class Jugador implements Comparable<Jugador> {
 		int result = 1;
 		result = prime * result + (aceptado ? 1231 : 1237);
 		result = prime * result + ((apellidos == null) ? 0 : apellidos.hashCode());
-		result = prime * result + (capitan ? 1231 : 1237);
+		result = prime * result + (delegado ? 1231 : 1237);
 		result = prime * result + ((clave == null) ? 0 : clave.hashCode());
 		result = prime * result + ((dni == null) ? 0 : dni.hashCode());
 		result = prime * result + dorsal;
