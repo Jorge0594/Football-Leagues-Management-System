@@ -103,7 +103,7 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.UNAUTHORIZED);
 		}
 		equipo.setId(null);
-		equipo.setGrupo(usuario.getGrupo());
+		equipo.setGrupo(usuario.getLiga());
 		equipo.setAceptado(false);
 		equipo.setImagenEquipo("shield.png");
 
