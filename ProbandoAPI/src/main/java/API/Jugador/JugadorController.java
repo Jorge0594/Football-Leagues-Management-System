@@ -22,9 +22,9 @@ import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
 import API.Equipo.EquipoController.PerfilView;
+import API.Grupo.Grupo;
+import API.Grupo.GrupoRepository;
 import API.Images.ImageService;
-import API.Liga.Liga;
-import API.Liga.LigaRepository;
 import API.Mails.MailService;
 import API.Partido.PartidoRepository;
 import API.Sancion.Sancion;
@@ -40,13 +40,15 @@ public class JugadorController {
 
 	public interface ProfileView extends Jugador.PerfilAtt, Jugador.EquipoAtt, Sancion.SancionAtt, Sancion.JugadorAtt {
 	}
+	
+	private Object lock = new Object();
 
 	@Autowired
 	private JugadorRepository jugadorRepository;
 	@Autowired
 	private EquipoRepository equipoRepository;
 	@Autowired
-	private LigaRepository ligaRepository;
+	private GrupoRepository grupoRepository;
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	@Autowired
@@ -94,8 +96,8 @@ public class JugadorController {
 				return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 			}
 
-			if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
-				jugador.setLiga(equipo.getLiga());
+			if (!equipo.getGrupo().equals("") && equipo.isAceptado()) {
+				jugador.setGrupo(equipo.getGrupo());
 			}
 
 			equipo.getPlantillaEquipo().add(jugador);
@@ -146,20 +148,20 @@ public class JugadorController {
 	}
 
 	@JsonView(PerfilView.class)
-	@RequestMapping(value = "/validar/email/{email:.+}", method = RequestMethod.GET)
-	public ResponseEntity<Jugador> emailDisponible(@PathVariable String email) {
+	@RequestMapping(value = "/validar/email/{email:.+}/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Jugador> emailDisponible(@PathVariable String email, @PathVariable String id) {
 		Jugador jugador = jugadorRepository.findByEmailIgnoreCase(email);
-		if (jugador != null) {
+		if (jugador != null && !jugador.getId().equals(id)) {
 			return new ResponseEntity<Jugador>(HttpStatus.CONFLICT);
 		}
 		return new ResponseEntity<Jugador>(HttpStatus.OK);
 	}
 
 	@JsonView(PerfilView.class)
-	@RequestMapping(value = "validar/dni/{dni}", method = RequestMethod.GET)
-	public ResponseEntity<Jugador> dniDisponible(@PathVariable String dni) {
+	@RequestMapping(value = "validar/dni/{dni}/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Jugador> dniDisponible(@PathVariable String dni, @PathVariable String id) {
 		Jugador jugador = jugadorRepository.findByDniIgnoreCase(dni);
-		if (jugador != null) {
+		if (jugador != null && !jugador.getId().equals(id)) {
 			return new ResponseEntity<Jugador>(HttpStatus.CONFLICT);
 		}
 		return new ResponseEntity<Jugador>(HttpStatus.OK);
@@ -223,7 +225,7 @@ public class JugadorController {
 			jugadorRepository.save(jugador);
 			String credenciales = jugador.getNombreUsuario() + ";" + clave;
 			// Deshabilitado de momento
-			 mailService.getMail().mandarEmail(jugador.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
+			mailService.getMail().mandarEmail(jugador.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
 			return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 		}
 	}
@@ -349,7 +351,7 @@ public class JugadorController {
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{id}/email", method = RequestMethod.PUT)
-	public ResponseEntity<Jugador> cambiarEmail(@PathVariable String id, @RequestBody String email) {
+	public synchronized ResponseEntity<Jugador> cambiarEmail(@PathVariable String id, @RequestBody String email) {
 		Jugador jugador = jugadorRepository.findById(id);
 		if (jugador == null) {
 			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
@@ -364,9 +366,10 @@ public class JugadorController {
 	public ResponseEntity<Jugador> modificarImagenPerfil(@PathVariable String id, @RequestParam("File") MultipartFile file) {
 		Jugador jugador = jugadorRepository.findById(id);
 		if (jugador == null) {
-			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Jugador>(HttpStatus.NOT_FOUND);
 		}
-		if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario()) || usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") || usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
+		
+		synchronized (lock) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
 				jugador.setFotoJugador(imageService.getImg().getNombreFichero());
@@ -375,10 +378,8 @@ public class JugadorController {
 			} else {
 				return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 			}
-
-		} else {
-			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 		}
+
 	}
 
 	@JsonView(ProfileView.class)
@@ -386,9 +387,10 @@ public class JugadorController {
 	public ResponseEntity<Jugador> modificarImagenPerfilDni(@PathVariable String dni, @RequestParam("File") MultipartFile file) {
 		Jugador jugador = jugadorRepository.findByDniIgnoreCase(dni);
 		if (jugador == null) {
-			return new ResponseEntity<Jugador>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Jugador>(HttpStatus.NOT_FOUND);
 		}
-		if (usuarioComponent.getLoggedUser().getNombreUsuario().equals(jugador.getNombreUsuario()) || usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") || usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN")) {
+		
+		synchronized (lock) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
 				jugador.setFotoJugador(imageService.getImg().getNombreFichero());
@@ -397,12 +399,11 @@ public class JugadorController {
 			} else {
 				return new ResponseEntity<Jugador>(HttpStatus.NOT_ACCEPTABLE);
 			}
-
-		} else {
-			return new ResponseEntity<Jugador>(HttpStatus.UNAUTHORIZED);
 		}
+		
+
 	}
-	
+
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/clave/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Jugador> cambiarClave(@PathVariable String id, @RequestBody String clave) {
@@ -411,13 +412,13 @@ public class JugadorController {
 			return new ResponseEntity<Jugador>(HttpStatus.CONFLICT);
 		}
 		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario());
-		
+
 		jugador.setClaveEncriptada(clave);
 		usuario.setClave(jugador.getClave());
-		
+
 		usuarioRepository.save(usuario);
 		jugadorRepository.save(jugador);
-		
+
 		return new ResponseEntity<Jugador>(HttpStatus.OK);
 	}
 
@@ -432,21 +433,25 @@ public class JugadorController {
 		Equipo equipo = equipoRepository.findById(jugador.getEquipo());
 		if (equipo != null) {
 			equipo.getPlantillaEquipo().remove(jugador);
-			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-			if (liga != null) {
-				liga.getGoleadores().remove(jugador);
+			Grupo grupo = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
+			if (grupo != null) {
 				equipo.getPlantillaEquipo().remove(jugador);
-				ligaRepository.save(liga);
+				grupoRepository.save(grupo);
 				equipoRepository.save(equipo);
 			}
 
 		}
+
 		Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(jugador.getNombreUsuario());
 
 		if (usuario != null) {
 			usuarioRepository.delete(usuario);
 		}
-
+		
+		if(!jugador.getFotoJugador().equals("defaultProfile.jpg")){
+			imageService.getImg().eleminarFoto(jugador.getFotoJugador());	
+		}
+		
 		jugadorRepository.delete(jugador);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 	}

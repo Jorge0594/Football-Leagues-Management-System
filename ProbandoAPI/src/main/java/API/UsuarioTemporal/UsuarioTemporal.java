@@ -8,7 +8,7 @@ public class UsuarioTemporal {
 	
 	private String id;
 	private String ip;
-	private String liga;
+	private String grupo;
 	private String nombreUsuario;
 	private String clave;
 	private String nombre;
@@ -25,7 +25,7 @@ public class UsuarioTemporal {
 	}
 
 	public UsuarioTemporal(String ip, String nombreUsuario, String clave, String nombre, String apellidos,
-			String email, String campus, String liga) {
+			String email, String campus, String grupo) {
 		super();
 		this.ip = ip;
 		this.nombreUsuario = nombreUsuario;
@@ -36,7 +36,7 @@ public class UsuarioTemporal {
 		this.campus = campus;
 		this.equipoId = "";
 		this.nombreEquipo = "";
-		this.liga = liga;
+		this.grupo = grupo;
 	}
 
 	public String getId() {
@@ -139,17 +139,17 @@ public class UsuarioTemporal {
 		this.fechaCaducidad = fechaCaducidad;
 	}
 	
-	public String getLiga() {
-		return liga;
+	public String getGrupo() {
+		return grupo;
 	}
 
-	public void setLiga(String liga) {
-		this.liga = liga;
+	public void setGrupo(String grupo) {
+		this.grupo = grupo;
 	}
 
 	@Override
 	public String toString() {
-		return "UsuarioTemporal [id=" + id + ", ip=" + ip + ", liga=" + liga + ", nombreUsuario=" + nombreUsuario
+		return "UsuarioTemporal [id=" + id + ", ip=" + ip + ", grupo=" + grupo + ", nombreUsuario=" + nombreUsuario
 				+ ", clave=" + clave + ", nombre=" + nombre + ", apellidos=" + apellidos + ", email=" + email
 				+ ", campus=" + campus + ", equipoId=" + equipoId + ", nombreEquipo=" + nombreEquipo + ", primerAcceso="
 				+ primerAcceso + ", fechaCaducidad=" + fechaCaducidad + "]";
@@ -167,7 +167,7 @@ public class UsuarioTemporal {
 		result = prime * result + ((fechaCaducidad == null) ? 0 : fechaCaducidad.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
-		result = prime * result + ((liga == null) ? 0 : liga.hashCode());
+		result = prime * result + ((grupo == null) ? 0 : grupo.hashCode());
 		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
 		result = prime * result + ((nombreEquipo == null) ? 0 : nombreEquipo.hashCode());
 		result = prime * result + ((nombreUsuario == null) ? 0 : nombreUsuario.hashCode());
@@ -224,10 +224,10 @@ public class UsuarioTemporal {
 				return false;
 		} else if (!ip.equals(other.ip))
 			return false;
-		if (liga == null) {
-			if (other.liga != null)
+		if (grupo == null) {
+			if (other.grupo != null)
 				return false;
-		} else if (!liga.equals(other.liga))
+		} else if (!grupo.equals(other.grupo))
 			return false;
 		if (nombre == null) {
 			if (other.nombre != null)

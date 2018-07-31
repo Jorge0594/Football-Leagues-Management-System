@@ -47,7 +47,7 @@ public class Jugador implements Comparable<Jugador> {
 	private String dni;
 
 	@JsonView(PerfilAtt.class)
-	private String nombreUsuario;
+	private String nombreUsuario = "";
 
 	@JsonView(ClaveAtt.class)
 	private String clave;
@@ -62,7 +62,7 @@ public class Jugador implements Comparable<Jugador> {
 	private String equipo;
 	
 	@JsonView(PerfilAtt.class)
-	private String liga;
+	private String grupo;
 
 	@JsonView(EquipoAtt.class)
 	private String posicion;
@@ -102,7 +102,7 @@ public class Jugador implements Comparable<Jugador> {
 	public Jugador(String id, String nombre, String apellidos, int edad, boolean aceptado, String fechaNacimiento,
 			String dni, String nombreUsuario, String clave, String email, String fotoJugador, String equipo,
 			String posicion, String estado, String lugarNacimiento, String nacionalidad, int dorsal, int goles,
-			int tarjetasAmarillas, int tarjetasRojas, boolean capitan, List<Sancion> sanciones, String liga) {
+			int tarjetasAmarillas, int tarjetasRojas, boolean capitan, List<Sancion> sanciones, String grupo) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -126,6 +126,23 @@ public class Jugador implements Comparable<Jugador> {
 		this.tarjetasRojas = tarjetasRojas;
 		this.capitan = capitan;
 		this.sanciones = sanciones;
+	}
+	
+	public Jugador(String nombre, String apellidos, String fechaNacimiento, String dni, String email, String fotoJugador, String posicion, String lugarNacimiento, String nacionalidad, int dorsal, boolean capitan) {
+		super();
+		this.nombre = nombre;
+		this.apellidos = apellidos;
+		this.fechaNacimiento = fechaNacimiento;
+		this.dni = dni;
+		this.email = email;
+		this.fotoJugador = fotoJugador;
+		this.posicion = posicion;
+		this.lugarNacimiento = lugarNacimiento;
+		this.nacionalidad = nacionalidad;
+		this.dorsal = dorsal;
+		this.capitan = capitan;
+		this.aceptado = false;
+		this.fotoJugador = "defaultProfile.jpg";
 	}
 
 
@@ -226,13 +243,13 @@ public class Jugador implements Comparable<Jugador> {
 		return tarjetasRojas;
 	}
 
-	public String getLiga() {
-		return liga;
+	public String getGrupo() {
+		return grupo;
 	}
 
 
-	public void setLiga(String liga) {
-		this.liga = liga;
+	public void setGrupo(String grupo) {
+		this.grupo = grupo;
 	}
 
 
@@ -327,7 +344,7 @@ public class Jugador implements Comparable<Jugador> {
 		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", edad=" + edad
 				+ ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni
 				+ ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
-				+ fotoJugador + ", equipo=" + equipo + ", liga=" + liga + ", posicion=" + posicion + ", estado="
+				+ fotoJugador + ", equipo=" + equipo + ", grupo=" + grupo + ", posicion=" + posicion + ", estado="
 				+ estado + ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad + ", dorsal="
 				+ dorsal + ", goles=" + goles + ", tarjetasAmarillas=" + tarjetasAmarillas + ", tarjetasRojas="
 				+ tarjetasRojas + ", capitan=" + capitan + ", sanciones=" + sanciones + "]";
@@ -351,7 +368,7 @@ public class Jugador implements Comparable<Jugador> {
 		result = prime * result + ((fotoJugador == null) ? 0 : fotoJugador.hashCode());
 		result = prime * result + goles;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((liga == null) ? 0 : liga.hashCode());
+		result = prime * result + ((grupo == null) ? 0 : grupo.hashCode());
 		result = prime * result + ((lugarNacimiento == null) ? 0 : lugarNacimiento.hashCode());
 		result = prime * result + ((nacionalidad == null) ? 0 : nacionalidad.hashCode());
 		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());

@@ -10,7 +10,6 @@ import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import API.ConexionesAmazon.AmazonBucket;
@@ -31,42 +30,18 @@ public class ModuleImages {
 		this.nombreFichero = nombreFichero;
 	}
 
-	/*
-	 * public boolean cambiarFoto(String id, MultipartFile file) { final String
-	 * FILES_FOLDER = "src\\main\\resources\\static\\images"; nombreFichero =
-	 * "profile" + id + ".jpg";
-	 * 
-	 * if (!file.isEmpty()) { try {
-	 * 
-	 * File filesFolder = new File(FILES_FOLDER); if (!filesFolder.exists()) {
-	 * filesFolder.mkdirs(); }
-	 * 
-	 * File uploadedFile = new File(filesFolder.getAbsolutePath(),
-	 * nombreFichero); uploadedFile.createNewFile(); FileOutputStream writeFile
-	 * = new FileOutputStream(uploadedFile);
-	 * 
-	 * writeFile.write(file.getBytes()); writeFile.close();
-	 * 
-	 * BufferedImage bImage = ImageIO.read(uploadedFile); Image imageScaled; if
-	 * (bImage.getWidth() >= 800 && bImage.getHeight() >= 800) { imageScaled =
-	 * bImage.getScaledInstance((int) (bImage.getWidth() * 0.2), (int)
-	 * (bImage.getHeight() * 0.2), BufferedImage.SCALE_SMOOTH); } else {
-	 * imageScaled = bImage.getScaledInstance((int) (bImage.getWidth() * 0.7),
-	 * (int) (bImage.getHeight() * 0.7), BufferedImage.SCALE_SMOOTH); }
-	 * 
-	 * BufferedImage bImageResize = toBufferedImage(imageScaled);
-	 * 
-	 * ImageIO.write(bImageResize, "jpg", uploadedFile);
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); return false; } } return
-	 * true; }
-	 */
-
 	public boolean cambiarFoto(String id, MultipartFile multipartFile) {
 		nombreFichero = "profile" + id + ".jpg";
 		try {
 			File file = conversorFicheros(multipartFile);
 			redimensionadorImagen(file);
+			
+			if(amazonBucket.existeFichero(nombreFichero)){
+				System.out.println("REMOVE FILE:" + nombreFichero);
+				amazonBucket.eliminarFichero(nombreFichero);
+			}
+			
+			System.out.println("ADD NEW FILE:" + nombreFichero);
 			amazonBucket.añadirFichero(nombreFichero, file);
 			file.delete();
 			
@@ -78,7 +53,8 @@ public class ModuleImages {
 	
 	public boolean eleminarFoto(String nombre){
 		try {
-			amazonBucket.eliminarFichero(nombre);
+			if(amazonBucket.existeFichero(nombreFichero))
+				amazonBucket.eliminarFichero(nombre);
 			return true;
 		}catch (Exception e) {
 			return false;
