@@ -2,8 +2,15 @@ package API.Equipo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +29,7 @@ import API.Grupo.GrupoRepository;
 import API.Images.ImageService;
 import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
+import API.MongoBulk.MongoBulk;
 import API.Sancion.Sancion;
 import API.Usuario.UsuarioComponent;
 import API.UsuarioTemporal.UsuarioTemporal;
@@ -43,7 +51,7 @@ public class EquipoController {
 	}
 
 	private Object lock = new Object();
-	
+
 	@Autowired
 	private EquipoRepository equipoRepository;
 	@Autowired
@@ -56,6 +64,8 @@ public class EquipoController {
 	private UsuarioTemporalRepository temporalRepository;
 	@Autowired
 	private ImageService imageService;
+	@Autowired
+	private MongoBulk mongoBulk;
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -187,6 +197,34 @@ public class EquipoController {
 		return new ResponseEntity<List<Jugador>>(equipo.getPlantillaEquipo(), HttpStatus.OK);
 	}
 
+	@SuppressWarnings("unchecked")
+	@JsonView(PerfilView.class)
+	@RequestMapping(value = "/{id}/temporal", method = RequestMethod.PUT)
+	public ResponseEntity<Equipo> modificarEquipoTemporal(@PathVariable String id, @RequestBody String requestBody) {
+		Equipo equipo = equipoRepository.findById(id);
+		if (equipo == null) {
+			return new ResponseEntity<Equipo>(HttpStatus.NOT_FOUND);
+		}
+		JSONParser parser = new JSONParser();
+		try {
+			JSONObject jsonRequest = (JSONObject) parser.parse(requestBody);
+			JSONArray nuevosJugadores = (JSONArray) jsonRequest.get("newPlayers");
+			JSONArray jugadoresModificados = (JSONArray) jsonRequest.get("modifyPlayers");
+			List<String> jugadoresEliminados = (List<String>) jsonRequest.get("removedPlayers");
+
+			actualizarJugadores(jugadoresModificados, equipo);
+			if (nuevosJugadores.size() > 0)
+				crearJugadores(nuevosJugadores, equipo);
+			if (jugadoresEliminados.size() > 0)
+				eliminarJugadores(jugadoresEliminados, equipo);
+
+			equipoRepository.save(equipo);
+		} catch (ParseException e) {
+			return new ResponseEntity<Equipo>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Equipo>(HttpStatus.OK);
+	}
+
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/imagen/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Equipo> cambiarImagenEquipo(@PathVariable String id, @RequestParam("File") MultipartFile file) {
@@ -309,12 +347,14 @@ public class EquipoController {
 
 		UsuarioTemporal usuarioTemporal = temporalRepository.findByEquipoId(id);
 		if (usuarioTemporal != null) {
-			System.out.println("Borrado de jugadores del equipo de usuario temporal");
 			usuarioTemporal.setEquipoId("");
 			temporalRepository.save(usuarioTemporal);
 
-			for (Jugador j : equipo.getPlantillaEquipo()) {
-				jugadorRepository.delete(j);
+			Query query = new Query(Criteria.where("equipo").is(equipo.getId()));
+			try {
+				mongoBulk.eliminarBloque(query, "Jugador");
+			} catch (Exception e) {
+				return new ResponseEntity<Equipo>(HttpStatus.NOT_FOUND);
 			}
 		} else {
 			if (equipo.getPlantillaEquipo() != null) {
@@ -328,5 +368,63 @@ public class EquipoController {
 		equipoRepository.delete(equipo);
 
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
+	}
+
+	private void actualizarJugadores(JSONArray jugadores, Equipo equipo) {
+		for (int i = 0; i < jugadores.size(); i++) {
+			JSONObject jsonJugador = (JSONObject) jugadores.get(i);
+			Optional<Jugador> jugador = equipo.getPlantillaEquipo().stream().filter(j -> j.getId().equals((String) jsonJugador.get("id"))).findAny();
+			if (jugador.isPresent()) {
+				actualizarDatosJugador(jsonJugador, jugador.get());
+			}
+		}
+	}
+
+	private void eliminarJugadores(List<String> listaIds, Equipo equipo) {
+		List<Jugador> plantilla = equipo.getPlantillaEquipo();
+
+		listaIds.forEach(id -> {
+			Optional<Jugador> jugador = plantilla.stream().filter(j -> j.getId().equals(id)).findAny();
+			if (jugador.isPresent()) {
+				plantilla.remove(jugador.get());
+				jugadorRepository.delete(jugador.get());
+			}
+		});
+
+		equipo.setPlantillaEquipo(plantilla);
+
+	}
+
+	private void crearJugadores(JSONArray jugadores, Equipo equipo) {
+		Jugador jugador;
+		JSONObject jsonJugador;
+		List<Jugador> listaJugadores = new ArrayList<>();
+		for (int i = 0; i < jugadores.size(); i++) {
+			jsonJugador = (JSONObject) jugadores.get(i);
+			jugador = new Jugador((String) jsonJugador.get("nombre"), (String) jsonJugador.get("apellidos"), (String) jsonJugador.get("fechaNacimiento"), (String) jsonJugador.get("dni"), (String) jsonJugador.get("email"), (String) jsonJugador.get("fotoJugador"), (String) jsonJugador.get("posicion"),
+					(String) jsonJugador.get("lugarNacimiento"), (String) jsonJugador.get("nacionalidad"), (int) (long) jsonJugador.get("dorsal"), (boolean) jsonJugador.get("capitan"));
+
+			jugador.setEquipo(equipo.getId());
+			jugadorRepository.save(jugador);
+
+			listaJugadores.add(jugador);
+		}
+
+		equipo.getPlantillaEquipo().addAll(listaJugadores);
+	}
+
+	private void actualizarDatosJugador(JSONObject jsonJugador, Jugador jugador) {
+		jugador.setNombre((String) jsonJugador.get("nombre"));
+		jugador.setApellidos((String) jsonJugador.get("apellidos"));
+		jugador.setEmail((String) jsonJugador.get("email"));
+		jugador.setFechaNacimiento((String) jsonJugador.get("fechaNacimiento"));
+		jugador.setDni((String) jsonJugador.get("dni"));
+		jugador.setPosicion((String) jsonJugador.get("posicion"));
+		jugador.setLugarNacimiento((String) jsonJugador.get("lugarNacimiento"));
+		jugador.setNacionalidad((String) jsonJugador.get("nacionalidad"));
+		jugador.setDorsal((int) (long) jsonJugador.get("dorsal"));
+		jugador.setFotoJugador((String) jsonJugador.get("fotoJugador"));
+		jugador.setCapitan((boolean) jsonJugador.get("capitan"));
+		jugadorRepository.save(jugador);
 	}
 }

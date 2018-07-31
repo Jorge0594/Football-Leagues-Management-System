@@ -37,11 +37,9 @@ public class ModuleImages {
 			redimensionadorImagen(file);
 			
 			if(amazonBucket.existeFichero(nombreFichero)){
-				System.out.println("REMOVE FILE:" + nombreFichero);
 				amazonBucket.eliminarFichero(nombreFichero);
 			}
 			
-			System.out.println("ADD NEW FILE:" + nombreFichero);
 			amazonBucket.añadirFichero(nombreFichero, file);
 			file.delete();
 			

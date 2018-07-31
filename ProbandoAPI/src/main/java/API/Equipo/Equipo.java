@@ -30,6 +30,9 @@ public class Equipo implements Comparable<Equipo> {
 
 	@JsonView(RankAtt.class)
 	private String grupo;
+	
+	@JsonView(RankAtt.class)
+	private String liga;
 
 	@JsonView(PerfilAtt.class)
 	private String ciudad;
@@ -75,12 +78,13 @@ public class Equipo implements Comparable<Equipo> {
 	public Equipo() {
 	}
 
-	public Equipo(String id, String nombre, String grupo, String ciudad, int posicion, int golesEncajados, int goles,
+	public Equipo(String id, String nombre, String liga, String grupo, String ciudad, int posicion, int golesEncajados, int goles,
 			List<Jugador> plantillaEquipo) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.aceptado = false;
+		this.liga = liga;
 		this.grupo = grupo;
 		this.ciudad = ciudad;
 		this.posicion = posicion;
@@ -167,6 +171,14 @@ public class Equipo implements Comparable<Equipo> {
 		return partidosGanados;
 	}
 
+	public String getLiga() {
+		return liga;
+	}
+
+	public void setLiga(String liga) {
+		this.liga = liga;
+	}
+
 	public void setPartidosGanados(int partidosGanados) {
 		this.puntos = this.puntos + 3 * (partidosGanados - this.partidosGanados);
 		this.partidosGanados = partidosGanados;
@@ -221,15 +233,10 @@ public class Equipo implements Comparable<Equipo> {
 		this.estadioEquipo = estadioEquipo;
 	}
 
-
 	@Override
 	public String toString() {
-		return "Equipo [id=" + id + ", nombre=" + nombre + ", grupo=" + grupo + ", ciudad=" + ciudad + ", imagenEquipo="
-				+ imagenEquipo + ", aceptado=" + aceptado + ", posicion=" + posicion + ", puntos=" + puntos + ", goles="
-				+ goles + ", golesEncajados=" + golesEncajados + ", partidosGanados=" + partidosGanados
-				+ ", partidosPerdidos=" + partidosPerdidos + ", partidosEmpatados=" + partidosEmpatados
-				+ ", partidosJugados=" + partidosJugados + ", estadioEquipo=" + estadioEquipo + ", plantillaEquipo="
-				+ plantillaEquipo + "]";
+		return "Equipo [id=" + id + ", nombre=" + nombre + ", grupo=" + grupo + ", liga=" + liga + ", ciudad=" + ciudad + ", imagenEquipo=" + imagenEquipo + ", aceptado=" + aceptado + ", posicion=" + posicion + ", puntos=" + puntos + ", goles=" + goles + ", golesEncajados=" + golesEncajados
+				+ ", partidosGanados=" + partidosGanados + ", partidosPerdidos=" + partidosPerdidos + ", partidosEmpatados=" + partidosEmpatados + ", partidosJugados=" + partidosJugados + ", estadioEquipo=" + estadioEquipo + ", plantillaEquipo=" + plantillaEquipo + "]";
 	}
 
 	@Override

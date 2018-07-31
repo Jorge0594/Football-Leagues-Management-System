@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -43,7 +42,6 @@ import API.Usuario.UsuarioComponent;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
 import API.Sancion.Sancion;
-import API.Sancion.SancionController;
 import API.Sancion.SancionRepository;
 
 @RestController
@@ -56,25 +54,25 @@ public class ActaController {
 	}
 
 	@Autowired
-	ActaRepository actaRepository;
+	private ActaRepository actaRepository;
 	@Autowired
-	EquipoRepository equipoRepository;
+	private EquipoRepository equipoRepository;
 	@Autowired
-	JugadorRepository jugadorRepository;
+	private JugadorRepository jugadorRepository;
 	@Autowired
-	GrupoRepository grupoRepository;
+	private GrupoRepository grupoRepository;
 	@Autowired
-	PartidoRepository partidoRepository;
+	private PartidoRepository partidoRepository;
 	@Autowired
-	ArbitroRepository arbitroRepository;
+	private ArbitroRepository arbitroRepository;
 	@Autowired
-	UsuarioComponent usuarioComponent;
+	private UsuarioComponent usuarioComponent;
 	@Autowired
-	PdfCreator pdfCreator;
+	private PdfCreator pdfCreator;
 	@Autowired
-	IncidenciaRepository incidenciaRepository;
+	private IncidenciaRepository incidenciaRepository;
 	@Autowired
-	SancionRepository sancionRepository;
+	private SancionRepository sancionRepository;
 	
 	@JsonView(ActaView.class)
 	@RequestMapping(value = "/pendientes", method = RequestMethod.GET)
