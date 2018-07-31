@@ -1,8 +1,5 @@
 package API.Liga;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -42,11 +39,10 @@ public class LigaController {
 	@JsonView(LigaAtt.class)
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Liga> crearLiga(@RequestBody Liga entrada) {
+
 		if (ligaRepository.findByNombre(entrada.getNombre()) != null) {
 			return new ResponseEntity<Liga>(HttpStatus.NOT_ACCEPTABLE);
-		}
-
-		else {
+		} else {
 			entrada.setId(null);
 			ligaRepository.save(entrada);
 		}

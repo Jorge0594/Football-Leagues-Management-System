@@ -2,15 +2,8 @@ package API.Equipo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,12 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.Grupo.Grupo;
+import API.Grupo.GrupoRepository;
 import API.Images.ImageService;
 import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
-import API.Liga.Liga;
-import API.Liga.LigaRepository;
-import API.MongoBulk.MongoBulk;
 import API.Sancion.Sancion;
 import API.Usuario.UsuarioComponent;
 import API.UsuarioTemporal.UsuarioTemporal;
@@ -50,20 +42,20 @@ public class EquipoController {
 	public interface JugadorView extends Jugador.PerfilAtt, Jugador.EquipoAtt {
 	}
 
+	private Object lock = new Object();
+	
 	@Autowired
 	private EquipoRepository equipoRepository;
 	@Autowired
 	private JugadorRepository jugadorRepository;
 	@Autowired
-	private LigaRepository ligaRepository;
+	private GrupoRepository grupoRepository;
 	@Autowired
 	private UsuarioComponent usuarioComponent;
 	@Autowired
 	private UsuarioTemporalRepository temporalRepository;
 	@Autowired
 	private ImageService imageService;
-	@Autowired
-	private MongoBulk mongoBulk;
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -82,13 +74,13 @@ public class EquipoController {
 		equipo.setId(null);
 		equipo.setPlantillaEquipo(new ArrayList<Jugador>());
 
-		Liga ligaEquipo = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
+		Grupo grupoEquipo = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
 
-		equipo.setPosicion(ligaEquipo.getClasificacion().size() + 1);
+		equipo.setPosicion(grupoEquipo.getClasificacion().size() + 1);
 		equipoRepository.save(equipo);
 
-		ligaEquipo.getClasificacion().add(equipo);
-		ligaRepository.save(ligaEquipo);
+		grupoEquipo.getClasificacion().add(equipo);
+		grupoRepository.save(grupoEquipo);
 
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.CREATED);
 	}
@@ -101,7 +93,7 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.UNAUTHORIZED);
 		}
 		equipo.setId(null);
-		equipo.setLiga(usuario.getLiga());
+		equipo.setGrupo(usuario.getGrupo());
 		equipo.setAceptado(false);
 		equipo.setImagenEquipo("shield.png");
 
@@ -115,7 +107,7 @@ public class EquipoController {
 			jugador.setAceptado(false);
 			jugador.setId(null);
 			jugador.setFotoJugador("defaultProfile.jpg");
-			jugador.setLiga("");
+			jugador.setGrupo("");
 			jugador.setGoles(0);
 			jugador.setTarjetasAmarillas(0);
 			jugador.setTarjetasRojas(0);
@@ -144,9 +136,9 @@ public class EquipoController {
 	}
 
 	@JsonView(RankView.class)
-	@RequestMapping(value = "/liga/{liga}", method = RequestMethod.GET)
-	public ResponseEntity<List<Equipo>> verEquiposLiga(@PathVariable String liga) {
-		List<Equipo> equipos = equipoRepository.findByLigaIgnoreCase(liga);
+	@RequestMapping(value = "/grupo/{grupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Equipo>> verEquiposGrupo(@PathVariable String grupo) {
+		List<Equipo> equipos = equipoRepository.findByGrupoIgnoreCase(grupo);
 		if (equipos.isEmpty()) {
 			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
 		}
@@ -164,9 +156,9 @@ public class EquipoController {
 	}
 
 	@JsonView(PerfilView.class)
-	@RequestMapping(value = "/validar/{nombre}/{liga}", method = RequestMethod.GET)
-	public ResponseEntity<Equipo> disponibleNombreEquipoLiga(@PathVariable(value = "nombre") String nombre, @PathVariable(value = "liga") String liga) {
-		Equipo equipo = equipoRepository.findByLigaAndNombreAllIgnoreCase(liga, nombre);
+	@RequestMapping(value = "/validar/{nombre}/{grupo}", method = RequestMethod.GET)
+	public ResponseEntity<Equipo> disponibleNombreEquipoGrupo(@PathVariable(value = "nombre") String nombre, @PathVariable(value = "grupo") String grupo) {
+		Equipo equipo = equipoRepository.findByGrupoAndNombreAllIgnoreCase(grupo, nombre);
 		if (equipo != null) {
 			return new ResponseEntity<Equipo>(HttpStatus.CONFLICT);
 		}
@@ -194,36 +186,6 @@ public class EquipoController {
 
 		return new ResponseEntity<List<Jugador>>(equipo.getPlantillaEquipo(), HttpStatus.OK);
 	}
-	
-	@SuppressWarnings("unchecked")
-	@JsonView(PerfilView.class)
-	@RequestMapping(value = "/{id}/temporal", method = RequestMethod.PUT)
-	public ResponseEntity<Equipo> modificarEquipoTemporal(@PathVariable String id, @RequestBody String requestBody) {
-		Equipo equipo = equipoRepository.findById(id);
-		if (equipo == null) {
-			return new ResponseEntity<Equipo>(HttpStatus.NOT_FOUND);
-		}
-
-		JSONParser parser = new JSONParser();
-		try {
-			JSONObject jsonRequest = (JSONObject) parser.parse(requestBody);
-			JSONArray nuevosJugadores = (JSONArray) jsonRequest.get("newPlayers");
-			JSONArray jugadoresModificados = (JSONArray) jsonRequest.get("modifyPlayers");
-			List<String> jugadoresEliminados = (List<String>) jsonRequest.get("removedPlayers");
-			
-			actualizarJugadores(jugadoresModificados, equipo);
-			if(nuevosJugadores.size() > 0)
-				crearJugadores(nuevosJugadores, equipo);
-			if(jugadoresEliminados.size() > 0)
-				eliminarJugadores(jugadoresEliminados, equipo);
-			
-			equipoRepository.save(equipo);
-
-		} catch (ParseException e) {
-			return new ResponseEntity<Equipo>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<Equipo>(HttpStatus.OK);
-	}
 
 	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/imagen/{id}", method = RequestMethod.PUT)
@@ -233,12 +195,14 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 
-		if (imageService.getImg().cambiarFoto(equipo.getNombre() + equipo.getLiga(), file)) {
-			equipo.setImagenEquipo(imageService.getImg().getNombreFichero());
+		synchronized (lock) {
+			if (imageService.getImg().cambiarFoto(equipo.getNombre() + equipo.getGrupo(), file)) {
+				equipo.setImagenEquipo(imageService.getImg().getNombreFichero());
 
-			equipoRepository.save(equipo);
-		} else {
-			return new ResponseEntity<Equipo>(HttpStatus.NOT_FOUND);
+				equipoRepository.save(equipo);
+			} else {
+				return new ResponseEntity<Equipo>(HttpStatus.NOT_FOUND);
+			}
 		}
 
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
@@ -276,19 +240,19 @@ public class EquipoController {
 		if (equipo == null || jugador == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
-		if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
-			jugador.setLiga(equipo.getLiga());
+		if (!equipo.getGrupo().equals("") && equipo.isAceptado()) {
+			jugador.setGrupo(equipo.getGrupo());
 		}
 		if (!jugador.getEquipo().equals("")) {
 			if (!equipo.getPlantillaEquipo().contains(jugador)) {
 				Equipo aux = equipoRepository.findById(jugador.getEquipo());
 				/*
-				 * if (!aux.getLiga().equals(equipo.getLiga()) &&
-				 * (!aux.getLiga().equals("")) && (aux.isAceptado())) { Liga
-				 * ligaAux =
-				 * ligaRepository.findByNombreIgnoreCase(aux.getLiga());
-				 * ligaAux.getGoleadores().remove(jugador);
-				 * ligaRepository.save(ligaAux); }
+				 * if (!aux.getGrupo().equals(equipo.getGrupo()) &&
+				 * (!aux.getGrupo().equals("")) && (aux.isAceptado())) { Grupo
+				 * grupoAux =
+				 * grupoRepository.findByNombreIgnoreCase(aux.getGrupo());
+				 * grupoAux.getGoleadores().remove(jugador);
+				 * grupoRepository.save(grupoAux); }
 				 */
 				aux.getPlantillaEquipo().remove(jugador);
 				equipoRepository.save(aux);
@@ -317,26 +281,10 @@ public class EquipoController {
 
 			equipo.getPlantillaEquipo().remove(jugador);
 			jugador.setEquipo("");
-			jugador.setLiga("");
+			jugador.setGrupo("");
 
 			jugadorRepository.save(jugador);
 			equipoRepository.save(equipo);
-
-			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-			if (liga != null && liga.getGoleadores().contains(jugador)) {// Elimina
-																			// a
-																			// el
-																			// jugador
-																			// si
-																			// se
-																			// encuentra
-																			// entre
-																			// los
-																			// goleadores
-				List<Jugador> jugadores = jugadorRepository.findByLigaIgnoreCase(liga.getNombre());
-				liga.crearGoleadores(jugadores);
-				ligaRepository.save(liga);
-			}
 
 			return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 		}
@@ -351,32 +299,23 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 
-		if (!equipo.getLiga().equals("") && equipo.isAceptado()) {
-			Liga liga = ligaRepository.findByNombreIgnoreCase(equipo.getLiga());
-			liga.getGoleadores().removeAll(equipo.getPlantillaEquipo());
-			liga.getClasificacion().remove(equipo);
-			ligaRepository.save(liga);
+		if (!equipo.getGrupo().equals("") && equipo.isAceptado()) {
+			Grupo grupo = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
+			grupo.getClasificacion().remove(equipo);
+			grupoRepository.save(grupo);
 		}
 
 		// Testing
 
 		UsuarioTemporal usuarioTemporal = temporalRepository.findByEquipoId(id);
 		if (usuarioTemporal != null) {
+			System.out.println("Borrado de jugadores del equipo de usuario temporal");
 			usuarioTemporal.setEquipoId("");
 			temporalRepository.save(usuarioTemporal);
 
-			Query query = new Query(Criteria.where("equipo").is(equipo.getId()));
-
-			try {
-				mongoBulk.eliminarBloque(query, "Jugador");
-			} catch (Exception e) {
-				return new ResponseEntity<Equipo>(HttpStatus.NOT_FOUND);
+			for (Jugador j : equipo.getPlantillaEquipo()) {
+				jugadorRepository.delete(j);
 			}
-
-			/*
-			 * for(Jugador j : equipo.getPlantillaEquipo()){
-			 * jugadorRepository.delete(j); }
-			 */
 		} else {
 			if (equipo.getPlantillaEquipo() != null) {
 				for (Jugador j : equipo.getPlantillaEquipo()) {
@@ -390,75 +329,4 @@ public class EquipoController {
 
 		return new ResponseEntity<Equipo>(equipo, HttpStatus.OK);
 	}
-
-	private void actualizarJugadores(JSONArray jugadores, Equipo equipo) {
-		for (int i = 0; i < jugadores.size(); i++) {
-			JSONObject jsonJugador = (JSONObject) jugadores.get(i);
-			Optional<Jugador> jugador = equipo.getPlantillaEquipo().stream()
-					.filter(j -> j.getId().equals((String) jsonJugador.get("id")))
-					.findAny();
-
-			if (jugador.isPresent()) {
-				actualizarDatosJugador(jsonJugador, jugador.get());
-			}
-		}
-	}
-	
-	private void eliminarJugadores(List<String>listaIds, Equipo equipo){
-		List<Jugador> plantilla = equipo.getPlantillaEquipo();
-		
-		listaIds.forEach(id -> {
-			Optional<Jugador> jugador = plantilla.stream()
-					.filter(j -> j.getId().equals(id))
-					.findAny();
-			if(jugador.isPresent()){
-				plantilla.remove(jugador.get());
-				jugadorRepository.delete(jugador.get());
-			}
-		});
-		
-		equipo.setPlantillaEquipo(plantilla);
-		
-	}
-
-	private void crearJugadores(JSONArray jugadores, Equipo equipo) {
-		Jugador jugador;
-		JSONObject jsonJugador;
-		List<Jugador> listaJugadores = new ArrayList<>();
-
-		for (int i = 0; i < jugadores.size(); i++) {
-			jsonJugador = (JSONObject) jugadores.get(i);
-			jugador = new Jugador((String) jsonJugador.get("nombre"), (String) jsonJugador.get("apellidos"), (String) jsonJugador.get("fechaNacimiento"),
-					(String) jsonJugador.get("dni"), (String) jsonJugador.get("email"), (String) jsonJugador.get("fotoJugador"), (String) jsonJugador.get("posicion"),
-						(String) jsonJugador.get("lugarNacimiento"), (String) jsonJugador.get("nacionalidad"), (int)(long) jsonJugador.get("dorsal"), (boolean) jsonJugador.get("capitan"));
-			
-			jugador.setEquipo(equipo.getId());
-			jugador.setLiga(equipo.getLiga());
-			
-			jugadorRepository.save(jugador);
-			
-			listaJugadores.add(jugador);
-		}
-		
-		equipo.getPlantillaEquipo().addAll(listaJugadores);
-	}
-
-	private void actualizarDatosJugador(JSONObject jsonJugador, Jugador jugador) {
-
-		jugador.setNombre((String) jsonJugador.get("nombre"));
-		jugador.setApellidos((String) jsonJugador.get("apellidos"));
-		jugador.setEmail((String) jsonJugador.get("email"));
-		jugador.setFechaNacimiento((String) jsonJugador.get("fechaNacimiento"));
-		jugador.setDni((String) jsonJugador.get("dni"));
-		jugador.setPosicion((String) jsonJugador.get("posicion"));
-		jugador.setLugarNacimiento((String) jsonJugador.get("lugarNacimiento"));
-		jugador.setNacionalidad((String) jsonJugador.get("nacionalidad"));
-		jugador.setDorsal((int)(long) jsonJugador.get("dorsal"));
-		jugador.setFotoJugador((String) jsonJugador.get("fotoJugador"));
-		jugador.setCapitan((boolean) jsonJugador.get("capitan"));
-
-		jugadorRepository.save(jugador);
-
-	}
-	
 }
