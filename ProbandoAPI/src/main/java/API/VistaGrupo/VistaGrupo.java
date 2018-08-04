@@ -1,19 +1,16 @@
 package API.VistaGrupo;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.annotation.JsonView;
 
 
-@Document(collection = "VistaGrupo")
+@Component
 public class VistaGrupo {
 
 	public interface VistaGrupoAtt {
 	}
 
-	@Id
-	@JsonView(VistaGrupoAtt.class)
-	private String id;
 
 	@JsonView(VistaGrupoAtt.class)
 	private String idGrupo;
@@ -21,19 +18,11 @@ public class VistaGrupo {
 	@JsonView(VistaGrupoAtt.class)
 	private String nombre;
 
-
+    public VistaGrupo() {}
 	public VistaGrupo(String idGrupo, String nombre) {
 		super();
 		this.idGrupo = idGrupo;
 		this.nombre = nombre;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getIdGrupo() {
@@ -59,7 +48,6 @@ public class VistaGrupo {
 		int result = 1;
 		result = prime * result + ((idGrupo == null) ? 0 : idGrupo.hashCode());
 		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
 

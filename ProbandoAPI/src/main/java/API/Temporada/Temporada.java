@@ -1,7 +1,9 @@
 package API.Temporada;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,15 +28,16 @@ public class Temporada {
 	@JsonView(TemporadaAtt.class)
 	private List<Arbitro> arbitros;
 	
+
 	@JsonView(TemporadaAtt.class)
 	private List<VistaGrupo> grupos;
 
-
+	public Temporada() {}
 	public Temporada(String nombre) {
 		super();
-		this.arbitros = null;
-		this.grupos = null;
 		this.nombre = nombre;
+		this.grupos = new ArrayList<VistaGrupo>();
+		this.arbitros = new ArrayList<Arbitro>();
 	}
 
 	
@@ -70,7 +73,14 @@ public class Temporada {
 		this.grupos = grupos;
 	}
 
-	
+	public boolean addVistaGrupo(VistaGrupo vista) {
+		if(grupos!= null && grupos.contains(vista)) {
+			return false;
+		}else{
+			grupos.add(vista);
+			return true;
+		}
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;

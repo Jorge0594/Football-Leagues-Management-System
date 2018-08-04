@@ -4,17 +4,14 @@ import API.Jugador.*;
 import API.Mails.MailService;
 import API.MongoBulk.MongoBulk;
 import API.Partido.Partido;
-import API.Partido.PartidoRepository;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioRepository;
 import API.Utilidades.UsuarioUtils;
 import API.Equipo.*;
-import API.Grupo.*;
 import API.Grupo.Grupo.GrupoAtt;
 import API.VistaGrupo.*;
+import API.Temporada.*;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +20,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -59,7 +54,7 @@ public class GrupoController {
 	@Autowired
 	private JugadorRepository jugadorRepository;
 	@Autowired
-	private VistaGrupoRepository vistaGrupoRepository;
+	private TemporadaRepository temporadaRepository;
 
 	@Autowired
 	private MailService mailService;
@@ -74,11 +69,29 @@ public class GrupoController {
 		grupo.setId(null);
 		grupo.setNombre(grupo.getNombre().toUpperCase());
 		grupoRepository.save(grupo);
-		
-		VistaGrupo vistaGrupo = new VistaGrupo(grupo.getId(),grupo.getNombre());
-		vistaGrupoRepository.save(vistaGrupo);
-		
+
 		return new ResponseEntity<Grupo>(grupo, HttpStatus.CREATED);
+	}
+	
+	@JsonView(InfoGrupoView.class)
+	@RequestMapping(value = "/{nombreTemporada}", method = RequestMethod.POST)
+	public ResponseEntity<Grupo> crearGrupoConVista(@RequestBody Grupo grupo, @PathVariable String nombreTemporada) {	
+		grupo.setId(null);
+		grupo.setNombre(grupo.getNombre().toUpperCase());		
+		grupoRepository.save(grupo);
+		
+		VistaGrupo vistaGrupo = new VistaGrupo(grupo.getId(),grupo.getNombre()) ;
+		Temporada temporadaActual = temporadaRepository.findByNombre(nombreTemporada);
+		
+		if(temporadaActual != null && temporadaActual.addVistaGrupo(vistaGrupo)) {
+			temporadaRepository.save(temporadaActual);	
+			return new ResponseEntity<Grupo>(grupo, HttpStatus.CREATED);
+		}
+		else {
+			grupoRepository.delete(grupo);
+			return new ResponseEntity<Grupo>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		
 	}
 
 	@JsonView(InfoGrupoView.class)

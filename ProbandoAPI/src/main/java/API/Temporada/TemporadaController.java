@@ -2,6 +2,7 @@ package API.Temporada;
 
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Grupo.*;
+import API.VistaGrupo.VistaGrupo;
 
 
 @RestController
@@ -48,6 +50,7 @@ public class TemporadaController {
 		}
 		else {
 			entrada.setId(null);
+			entrada.setGrupos(new ArrayList<VistaGrupo>());
 			temporadaRepository.save(entrada);
 		}
 		return new ResponseEntity<Temporada>(entrada, HttpStatus.OK);
