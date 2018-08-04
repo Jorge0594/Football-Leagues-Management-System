@@ -16,7 +16,10 @@ public class HistoricoJugador extends Historico {
 		this.jugador = jugador;
 	}
 
-	
+	public HistoricoJugador(String id, String temporada, Jugador jugador){
+		super(id, temporada);
+		this.jugador = jugador;
+	}
 
 	public Jugador getJugador() {
 		return jugador;
@@ -28,7 +31,7 @@ public class HistoricoJugador extends Historico {
 
 	@Override
 	public String toString() {
-		return "HistoricoJugador [jugador=" + jugador + "]";
+		return "HistoricoJugador" + super.toString() +  ", jugador=" + jugador + "]";
 	}
 
 	@Override

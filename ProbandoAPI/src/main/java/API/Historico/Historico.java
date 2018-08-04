@@ -35,7 +35,7 @@ public abstract class Historico {
 
 	@Override
 	public String toString() {
-		return "Historico [id=" + id + ", temporada=" + temporada + "]";
+		return "[id=" + id + ", temporada=" + temporada;
 	}
 
 	@Override
@@ -68,9 +68,5 @@ public abstract class Historico {
 			return false;
 		return true;
 	}
-	
-	
-	
-	
 
 }

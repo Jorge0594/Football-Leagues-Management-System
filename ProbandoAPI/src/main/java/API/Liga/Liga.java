@@ -1,5 +1,6 @@
 package API.Liga;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -23,13 +24,14 @@ public class Liga {
 	private String nombre;
 	
 	@JsonView(LigaAtt.class)
-	private List<Temporada> temporadas;
+	private List<Temporada> temporadas = new ArrayList<>();
 	
 	@JsonView(LigaAtt.class)
 	private int temporadaActual;
 
-
-
+	
+	public Liga(){}
+	
 	public Liga(String nombre) {
 		super();
 		this.temporadas = null;

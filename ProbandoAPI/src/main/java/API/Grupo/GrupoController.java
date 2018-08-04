@@ -74,24 +74,22 @@ public class GrupoController {
 	}
 	
 	@JsonView(InfoGrupoView.class)
-	@RequestMapping(value = "/{nombreTemporada}", method = RequestMethod.POST)
-	public ResponseEntity<Grupo> crearGrupoConVista(@RequestBody Grupo grupo, @PathVariable String nombreTemporada) {	
+	@RequestMapping(value = "/{idTemporada}", method = RequestMethod.POST)
+	public ResponseEntity<Grupo> crearGrupoConVista(@RequestBody Grupo grupo, @PathVariable String idTemporada) {	
 		grupo.setId(null);
 		grupo.setNombre(grupo.getNombre().toUpperCase());		
 		grupoRepository.save(grupo);
 		
 		VistaGrupo vistaGrupo = new VistaGrupo(grupo.getId(),grupo.getNombre()) ;
-		Temporada temporadaActual = temporadaRepository.findByNombre(nombreTemporada);
+		Temporada temporadaActual = temporadaRepository.findById(idTemporada);
 		
 		if(temporadaActual != null && temporadaActual.addVistaGrupo(vistaGrupo)) {
 			temporadaRepository.save(temporadaActual);	
 			return new ResponseEntity<Grupo>(grupo, HttpStatus.CREATED);
-		}
-		else {
+		} else {
 			grupoRepository.delete(grupo);
 			return new ResponseEntity<Grupo>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		
 	}
 
 	@JsonView(InfoGrupoView.class)

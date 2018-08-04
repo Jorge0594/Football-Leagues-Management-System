@@ -3,14 +3,13 @@ package API.Temporada;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Arbitro.Arbitro;
 import API.VistaGrupo.VistaGrupo;
-
 
 @Document(collection = "Temporada")
 public class Temporada {
@@ -21,26 +20,27 @@ public class Temporada {
 	@Id
 	@JsonView(TemporadaAtt.class)
 	private String id;
-
 	@JsonView(TemporadaAtt.class)
 	private String nombre;
-	
+	@JsonView(TemporadaAtt.class)
+	private String liga;
+	@DBRef
 	@JsonView(TemporadaAtt.class)
 	private List<Arbitro> arbitros;
-	
-
 	@JsonView(TemporadaAtt.class)
 	private List<VistaGrupo> grupos;
 
-	public Temporada() {}
-	public Temporada(String nombre) {
+	public Temporada() {
+	}
+
+	public Temporada(String nombre, String liga) {
 		super();
 		this.nombre = nombre;
+		this.liga = liga;
 		this.grupos = new ArrayList<VistaGrupo>();
 		this.arbitros = new ArrayList<Arbitro>();
 	}
 
-	
 	public String getId() {
 		return id;
 	}
@@ -48,7 +48,7 @@ public class Temporada {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public String getNombre() {
 		return nombre;
 	}
@@ -73,22 +73,37 @@ public class Temporada {
 		this.grupos = grupos;
 	}
 
+	public String getLiga() {
+		return liga;
+	}
+
+	public void setLiga(String liga) {
+		this.liga = liga;
+	}
+
 	public boolean addVistaGrupo(VistaGrupo vista) {
-		if(grupos!= null && grupos.contains(vista)) {
+		if (grupos != null && grupos.contains(vista)) {
 			return false;
-		}else{
+		} else {
 			grupos.add(vista);
 			return true;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "Temporada [id=" + id + ", nombre=" + nombre + ", liga=" + liga + ", arbitros=" + arbitros + ", grupos=" + grupos + "]";
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((grupos == null) ? 0 : grupos.hashCode());
-		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((arbitros == null) ? 0 : arbitros.hashCode());
+		result = prime * result + ((grupos == null) ? 0 : grupos.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((liga == null) ? 0 : liga.hashCode());
+		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
 		return result;
 	}
 
@@ -111,6 +126,16 @@ public class Temporada {
 				return false;
 		} else if (!grupos.equals(other.grupos))
 			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (liga == null) {
+			if (other.liga != null)
+				return false;
+		} else if (!liga.equals(other.liga))
+			return false;
 		if (nombre == null) {
 			if (other.nombre != null)
 				return false;
@@ -118,5 +143,8 @@ public class Temporada {
 			return false;
 		return true;
 	}
+
+	
+	
 
 }

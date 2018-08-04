@@ -15,6 +15,11 @@ public class HistoricoEquipo extends Historico{
 		super();
 		this.equipo = equipo;
 	}
+	
+	public HistoricoEquipo(String id, String temporada, Equipo equipo){
+		super(id, temporada);
+		this.equipo = equipo;
+	}
 
 	public Equipo getEquipo() {
 		return equipo;
@@ -26,7 +31,7 @@ public class HistoricoEquipo extends Historico{
 
 	@Override
 	public String toString() {
-		return "HistoricoEquipo [equipo=" + equipo + "]";
+		return "HistoricoEquipo" + super.toString() + ", equipo=" + equipo + "]";
 	}
 
 	@Override
