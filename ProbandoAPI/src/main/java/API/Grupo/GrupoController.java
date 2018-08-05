@@ -18,8 +18,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.mockito.internal.matchers.Equals;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -80,14 +84,21 @@ public class GrupoController {
 		grupo.setNombre(grupo.getNombre().toUpperCase());		
 		grupoRepository.save(grupo);
 		
-		VistaGrupo vistaGrupo = new VistaGrupo(grupo.getId(),grupo.getNombre()) ;
 		Temporada temporadaActual = temporadaRepository.findById(idTemporada);
 		
-		if(temporadaActual != null && temporadaActual.addVistaGrupo(vistaGrupo)) {
+		if(temporadaActual != null) {
+			grupo.setTemporada(temporadaActual.getNombre());
+			grupoRepository.save(grupo);
+			
+			VistaGrupo vistaGrupo = new VistaGrupo(grupo.getId(),grupo.getNombre());
+			if(!temporadaActual.addVistaGrupo(vistaGrupo)){
+				grupoRepository.delete(grupo);
+				return new ResponseEntity<Grupo>(HttpStatus.NOT_FOUND);
+			}
+			
 			temporadaRepository.save(temporadaActual);	
 			return new ResponseEntity<Grupo>(grupo, HttpStatus.CREATED);
 		} else {
-			grupoRepository.delete(grupo);
 			return new ResponseEntity<Grupo>(HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
@@ -190,7 +201,8 @@ public class GrupoController {
 			return new ResponseEntity<Grupo>(HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
-
+	
+	
 	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "/{nombre}/equipo/{idEquipo}", method = RequestMethod.DELETE)
 	public ResponseEntity<Grupo> eliminarEquipoGrupo(@PathVariable(value = "nombre") String nombre, @PathVariable(value = "idEquipo") String idEquipo) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -22,7 +23,7 @@ public class Liga {
 
 	@JsonView(LigaAtt.class)
 	private String nombre;
-	
+	@DBRef
 	@JsonView(LigaAtt.class)
 	private List<Temporada> temporadas = new ArrayList<>();
 	

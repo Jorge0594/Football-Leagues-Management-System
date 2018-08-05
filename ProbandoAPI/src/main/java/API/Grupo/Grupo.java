@@ -22,6 +22,8 @@ public class Grupo {
 	@JsonView(GrupoAtt.class)
 	private String id;
 	@JsonView(GrupoAtt.class)
+	private String temporada;
+	@JsonView(GrupoAtt.class)
 	private String nombre;
 	@JsonView(GrupoAtt.class)
 	private int jornadaActual;
@@ -29,23 +31,22 @@ public class Grupo {
 	@JsonView(GrupoAtt.class)
 	private List<Equipo> clasificacion = new ArrayList<>();
 
-
-	public Grupo(String id, String nombre, List<Equipo> clasificacion) {
-		super();
-		this.id = id;
-		this.nombre = nombre;
-		this.clasificacion = clasificacion;
-		this.jornadaActual = 0;
-	}
-
-	public Grupo() {
-	}
+	public Grupo() {}
 	
 	public Grupo(String nombre) {
 		super();
 		this.nombre = nombre;
 	}
-	
+
+	public Grupo(String id, String temporada, String nombre, int jornadaActual, List<Equipo> clasificacion) {
+		this(nombre);
+		
+		this.id = id;
+		this.temporada = temporada;
+		this.jornadaActual = jornadaActual;
+		this.clasificacion = clasificacion;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -81,6 +82,16 @@ public class Grupo {
 	public void aumentaJornadaActual() {
 		this.jornadaActual++;
 	}
+	
+	
+	public String getTemporada() {
+		return temporada;
+	}
+
+	public void setTemporada(String temporada) {
+		this.temporada = temporada;
+	}
+
 	@Override
 	public String toString() {
 		return "Liga [id=" + id + ", nombre=" + nombre + ", clasificacion=" + clasificacion;
@@ -92,7 +103,9 @@ public class Grupo {
 		int result = 1;
 		result = prime * result + ((clasificacion == null) ? 0 : clasificacion.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + jornadaActual;
 		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+		result = prime * result + ((temporada == null) ? 0 : temporada.hashCode());
 		return result;
 	}
 
@@ -115,10 +128,17 @@ public class Grupo {
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
+		if (jornadaActual != other.jornadaActual)
+			return false;
 		if (nombre == null) {
 			if (other.nombre != null)
 				return false;
 		} else if (!nombre.equals(other.nombre))
+			return false;
+		if (temporada == null) {
+			if (other.temporada != null)
+				return false;
+		} else if (!temporada.equals(other.temporada))
 			return false;
 		return true;
 	}

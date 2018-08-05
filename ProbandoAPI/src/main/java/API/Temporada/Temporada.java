@@ -26,9 +26,9 @@ public class Temporada {
 	private String liga;
 	@DBRef
 	@JsonView(TemporadaAtt.class)
-	private List<Arbitro> arbitros;
+	private List<Arbitro> arbitros = new ArrayList<>();
 	@JsonView(TemporadaAtt.class)
-	private List<VistaGrupo> grupos;
+	private List<VistaGrupo> grupos = new ArrayList<>();
 
 	public Temporada() {
 	}
@@ -37,8 +37,6 @@ public class Temporada {
 		super();
 		this.nombre = nombre;
 		this.liga = liga;
-		this.grupos = new ArrayList<VistaGrupo>();
-		this.arbitros = new ArrayList<Arbitro>();
 	}
 
 	public String getId() {
@@ -82,7 +80,7 @@ public class Temporada {
 	}
 
 	public boolean addVistaGrupo(VistaGrupo vista) {
-		if (grupos != null && grupos.contains(vista)) {
+		if (grupos.contains(vista)) {
 			return false;
 		} else {
 			grupos.add(vista);

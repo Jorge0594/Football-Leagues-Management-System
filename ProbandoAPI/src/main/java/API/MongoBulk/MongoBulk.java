@@ -47,7 +47,7 @@ public class MongoBulk {
 		try { 
 			
 			BulkOperations bulk = mongoTemplate.bulkOps(BulkMode.UNORDERED, nombreColeccion);
-			bulk.updateOne(query, update);
+			bulk.updateMulti(query, update);
 			
 			bulk.execute();
 		} catch (Exception e){
