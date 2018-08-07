@@ -15,13 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Temporada.Temporada;
+import API.VistaGrupo.VistaGrupo;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/ligas")
 public class LigaController {
 
-	public interface LigaAtt extends Liga.LigaAtt, Temporada.TemporadaAtt {
+	public interface LigaAtt extends Liga.LigaAtt, Temporada.TemporadaAtt, VistaGrupo.VistaGrupoAtt {
 	}
 
 	@Autowired
@@ -31,6 +32,21 @@ public class LigaController {
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Liga>> verLigas() {
 		return new ResponseEntity<List<Liga>>(ligaRepository.findAll(), HttpStatus.OK);
+
+	}
+	
+	@JsonView(LigaAtt.class)
+	@RequestMapping(value = "{nombre}/grupos", method = RequestMethod.GET)
+	public ResponseEntity<List<VistaGrupo>> verGruposLiga(@PathVariable String nombre) {
+		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
+		
+		if(liga == null){
+			 return new ResponseEntity<List<VistaGrupo>>(HttpStatus.NOT_FOUND);
+		}
+		//Suponiendo que la variable temporada actual sea el indice en elq eu se encuentra dicha jornada en la lista
+		Temporada temporada = liga.getTemporadas().get(liga.getTemporadaActual());
+		
+		return new ResponseEntity<List<VistaGrupo>>(temporada.getGrupos(), HttpStatus.OK);
 
 	}
 

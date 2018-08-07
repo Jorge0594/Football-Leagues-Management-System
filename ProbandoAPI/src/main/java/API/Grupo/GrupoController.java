@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.mockito.internal.matchers.Equals;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -46,7 +47,7 @@ public class GrupoController {
 	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt {
 	}
 
-	public interface InfoGrupoView extends GrupoAtt, Jugador.EquipoAtt, Equipo.RankAtt, Partido.InfoAtt {
+	public interface InfoGrupoView extends GrupoAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Partido.InfoAtt {
 	}
 
 	@Autowired
@@ -131,6 +132,32 @@ public class GrupoController {
 
 		return new ResponseEntity<List<Equipo>>(equipos, HttpStatus.OK);
 	}
+	
+	@JsonView(InfoGrupoView.class)
+	@RequestMapping(value = "/goleadores/{liga}/{grupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> obtenerGoleadores(@PathVariable(value = "liga") String liga, @PathVariable(value = "grupo") String grupo){
+		PageRequest page = new PageRequest(0, 5, new Sort(Sort.Direction.DESC, "goles"));
+		
+		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(grupo.toUpperCase(), liga.toUpperCase(), page), HttpStatus.OK);
+	}
+	
+	@JsonView(InfoGrupoView.class)
+	@RequestMapping(value = "/amarillas/{liga}/{grupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> obtenerRankAmarillas(@PathVariable(value = "liga") String liga, @PathVariable(value = "grupo") String grupo){
+		PageRequest page = new PageRequest(0, 5, new Sort(Sort.Direction.DESC, "tarjetasAmarillas"));
+		
+		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(grupo.toUpperCase(), liga.toUpperCase(), page), HttpStatus.OK);
+	}
+	
+	@JsonView(InfoGrupoView.class)
+	@RequestMapping(value = "/rojas/{liga}/{grupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> obtenerRankRojas(@PathVariable(value = "liga") String liga, @PathVariable(value = "grupo") String grupo){
+		PageRequest page = new PageRequest(0, 5, new Sort(Sort.Direction.DESC, "tarjetasRojas"));
+		
+		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(grupo.toUpperCase(), liga.toUpperCase(), page), HttpStatus.OK);
+	}
+	
+	
 	
 	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "/{nombreGrupo}/generarCalendario/{fechaInicio}/{duracionJornada}", method = RequestMethod.GET)

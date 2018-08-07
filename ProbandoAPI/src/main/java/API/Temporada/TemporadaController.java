@@ -24,7 +24,7 @@ import API.VistaGrupo.VistaGrupo;
 @RequestMapping("/temporadas")
 public class TemporadaController {
 
-	public interface TemporadaAtt extends Temporada.TemporadaAtt{
+	public interface TemporadaAtt extends Temporada.TemporadaAtt, VistaGrupo.VistaGrupoAtt{
 	}
 
 	@Autowired

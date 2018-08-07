@@ -63,6 +63,9 @@ public class Jugador implements Comparable<Jugador> {
 	
 	@JsonView(PerfilAtt.class)
 	private String grupo;
+	
+	@JsonView(PerfilAtt.class)
+	private String liga;
 
 	@JsonView(EquipoAtt.class)
 	private String posicion;
@@ -102,7 +105,7 @@ public class Jugador implements Comparable<Jugador> {
 	public Jugador(String id, String nombre, String apellidos, int edad, boolean aceptado, String fechaNacimiento,
 			String dni, String nombreUsuario, String clave, String email, String fotoJugador, String equipo,
 			String posicion, String estado, String lugarNacimiento, String nacionalidad, int dorsal, int goles,
-			int tarjetasAmarillas, int tarjetasRojas, boolean delegado, List<Sancion> sanciones, String grupo) {
+			int tarjetasAmarillas, int tarjetasRojas, boolean delegado, List<Sancion> sanciones, String grupo, String liga) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -114,7 +117,7 @@ public class Jugador implements Comparable<Jugador> {
 		this.nombreUsuario = nombreUsuario;
 		this.clave = clave;
 		this.email = email;
-		this.fotoJugador = fotoJugador;
+		this.fotoJugador = "defaultProfile.jpg";
 		this.equipo = equipo;
 		this.posicion = posicion;
 		this.estado = estado;
@@ -126,6 +129,7 @@ public class Jugador implements Comparable<Jugador> {
 		this.tarjetasRojas = tarjetasRojas;
 		this.delegado = delegado;
 		this.sanciones = sanciones;
+		this.liga = liga;
 	}
 	
 	public Jugador(String nombre, String apellidos, String fechaNacimiento, String dni, String email, String fotoJugador, String posicion, String lugarNacimiento, String nacionalidad, int dorsal, boolean delegado) {
@@ -339,45 +343,20 @@ public class Jugador implements Comparable<Jugador> {
 		this.sanciones = sanciones;
 	}
 
-	@Override
-	public String toString() {
-		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", edad=" + edad
-				+ ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni
-				+ ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
-				+ fotoJugador + ", equipo=" + equipo + ", grupo=" + grupo + ", posicion=" + posicion + ", estado="
-				+ estado + ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad + ", dorsal="
-				+ dorsal + ", goles=" + goles + ", tarjetasAmarillas=" + tarjetasAmarillas + ", tarjetasRojas="
-				+ tarjetasRojas + ", delegado=" + delegado + ", sanciones=" + sanciones + "]";
+	public String getLiga() {
+		return liga;
 	}
 
+
+	public void setLiga(String liga) {
+		this.liga = liga;
+	}
+	
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (aceptado ? 1231 : 1237);
-		result = prime * result + ((apellidos == null) ? 0 : apellidos.hashCode());
-		result = prime * result + (delegado ? 1231 : 1237);
-		result = prime * result + ((clave == null) ? 0 : clave.hashCode());
-		result = prime * result + ((dni == null) ? 0 : dni.hashCode());
-		result = prime * result + dorsal;
-		result = prime * result + edad;
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((equipo == null) ? 0 : equipo.hashCode());
-		result = prime * result + ((estado == null) ? 0 : estado.hashCode());
-		result = prime * result + ((fechaNacimiento == null) ? 0 : fechaNacimiento.hashCode());
-		result = prime * result + ((fotoJugador == null) ? 0 : fotoJugador.hashCode());
-		result = prime * result + goles;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((grupo == null) ? 0 : grupo.hashCode());
-		result = prime * result + ((lugarNacimiento == null) ? 0 : lugarNacimiento.hashCode());
-		result = prime * result + ((nacionalidad == null) ? 0 : nacionalidad.hashCode());
-		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-		result = prime * result + ((nombreUsuario == null) ? 0 : nombreUsuario.hashCode());
-		result = prime * result + ((posicion == null) ? 0 : posicion.hashCode());
-		result = prime * result + ((sanciones == null) ? 0 : sanciones.hashCode());
-		result = prime * result + tarjetasAmarillas;
-		result = prime * result + tarjetasRojas;
-		return result;
+	public String toString() {
+		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", edad=" + edad + ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
+				+ fotoJugador + ", equipo=" + equipo + ", grupo=" + grupo + ", liga=" + liga + ", posicion=" + posicion + ", estado=" + estado + ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas="
+				+ tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", delegado=" + delegado + ", sanciones=" + sanciones + "]";
 	}
 
 
