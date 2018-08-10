@@ -7,9 +7,10 @@ import API.Partido.Partido;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioRepository;
 import API.Utilidades.UsuarioUtils;
+import API.Vistas.*;
+import API.Vistas.VistaTemporada.VistaTemporadaAtt;
 import API.Equipo.*;
 import API.Grupo.Grupo.GrupoAtt;
-import API.VistaGrupo.*;
 import API.Temporada.*;
 
 import java.util.ArrayList;
@@ -18,11 +19,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.mockito.internal.matchers.Equals;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
@@ -44,10 +43,10 @@ import com.tournament.generator.TournamentCalendar;
 public class GrupoController {
 
 
-	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt {
+	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt {
 	}
 
-	public interface InfoGrupoView extends GrupoAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Partido.InfoAtt {
+	public interface InfoGrupoView extends GrupoAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Partido.InfoAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt{
 	}
 
 	@Autowired
@@ -88,7 +87,7 @@ public class GrupoController {
 		Temporada temporadaActual = temporadaRepository.findById(idTemporada);
 		
 		if(temporadaActual != null) {
-			grupo.setTemporada(temporadaActual.getNombre());
+			grupo.setTemporada(new VistaTemporada(temporadaActual.getId(), temporadaActual.getNombre(), temporadaActual.getLiga()));
 			grupoRepository.save(grupo);
 			
 			VistaGrupo vistaGrupo = new VistaGrupo(grupo.getId(),grupo.getNombre());
@@ -134,40 +133,74 @@ public class GrupoController {
 	}
 	
 	@JsonView(InfoGrupoView.class)
-	@RequestMapping(value = "/goleadores/{liga}/{grupo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Jugador>> obtenerGoleadores(@PathVariable(value = "liga") String liga, @PathVariable(value = "grupo") String grupo){
+	@RequestMapping(value = "/goleadores/{liga}/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> obtenerGoleadores(@PathVariable(value = "liga") String liga, @PathVariable(value = "grupo") String idGrupo){
 		PageRequest page = new PageRequest(0, 5, new Sort(Sort.Direction.DESC, "goles"));
 		
-		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(grupo.toUpperCase(), liga.toUpperCase(), page), HttpStatus.OK);
+		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(idGrupo, liga.toUpperCase(), page), HttpStatus.OK);
 	}
 	
 	@JsonView(InfoGrupoView.class)
-	@RequestMapping(value = "/amarillas/{liga}/{grupo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Jugador>> obtenerRankAmarillas(@PathVariable(value = "liga") String liga, @PathVariable(value = "grupo") String grupo){
+	@RequestMapping(value = "/amarillas/{liga}/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> obtenerRankAmarillas(@PathVariable(value = "liga") String liga, @PathVariable(value = "grupo") String idGrupo){
 		PageRequest page = new PageRequest(0, 5, new Sort(Sort.Direction.DESC, "tarjetasAmarillas"));
 		
-		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(grupo.toUpperCase(), liga.toUpperCase(), page), HttpStatus.OK);
+		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(idGrupo, liga.toUpperCase(), page), HttpStatus.OK);
 	}
 	
 	@JsonView(InfoGrupoView.class)
-	@RequestMapping(value = "/rojas/{liga}/{grupo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Jugador>> obtenerRankRojas(@PathVariable(value = "liga") String liga, @PathVariable(value = "grupo") String grupo){
+	@RequestMapping(value = "/rojas/{liga}/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> obtenerRankRojas(@PathVariable(value = "liga") String liga, @PathVariable(value = "idGrupo") String idGrupo){
 		PageRequest page = new PageRequest(0, 5, new Sort(Sort.Direction.DESC, "tarjetasRojas"));
 		
-		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(grupo.toUpperCase(), liga.toUpperCase(), page), HttpStatus.OK);
+		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(idGrupo, liga.toUpperCase(), page), HttpStatus.OK);
+	}
+	
+	@JsonView(InfoGrupoView.class)
+	@RequestMapping(value = "/porteros/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> obtenerRankProteros(@PathVariable String idGrupo){
+		
+		return null;
+	}
+	
+	
+	@JsonView(InfoGrupoView.class)
+	@RequestMapping(value = "/modificar/{idGrupo}", method = RequestMethod.PUT)
+	public ResponseEntity<List<Jugador>> modificarJugadores(@PathVariable String idGrupo){
+		Grupo grupo = grupoRepository.findById(idGrupo);
+		
+		if(grupo == null){
+			 return new ResponseEntity<List<Jugador>>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		
+		VistaGrupo vistaGrupo = new VistaGrupo(grupo.getId(), grupo.getNombre());
+		
+		Update update = new Update();
+		update.set("grupo", vistaGrupo);
+		
+		Query query = new Query();
+		
+		mongoBulk.modificarBloque(query, update, "Jugador");
+		
+		return new ResponseEntity<List<Jugador>>(HttpStatus.OK);
 	}
 	
 	
 	
 	@JsonView(InfoGrupoView.class)
-	@RequestMapping(value = "/{nombreGrupo}/generarCalendario/{fechaInicio}/{duracionJornada}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> generarCalendario(@PathVariable(value = "nombreGrupo") String nombreGrupo, @PathVariable(value = "fechaInicio") String fechaInicio, @PathVariable(value = "duracionJornada") String duracionJornada) {
-	
-			List<Equipo> equipos = equipoRepository.findCustomEquiposGrupo(nombreGrupo.toUpperCase(), true);
+	@RequestMapping(value = "/{idGrupo}/generarCalendario/{fechaInicio}/{duracionJornada}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> generarCalendario(@PathVariable(value = "idGrupo") String idGrupo, @PathVariable(value = "fechaInicio") String fechaInicio, @PathVariable(value = "duracionJornada") String duracionJornada) {
+			
+			Grupo grupo = grupoRepository.findCustomTemporada(idGrupo);
+			if(grupo == null){
+				return new ResponseEntity<List<Partido>>(HttpStatus.NOT_ACCEPTABLE);
+			}
+			
+			List<Equipo> equipos = equipoRepository.findCustomEquiposGrupo(idGrupo, true);
 			Map<String, Equipo> mapaEquipos = equipos.stream()
 					.collect(Collectors.toMap(Equipo::getId, Function.identity()));
 
-			List<Partido> partidos = generarCalendarioGrupo(mapaEquipos, fechaInicio, nombreGrupo, Integer.parseInt(duracionJornada));
+			List<Partido> partidos = generarCalendarioGrupo(mapaEquipos, fechaInicio, grupo, Integer.parseInt(duracionJornada));
 
 			try {
 				mongoBulk.insertarBloque(partidos, "Partido");
@@ -192,19 +225,19 @@ public class GrupoController {
 
 		if (!grupo.getClasificacion().contains(equipo)) {
 			if (!equipo.getGrupo().equals("")) {
-				Grupo aux = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
+				Grupo aux = grupoRepository.findById(equipo.getGrupo().getIdGrupo());
 				if (aux != null) {
 					aux.getClasificacion().remove(equipo);
 					grupoRepository.save(aux);
 				}
 			}
-			equipo.setGrupo(grupo.getNombre());
+			equipo.setGrupo(new VistaGrupo(grupo.getId(), grupo.getNombre()));
 			equipo.setAceptado(true);
 			for (Jugador j : equipo.getPlantillaEquipo()) {
 				String clave = utils.generarClave();
-
+				
 				j.setAceptado(true);
-				j.setGrupo(grupo.getNombre());
+				j.setGrupo(new VistaGrupo(grupo.getId(), grupo.getNombre()));
 				j.setNombreUsuario(utils.generarNombreUsuario(j.getNombre(), j.getApellidos()));
 				j.setClaveEncriptada(clave);
 
@@ -239,7 +272,7 @@ public class GrupoController {
 			return new ResponseEntity<Grupo>(HttpStatus.NO_CONTENT);
 		}
 		grupo.getClasificacion().remove(equipo);
-		equipo.setGrupo("");
+		equipo.setGrupo(new VistaGrupo());
 
 		equipoRepository.save(equipo);
 		grupoRepository.save(grupo);
@@ -255,14 +288,17 @@ public class GrupoController {
 			return new ResponseEntity<Grupo>(HttpStatus.NO_CONTENT);
 		}
 		for (Equipo e : grupo.getClasificacion()) {
-			e.setGrupo("");
+			e.setGrupo(new VistaGrupo());
 			equipoRepository.save(e);
 		}
 		grupoRepository.delete(grupo);
 		return new ResponseEntity<Grupo>(grupo, HttpStatus.OK);
 	}
 
-	private List<Partido> generarCalendarioGrupo(Map<String, Equipo> mapaEquipos, String fechaInicio, String nombreGrupo, int duracionJornada) {
+	private List<Partido> generarCalendarioGrupo(Map<String, Equipo> mapaEquipos, String fechaInicio, Grupo grupo, int duracionJornada) {
+		
+		VistaGrupo vistaGrupo = new VistaGrupo(grupo.getId(), grupo.getNombre());
+		VistaTemporada vistaTemporada = grupo.getTemporada();
 		
 		List<String> idEquipos  = new ArrayList<>();
 		idEquipos.addAll(mapaEquipos.keySet());
@@ -272,7 +308,7 @@ public class GrupoController {
 		
 		return calendario.stream()
 				.map(round -> {
-					return new Partido(nombreGrupo, round.getLocalId(), mapaEquipos.get(round.getLocalId()).getNombre(), round.getVisitorId(),
+					return new Partido(vistaTemporada.getLiga(), vistaGrupo, vistaTemporada, round.getLocalId(), mapaEquipos.get(round.getLocalId()).getNombre(), round.getVisitorId(),
 							mapaEquipos.get(round.getVisitorId()).getNombre(), mapaEquipos.get(round.getLocalId()).getImagenEquipo(),
 								mapaEquipos.get(round.getVisitorId()).getImagenEquipo(), round.getDate(), round.getRoundNum());
 		}).collect(Collectors.toList());

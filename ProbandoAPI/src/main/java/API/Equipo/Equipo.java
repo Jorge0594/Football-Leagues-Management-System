@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Estadio.Estadio;
 import API.Jugador.Jugador;
+import API.Vistas.VistaGrupo;
 
 @Document(collection = "Equipo")
 public class Equipo implements Comparable<Equipo> {
@@ -29,7 +30,7 @@ public class Equipo implements Comparable<Equipo> {
 	private String nombre;
 
 	@JsonView(RankAtt.class)
-	private String grupo;
+	private VistaGrupo grupo;
 	
 	@JsonView(RankAtt.class)
 	private String liga;
@@ -78,7 +79,7 @@ public class Equipo implements Comparable<Equipo> {
 	public Equipo() {
 	}
 
-	public Equipo(String id, String nombre, String liga, String grupo, String ciudad, int posicion, int golesEncajados, int goles,
+	public Equipo(String id, String nombre, String liga, VistaGrupo grupo, String ciudad, int posicion, int golesEncajados, int goles,
 			List<Jugador> plantillaEquipo) {
 		super();
 		this.id = id;
@@ -111,11 +112,11 @@ public class Equipo implements Comparable<Equipo> {
 		this.nombre = nombre;
 	}
 
-	public String getGrupo() {
+	public VistaGrupo getGrupo() {
 		return grupo;
 	}
 
-	public void setGrupo(String grupo) {
+	public void setGrupo(VistaGrupo grupo) {
 		this.grupo = grupo;
 	}
 

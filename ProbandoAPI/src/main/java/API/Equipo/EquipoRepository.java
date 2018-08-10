@@ -7,9 +7,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 public interface EquipoRepository extends MongoRepository<Equipo, String> {
 	
-	List<Equipo>findByGrupoIgnoreCase(String grupo);
+	List<Equipo>findByGrupoIdGrupo(String grupo);
 	
-	List<Equipo> findByAceptado(boolean aceptado);
+	List<Equipo>findByGrupoNombreIgnoreCase(String nombreGrupo);
+	
+	List<Equipo>findByAceptado(boolean aceptado);
 	
 	Equipo findByPosicion(int posicion);
 	

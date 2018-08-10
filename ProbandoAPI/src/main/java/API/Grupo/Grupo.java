@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import API.Equipo.*;
-
+import API.Vistas.VistaTemporada;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -22,7 +22,7 @@ public class Grupo {
 	@JsonView(GrupoAtt.class)
 	private String id;
 	@JsonView(GrupoAtt.class)
-	private String temporada;
+	private VistaTemporada temporada;
 	@JsonView(GrupoAtt.class)
 	private String nombre;
 	@JsonView(GrupoAtt.class)
@@ -38,7 +38,7 @@ public class Grupo {
 		this.nombre = nombre;
 	}
 
-	public Grupo(String id, String temporada, String nombre, int jornadaActual, List<Equipo> clasificacion) {
+	public Grupo(String id, VistaTemporada temporada, String nombre, int jornadaActual, List<Equipo> clasificacion) {
 		this(nombre);
 		
 		this.id = id;
@@ -84,11 +84,11 @@ public class Grupo {
 	}
 	
 	
-	public String getTemporada() {
+	public VistaTemporada getTemporada() {
 		return temporada;
 	}
 
-	public void setTemporada(String temporada) {
+	public void setTemporada(VistaTemporada temporada) {
 		this.temporada = temporada;
 	}
 

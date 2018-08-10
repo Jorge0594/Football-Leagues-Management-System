@@ -1,24 +1,23 @@
-package API.VistaGrupo;
+package API.Vistas;
 
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 
+
 @Component
 public class VistaGrupo {
-
-	public interface VistaGrupoAtt {
-	}
-
-
+	
+	public interface VistaGrupoAtt{}
+	
 	@JsonView(VistaGrupoAtt.class)
 	private String idGrupo;
-
 	@JsonView(VistaGrupoAtt.class)
 	private String nombre;
 
     public VistaGrupo() {}
+    
 	public VistaGrupo(String idGrupo, String nombre) {
 		super();
 		this.idGrupo = idGrupo;

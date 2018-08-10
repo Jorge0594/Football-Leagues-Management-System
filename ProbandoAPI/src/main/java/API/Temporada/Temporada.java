@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Arbitro.Arbitro;
-import API.VistaGrupo.VistaGrupo;
+import API.Vistas.VistaGrupo;
 
 @Document(collection = "Temporada")
 public class Temporada {

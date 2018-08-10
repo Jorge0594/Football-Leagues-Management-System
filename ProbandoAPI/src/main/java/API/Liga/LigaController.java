@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Temporada.Temporada;
-import API.VistaGrupo.VistaGrupo;
+import API.Vistas.VistaGrupo;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/ligas")
 public class LigaController {
 
-	public interface LigaAtt extends Liga.LigaAtt, Temporada.TemporadaAtt, VistaGrupo.VistaGrupoAtt {
+	public interface LigaAtt extends Liga.LigaAtt, Temporada.TemporadaAtt {
 	}
 
 	@Autowired
