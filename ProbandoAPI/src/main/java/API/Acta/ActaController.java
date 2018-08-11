@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -25,25 +24,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.itextpdf.text.DocumentException;
-import com.tournament.generator.TournamentCalendar;
 
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
 import API.Equipo.Equipo;
 import API.Equipo.EquipoRepository;
 import API.Estadio.Estadio;
+import API.Grupo.Grupo;
+import API.Grupo.GrupoRepository;
 import API.Jugador.Jugador;
 import API.Jugador.JugadorRepository;
-import API.Liga.Liga;
-import API.Liga.LigaRepository;
 import API.Partido.Partido;
 import API.Partido.PartidoRepository;
 import API.Pdfs.PdfCreator;
 import API.Usuario.UsuarioComponent;
+import API.Vistas.VistaGrupo;
+import API.Vistas.VistaTemporada;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
 import API.Sancion.Sancion;
-import API.Sancion.SancionController;
 import API.Sancion.SancionRepository;
 
 @RestController
@@ -52,29 +51,29 @@ import API.Sancion.SancionRepository;
 public class ActaController {
 
 	public interface ActaView
-			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Jugador.ClaveAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt, Equipo.PerfilAtt, Sancion.JugadorAtt, Sancion.SancionAtt {
+			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Jugador.ClaveAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt, Equipo.PerfilAtt, Sancion.JugadorAtt, Sancion.SancionAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt {
 	}
 
 	@Autowired
-	ActaRepository actaRepository;
+	private ActaRepository actaRepository;
 	@Autowired
-	EquipoRepository equipoRepository;
+	private EquipoRepository equipoRepository;
 	@Autowired
-	JugadorRepository jugadorRepository;
+	private JugadorRepository jugadorRepository;
 	@Autowired
-	LigaRepository ligaRepository;
+	private GrupoRepository grupoRepository;
 	@Autowired
-	PartidoRepository partidoRepository;
+	private PartidoRepository partidoRepository;
 	@Autowired
-	ArbitroRepository arbitroRepository;
+	private ArbitroRepository arbitroRepository;
 	@Autowired
-	UsuarioComponent usuarioComponent;
+	private UsuarioComponent usuarioComponent;
 	@Autowired
-	PdfCreator pdfCreator;
+	private PdfCreator pdfCreator;
 	@Autowired
-	IncidenciaRepository incidenciaRepository;
+	private IncidenciaRepository incidenciaRepository;
 	@Autowired
-	SancionRepository sancionRepository;
+	private SancionRepository sancionRepository;
 	
 	@JsonView(ActaView.class)
 	@RequestMapping(value = "/pendientes", method = RequestMethod.GET)
@@ -223,16 +222,16 @@ public class ActaController {
 			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		Partido partido = partidoRepository.findById(acta.getIdPartido());
-		Liga liga = ligaRepository.findByNombreIgnoreCase(partido.getLiga());
-		if (liga == null){
+		Grupo grupo = grupoRepository.findByNombreIgnoreCase(partido.getLiga());
+		if (grupo == null){
 			return new ResponseEntity<Acta>(HttpStatus.BAD_GATEWAY);
 		}
 		actualizarEquipos(acta);
-		Collections.sort(liga.getClasificacion());
-		actualizarJugadores(acta, liga);
+		Collections.sort(grupo.getClasificacion());
+		actualizarJugadores(acta, grupo);
 		actualizarPartido(acta);
 		acta.setAceptada(true);
-		ligaRepository.save(liga);
+		grupoRepository.save(grupo);
 		actaRepository.save(acta);
 		return new ResponseEntity<Acta>(acta, HttpStatus.OK);
 	}
@@ -371,7 +370,7 @@ public class ActaController {
 		equipoRepository.save(visitante);
 	}
 	
-	private void actualizarJugadores(Acta acta, Liga liga) {
+	private void actualizarJugadores(Acta acta, Grupo grupo) {
 	
 		for(Incidencia incidencia: acta.getIncidencias()) {
 			Jugador jugador = jugadorRepository.findById(incidencia.getIdJugador());
@@ -384,12 +383,9 @@ public class ActaController {
 			}
 			incidenciaRepository.save(incidencia);
 			jugadorRepository.save(jugador);
-			if(incidencia.getTipo().equals("GOL")){
-				liga.reordenarGoleadores(jugador);
-			}
 		}
 		
-		ligaRepository.save(liga);
+		grupoRepository.save(grupo);
 		
 		List<Sancion> sancionesActivas = sancionRepository.findByEnVigorTrue();
 		List<String> jugadoresId = new ArrayList<String>();

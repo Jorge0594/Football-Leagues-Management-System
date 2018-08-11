@@ -17,9 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import API.Acta.ActaRepository;
+import API.Grupo.Grupo;
+import API.Grupo.GrupoRepository;
 import API.Jugador.JugadorController.ProfileView;
-import API.Liga.Liga;
-import API.Liga.LigaRepository;
 import API.Partido.Partido;
 import API.Partido.PartidoRepository;
 import API.Sancion.Sancion;
@@ -48,7 +48,7 @@ public class ArbitroController {
 	@Autowired
 	ActaRepository actaRepository;
 	@Autowired
-	LigaRepository ligaRepository;
+	GrupoRepository grupoRepository;
 	@Autowired
 	PartidoRepository partidoRepository;
 	@Autowired
@@ -187,13 +187,6 @@ public class ArbitroController {
 
 	}
 
-
-	@RequestMapping(value = "{id}/ligas", method = RequestMethod.GET)
-	public ResponseEntity<List<Liga>> verLigasArbitro(@PathVariable String id) {
-		return new ResponseEntity<List<Liga>>(ligaRepository.findByArbitrosId(id), HttpStatus.OK);
-	}
-
-
 	@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Arbitro> verArbitroId(@PathVariable String id) {
@@ -234,7 +227,7 @@ public class ArbitroController {
 		return new ResponseEntity<List<Arbitro>>(entrada, HttpStatus.OK);
 	}
 
-	@JsonView(ArbitroView.class)
+	/*@JsonView(ArbitroView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Arbitro> eliminaArbitro(@PathVariable String id) {
 		Arbitro arbitro = arbitroRepository.findById(id);
@@ -242,16 +235,15 @@ public class ArbitroController {
 			return new ResponseEntity<Arbitro>(HttpStatus.NOT_FOUND);
 		} else {
 			Usuario usuarioDelArbitro = usuarioRepository.findByNombreUsuarioIgnoreCase(arbitro.getNombreUsuario());
-			List<Liga> ligasDelArbitro = ligaRepository.findAll();
 			List<Partido> partidosDelArbitro = partidoRepository.findByIdArbitro(arbitro.getId());
 			List<Sancion> sancionesDelArbitro = sancionRepository.findByArbitroSdrId(arbitro.getId());
 
 			if (!ligasDelArbitro.isEmpty()) {
 				// Elimina al árbitro de todas sus ligas.
-				for (Liga liga : ligasDelArbitro) {
-					if (liga.getArbitros().contains(arbitro)) {
-						liga.getArbitros().remove(arbitro);
-						ligaRepository.save(liga);
+				for (Grupo grupo : ligasDelArbitro) {
+					if (grupo.getArbitros().contains(arbitro)) {
+						grupo.getArbitros().remove(arbitro);
+						grupoRepository.save(grupo);
 					}
 				}
 			}
@@ -277,6 +269,8 @@ public class ArbitroController {
 			return new ResponseEntity<Arbitro>(arbitro, HttpStatus.OK);
 		}
 	}
+	DE MOMENTO NO SE ELIMINA, VER COMO SE GESTIONA CON LAS TEMPORADAS (De todas maneras no se eliminan)
+	*/
 	
 	@JsonView(ProfileView.class)
 	@RequestMapping(value = "dni/{dni}/foto", method = RequestMethod.PUT)

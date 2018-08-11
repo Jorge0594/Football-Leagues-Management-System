@@ -11,9 +11,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Sancion.Sancion;
+import API.Vistas.VistaGrupo;
 
 @Document(collection = "Jugador")
-public class Jugador implements Comparable<Jugador> {
+public class Jugador  {
 
 	public interface EquipoAtt {
 	}
@@ -47,7 +48,7 @@ public class Jugador implements Comparable<Jugador> {
 	private String dni;
 
 	@JsonView(PerfilAtt.class)
-	private String nombreUsuario;
+	private String nombreUsuario = "";
 
 	@JsonView(ClaveAtt.class)
 	private String clave;
@@ -60,6 +61,9 @@ public class Jugador implements Comparable<Jugador> {
 
 	@JsonView(EquipoAtt.class)
 	private String equipo;
+	
+	@JsonView(PerfilAtt.class)
+	private VistaGrupo grupo;
 	
 	@JsonView(PerfilAtt.class)
 	private String liga;
@@ -89,7 +93,7 @@ public class Jugador implements Comparable<Jugador> {
 	private int tarjetasRojas;
 
 	@JsonView(EquipoAtt.class)
-	private boolean capitan;
+	private boolean delegado;
 	
 	@JsonView(PerfilAtt.class)
 	@DBRef
@@ -102,7 +106,7 @@ public class Jugador implements Comparable<Jugador> {
 	public Jugador(String id, String nombre, String apellidos, int edad, boolean aceptado, String fechaNacimiento,
 			String dni, String nombreUsuario, String clave, String email, String fotoJugador, String equipo,
 			String posicion, String estado, String lugarNacimiento, String nacionalidad, int dorsal, int goles,
-			int tarjetasAmarillas, int tarjetasRojas, boolean capitan, List<Sancion> sanciones, String liga) {
+			int tarjetasAmarillas, int tarjetasRojas, boolean delegado, List<Sancion> sanciones, VistaGrupo grupo, String liga) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -114,7 +118,7 @@ public class Jugador implements Comparable<Jugador> {
 		this.nombreUsuario = nombreUsuario;
 		this.clave = clave;
 		this.email = email;
-		this.fotoJugador = fotoJugador;
+		this.fotoJugador = "defaultProfile.jpg";
 		this.equipo = equipo;
 		this.posicion = posicion;
 		this.estado = estado;
@@ -124,8 +128,27 @@ public class Jugador implements Comparable<Jugador> {
 		this.goles = goles;
 		this.tarjetasAmarillas = tarjetasAmarillas;
 		this.tarjetasRojas = tarjetasRojas;
-		this.capitan = capitan;
+		this.delegado = delegado;
 		this.sanciones = sanciones;
+		this.liga = liga;
+		this.grupo = grupo;
+	}
+	
+	public Jugador(String nombre, String apellidos, String fechaNacimiento, String dni, String email, String fotoJugador, String posicion, String lugarNacimiento, String nacionalidad, int dorsal, boolean delegado) {
+		super();
+		this.nombre = nombre;
+		this.apellidos = apellidos;
+		this.fechaNacimiento = fechaNacimiento;
+		this.dni = dni;
+		this.email = email;
+		this.fotoJugador = fotoJugador;
+		this.posicion = posicion;
+		this.lugarNacimiento = lugarNacimiento;
+		this.nacionalidad = nacionalidad;
+		this.dorsal = dorsal;
+		this.delegado = delegado;
+		this.aceptado = false;
+		this.fotoJugador = "defaultProfile.jpg";
 	}
 
 
@@ -226,13 +249,13 @@ public class Jugador implements Comparable<Jugador> {
 		return tarjetasRojas;
 	}
 
-	public String getLiga() {
-		return liga;
+	public VistaGrupo getGrupo() {
+		return grupo;
 	}
 
 
-	public void setLiga(String liga) {
-		this.liga = liga;
+	public void setGrupo(VistaGrupo grupo) {
+		this.grupo = grupo;
 	}
 
 
@@ -248,12 +271,12 @@ public class Jugador implements Comparable<Jugador> {
 		this.nacionalidad = nacionalidad;
 	}
 
-	public boolean isCapitan() {
-		return capitan;
+	public boolean isDelegado() {
+		return delegado;
 	}
 
-	public void setCapitan(boolean capitan) {
-		this.capitan = capitan;
+	public void setDelegado(boolean delegado) {
+		this.delegado = delegado;
 	}
 
 	public String getDni() {
@@ -322,45 +345,20 @@ public class Jugador implements Comparable<Jugador> {
 		this.sanciones = sanciones;
 	}
 
-	@Override
-	public String toString() {
-		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", edad=" + edad
-				+ ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni
-				+ ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
-				+ fotoJugador + ", equipo=" + equipo + ", liga=" + liga + ", posicion=" + posicion + ", estado="
-				+ estado + ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad + ", dorsal="
-				+ dorsal + ", goles=" + goles + ", tarjetasAmarillas=" + tarjetasAmarillas + ", tarjetasRojas="
-				+ tarjetasRojas + ", capitan=" + capitan + ", sanciones=" + sanciones + "]";
+	public String getLiga() {
+		return liga;
 	}
 
+
+	public void setLiga(String liga) {
+		this.liga = liga;
+	}
+	
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (aceptado ? 1231 : 1237);
-		result = prime * result + ((apellidos == null) ? 0 : apellidos.hashCode());
-		result = prime * result + (capitan ? 1231 : 1237);
-		result = prime * result + ((clave == null) ? 0 : clave.hashCode());
-		result = prime * result + ((dni == null) ? 0 : dni.hashCode());
-		result = prime * result + dorsal;
-		result = prime * result + edad;
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((equipo == null) ? 0 : equipo.hashCode());
-		result = prime * result + ((estado == null) ? 0 : estado.hashCode());
-		result = prime * result + ((fechaNacimiento == null) ? 0 : fechaNacimiento.hashCode());
-		result = prime * result + ((fotoJugador == null) ? 0 : fotoJugador.hashCode());
-		result = prime * result + goles;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((liga == null) ? 0 : liga.hashCode());
-		result = prime * result + ((lugarNacimiento == null) ? 0 : lugarNacimiento.hashCode());
-		result = prime * result + ((nacionalidad == null) ? 0 : nacionalidad.hashCode());
-		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-		result = prime * result + ((nombreUsuario == null) ? 0 : nombreUsuario.hashCode());
-		result = prime * result + ((posicion == null) ? 0 : posicion.hashCode());
-		result = prime * result + ((sanciones == null) ? 0 : sanciones.hashCode());
-		result = prime * result + tarjetasAmarillas;
-		result = prime * result + tarjetasRojas;
-		return result;
+	public String toString() {
+		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", edad=" + edad + ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
+				+ fotoJugador + ", equipo=" + equipo + ", grupo=" + grupo + ", liga=" + liga + ", posicion=" + posicion + ", estado=" + estado + ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas="
+				+ tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", delegado=" + delegado + ", sanciones=" + sanciones + "]";
 	}
 
 
@@ -380,17 +378,6 @@ public class Jugador implements Comparable<Jugador> {
 			return false;
 		
 		return true;
-	}
-
-
-	@Override
-	public int compareTo(Jugador o) {
-		if (this.goles > o.goles) {
-			return -1;
-		} else if (this.goles < o.goles) {
-			return 1;
-		}
-		return 0;
 	}
 
 }

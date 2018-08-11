@@ -37,6 +37,10 @@ public class AmazonBucket {
 		clienteAmazon.deleteObject(new DeleteObjectRequest(nombreBucket + "/", nombreFichero));
 	}
 	
+	public boolean existeFichero(String nombreFichero){
+		return clienteAmazon.doesObjectExist(nombreBucket, nombreFichero);
+	}
+	
 	
 	public String getUrl() {
 		return url;

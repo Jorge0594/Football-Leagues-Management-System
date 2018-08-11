@@ -3,7 +3,9 @@ package API.Jugador;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 
 public interface JugadorRepository extends MongoRepository<Jugador, String> {
@@ -16,7 +18,11 @@ public interface JugadorRepository extends MongoRepository<Jugador, String> {
 	
 	List<Jugador>findByEstadoAndEquipoAllIgnoreCase(String estado, String equipo);
 	
-	List<Jugador>findByLigaIgnoreCase(String liga);
+	List<Jugador>findByGrupoNombreIgnoreCase(String nombreGrupo);
+	
+	List<Jugador>findByGrupoIdGrupo(String id);
+	
+	List<Jugador>findByAceptado(boolean aceptado);
 	
 	Jugador findByNombreAndApellidosAllIgnoreCase(String nombre, String apellido);
 	
@@ -26,10 +32,15 @@ public interface JugadorRepository extends MongoRepository<Jugador, String> {
 	
 	Jugador findByDniIgnoreCase(String dni);
 	
-	Jugador findByCapitanAndEquipo(boolean capitan, String idEquipo);
+	Jugador findByDelegadoAndEquipo(boolean capitan, String idEquipo);
 	
 	Jugador findByDorsalAndEquipo(int dorsal,String equipo);
 	
 	Jugador findByNombreUsuarioIgnoreCase(String nombreUsuario);
+	
+	@Query(value = "{'grupo.id':?0, 'liga':?1}")
+	List<Jugador> getRankings(String grupoId, String liga, Pageable page);
+	
+	
 	
 }

@@ -31,6 +31,7 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/validar/email/{email}").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/validar/dni/{dni}").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/jugadores/{id}/foto").hasAnyRole("TEMPORAL","MIEMBROCOMITE","ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/jugadores/dni/{dni}/foto").hasAnyRole("JUGADOR", "MIEMBROCOMITE","ARBITRO","ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/jugadores/**").hasAnyRole("JUGADOR", "MIEMBROCOMITE","ARBITRO","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/jugadores/**").hasAnyRole("JUGADOR", "MIEMBROCOMITE","ARBITRO","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/jugadores/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
@@ -41,7 +42,8 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/validar/{nombre}/{liga}").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/id/{id}").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN","TEMPORAL");
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/equipos/**").hasAnyRole("JUGADOR","ARBITRO", "MIEMBROCOMITE","ADMIN");
-		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/equipos//imagen/{id}").hasAnyRole("TEMPORAL","MIEMBROCOMITE","ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/equipos/{id}/temporal").hasAnyRole("TEMPORAL","MIEMBROCOMITE","ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/equipos/imagen/{id}").hasAnyRole("TEMPORAL","MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/equipos/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/equipos/**").hasAnyRole("MIEMBROCOMITE","ADMIN");
 		
@@ -89,6 +91,12 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/ligas/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/ligas/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/ligas/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		
+		//Grupo
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/grupos/**").hasAnyRole("JUGADOR","ARBITRO","MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.PUT, "/grupos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.POST, "/grupos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
+		http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/grupos/**").hasAnyRole("MIEMBROCOMITE", "ADMIN");
 		
 		//Solicitudes
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/solicitudes/**").permitAll();
