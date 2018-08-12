@@ -35,9 +35,6 @@ public class Jugador  {
 	@JsonView(EquipoAtt.class)
 	private String apellidos;
 	
-	@JsonView(EquipoAtt.class)
-	private int edad;
-	
 	@JsonView(PerfilAtt.class)
 	private boolean aceptado;
 	
@@ -103,7 +100,7 @@ public class Jugador  {
 	};
 
 
-	public Jugador(String id, String nombre, String apellidos, int edad, boolean aceptado, String fechaNacimiento,
+	public Jugador(String id, String nombre, String apellidos, boolean aceptado, String fechaNacimiento,
 			String dni, String nombreUsuario, String clave, String email, String fotoJugador, String equipo,
 			String posicion, String estado, String lugarNacimiento, String nacionalidad, int dorsal, int goles,
 			int tarjetasAmarillas, int tarjetasRojas, boolean delegado, List<Sancion> sanciones, VistaGrupo grupo, String liga) {
@@ -111,7 +108,6 @@ public class Jugador  {
 		this.id = id;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
-		this.edad = edad;
 		this.aceptado = aceptado;
 		this.fechaNacimiento = fechaNacimiento;
 		this.dni = dni;
@@ -311,14 +307,6 @@ public class Jugador  {
 		this.aceptado = aceptado;
 	}
 
-	public int getEdad() {
-		return edad;
-	}
-
-	public void setEdad(int edad) {
-		this.edad = edad;
-	}
-
 	public String getFechaNacimiento() {
 		return fechaNacimiento;
 	}
@@ -356,7 +344,7 @@ public class Jugador  {
 	
 	@Override
 	public String toString() {
-		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", edad=" + edad + ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
+		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
 				+ fotoJugador + ", equipo=" + equipo + ", grupo=" + grupo + ", liga=" + liga + ", posicion=" + posicion + ", estado=" + estado + ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas="
 				+ tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", delegado=" + delegado + ", sanciones=" + sanciones + "]";
 	}

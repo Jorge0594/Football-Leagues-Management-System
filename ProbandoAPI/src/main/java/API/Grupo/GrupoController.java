@@ -4,11 +4,13 @@ import API.Jugador.*;
 import API.Mails.MailService;
 import API.MongoBulk.MongoBulk;
 import API.Partido.Partido;
+import API.Partido.PartidoRepository;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioRepository;
 import API.Utilidades.UsuarioUtils;
 import API.Vistas.*;
-import API.Vistas.VistaTemporada.VistaTemporadaAtt;
+import API.Acta.Acta;
+import API.Acta.ActaRepository;
 import API.Equipo.*;
 import API.Grupo.Grupo.GrupoAtt;
 import API.Temporada.*;
@@ -59,6 +61,10 @@ public class GrupoController {
 	private JugadorRepository jugadorRepository;
 	@Autowired
 	private TemporadaRepository temporadaRepository;
+	@Autowired
+	private ActaRepository actaRepository;
+	@Autowired
+	private PartidoRepository partidoRepository;
 
 	@Autowired
 	private MailService mailService;
@@ -123,7 +129,7 @@ public class GrupoController {
 	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "{nombre}/clasificacion" , method = RequestMethod.GET)
 	public ResponseEntity<List<Equipo>> verClasificacion(@PathVariable String nombre) {
-		Sort sort = new Sort(Sort.Direction.DESC, "puntos");
+		Sort sort = new Sort(Sort.Direction.DESC, "puntos", "goles", "golesEncajados");
 		List<Equipo> equipos = equipoRepository.findCustomClasificacion(nombre.toUpperCase(), sort);
 		if (equipos == null) {
 			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
@@ -158,9 +164,28 @@ public class GrupoController {
 	
 	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "/porteros/{idGrupo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Jugador>> obtenerRankProteros(@PathVariable String idGrupo){
+	public ResponseEntity<List<Jugador>> obtenerRankPorteros(@PathVariable String idGrupo){
+		List<Jugador> porteros = jugadorRepository.getPorteros(idGrupo);
 		
-		return null;
+		if(porteros == null || porteros.isEmpty()){
+			return new ResponseEntity<List<Jugador>>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		
+		Long partidos = actaRepository.getNumeroPartidosPortero("5abf51f35118d22d0022b528");
+		System.out.println("PARTIDOS: " + partidos );
+		Map<Jugador, Integer> mapaPorteroGoles = porteros.stream()
+				.filter(p -> p.getEquipo() != null && actaRepository.getNumeroPartidosPortero(p.getId()) > 0 && actaRepository.getNumeroPartidosPortero(p.getId()) >= (this.partidosJugadosEquipo(p.getEquipo()) * 0.8))
+				.collect(Collectors.toMap(Function.identity(), this::calcularGolesEncajadosPortero));
+		
+		mapaPorteroGoles = mapaPorteroGoles.entrySet().stream()
+				.sorted(Map.Entry.<Jugador, Integer>comparingByValue().reversed())
+				.limit(5)
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		
+		porteros = new ArrayList<>();
+		porteros.addAll(mapaPorteroGoles.keySet());
+		
+		return new ResponseEntity<List<Jugador>>(porteros, HttpStatus.OK);
 	}
 	
 	
@@ -313,6 +338,23 @@ public class GrupoController {
 								mapaEquipos.get(round.getVisitorId()).getImagenEquipo(), round.getDate(), round.getRoundNum());
 		}).collect(Collectors.toList());
 
+	}
+	
+	private int calcularGolesEncajadosPortero(Jugador portero){
+		
+		int totalLocal = actaRepository.findCustomEncajadosPorterolLocal(portero.getId()).stream()
+				.map(Acta::getGolesVisitante)
+				.reduce(0, (p1, p2) -> p1 + p2);
+		
+		int totalVisitante = actaRepository.findCustomEncajadosPorterolVisitante(portero.getId()).stream()
+				.map(Acta::getGolesLocal)
+				.reduce(0, (p1, p2) -> p1 + p2);
+		
+		return (totalLocal + totalVisitante);
+	}
+	
+	private int partidosJugadosEquipo(String id){
+		return equipoRepository.getPartidosJugadosEquipo(id).getPartidosJugados(); 
 	}
 	
 }
