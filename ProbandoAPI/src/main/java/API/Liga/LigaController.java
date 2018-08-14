@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.MiembroComite.MiembroComite;
+import API.MiembroComite.MiembroComiteRepository;
 import API.Temporada.Temporada;
 import API.VistaGrupo.VistaGrupo;
 
@@ -27,6 +29,8 @@ public class LigaController {
 
 	@Autowired
 	private LigaRepository ligaRepository;
+	
+	private MiembroComiteRepository miembroComiteRepository;
 
 	@JsonView(LigaAtt.class)
 	@RequestMapping(method = RequestMethod.GET)
@@ -34,7 +38,21 @@ public class LigaController {
 		return new ResponseEntity<List<Liga>>(ligaRepository.findAll(), HttpStatus.OK);
 
 	}
-	
+	@JsonView(LigaAtt.class)
+	@RequestMapping(value="asignada/{idMiembroComite}", method = RequestMethod.GET)
+	public ResponseEntity<Liga> verLigaComite(@PathVariable String idMiembroComite) {
+		MiembroComite miembro = miembroComiteRepository.findById(idMiembroComite);
+		if(miembro != null) {
+			Liga liga = ligaRepository.findById(miembro.getIdLiga());
+			if(liga != null) {
+				return new ResponseEntity<Liga>(HttpStatus.NOT_FOUND);
+			}else {
+				return new ResponseEntity<Liga>(liga, HttpStatus.OK);
+			}
+		}else {
+			return new ResponseEntity<Liga>(HttpStatus.NOT_FOUND);
+		}
+	}
 	@JsonView(LigaAtt.class)
 	@RequestMapping(value = "{nombre}/grupos", method = RequestMethod.GET)
 	public ResponseEntity<List<VistaGrupo>> verGruposLiga(@PathVariable String nombre) {

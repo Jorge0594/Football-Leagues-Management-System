@@ -38,6 +38,16 @@ public class TemporadaController {
 		return new ResponseEntity<List<Temporada>>(temporadaRepository.findAll(), HttpStatus.OK);
 
 	}
+	@JsonView(TemporadaAtt.class)
+	@RequestMapping(value="/{idTemporada}", method = RequestMethod.GET)
+	public ResponseEntity<Temporada> verTemporada(@PathVariable String idTemporada) {
+		Temporada temporada = temporadaRepository.findById(idTemporada);
+		if(temporada == null) {
+			return new ResponseEntity<Temporada>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<Temporada>(temporada, HttpStatus.OK);
+
+	}
 
 	@JsonView(TemporadaAtt.class)
 	@RequestMapping(method = RequestMethod.POST)
