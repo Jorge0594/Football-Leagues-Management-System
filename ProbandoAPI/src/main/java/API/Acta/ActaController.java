@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.itextpdf.text.DocumentException;
-import com.tournament.generator.TournamentCalendar;
 
 import API.Arbitro.Arbitro;
 import API.Arbitro.ArbitroRepository;
@@ -39,6 +38,8 @@ import API.Partido.Partido;
 import API.Partido.PartidoRepository;
 import API.Pdfs.PdfCreator;
 import API.Usuario.UsuarioComponent;
+import API.Vistas.VistaGrupo;
+import API.Vistas.VistaTemporada;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
 import API.Sancion.Sancion;
@@ -50,7 +51,7 @@ import API.Sancion.SancionRepository;
 public class ActaController {
 
 	public interface ActaView
-			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Jugador.ClaveAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt, Equipo.PerfilAtt, Sancion.JugadorAtt, Sancion.SancionAtt {
+			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Jugador.ClaveAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt, Equipo.PerfilAtt, Sancion.JugadorAtt, Sancion.SancionAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt {
 	}
 
 	@Autowired

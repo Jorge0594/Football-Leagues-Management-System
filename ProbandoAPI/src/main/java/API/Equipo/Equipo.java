@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Estadio.Estadio;
 import API.Jugador.Jugador;
+import API.Vistas.VistaGrupo;
 
 @Document(collection = "Equipo")
 public class Equipo implements Comparable<Equipo> {
@@ -29,13 +30,16 @@ public class Equipo implements Comparable<Equipo> {
 	private String nombre;
 
 	@JsonView(RankAtt.class)
-	private String grupo;
+	private VistaGrupo grupo;
 	
 	@JsonView(RankAtt.class)
 	private String liga;
 
 	@JsonView(PerfilAtt.class)
 	private String ciudad;
+	
+	@JsonView(PerfilAtt.class)
+	private String delegado;
 
 	@JsonView(RankAtt.class)
 	private String imagenEquipo;
@@ -78,7 +82,7 @@ public class Equipo implements Comparable<Equipo> {
 	public Equipo() {
 	}
 
-	public Equipo(String id, String nombre, String liga, String grupo, String ciudad, int posicion, int golesEncajados, int goles,
+	public Equipo(String id, String nombre, String liga, VistaGrupo grupo, String ciudad, int posicion, int golesEncajados, int goles,
 			List<Jugador> plantillaEquipo) {
 		super();
 		this.id = id;
@@ -111,11 +115,11 @@ public class Equipo implements Comparable<Equipo> {
 		this.nombre = nombre;
 	}
 
-	public String getGrupo() {
+	public VistaGrupo getGrupo() {
 		return grupo;
 	}
 
-	public void setGrupo(String grupo) {
+	public void setGrupo(VistaGrupo grupo) {
 		this.grupo = grupo;
 	}
 
@@ -233,10 +237,19 @@ public class Equipo implements Comparable<Equipo> {
 		this.estadioEquipo = estadioEquipo;
 	}
 
+	public String getDelegado() {
+		return delegado;
+	}
+
+	public void setDelegado(String delegado) {
+		this.delegado = delegado;
+	}
+
 	@Override
 	public String toString() {
-		return "Equipo [id=" + id + ", nombre=" + nombre + ", grupo=" + grupo + ", liga=" + liga + ", ciudad=" + ciudad + ", imagenEquipo=" + imagenEquipo + ", aceptado=" + aceptado + ", posicion=" + posicion + ", puntos=" + puntos + ", goles=" + goles + ", golesEncajados=" + golesEncajados
-				+ ", partidosGanados=" + partidosGanados + ", partidosPerdidos=" + partidosPerdidos + ", partidosEmpatados=" + partidosEmpatados + ", partidosJugados=" + partidosJugados + ", estadioEquipo=" + estadioEquipo + ", plantillaEquipo=" + plantillaEquipo + "]";
+		return "Equipo [id=" + id + ", nombre=" + nombre + ", grupo=" + grupo + ", liga=" + liga + ", ciudad=" + ciudad + ", delegado=" + delegado + ", imagenEquipo=" + imagenEquipo + ", aceptado=" + aceptado + ", posicion=" + posicion + ", puntos=" + puntos + ", goles=" + goles
+				+ ", golesEncajados=" + golesEncajados + ", partidosGanados=" + partidosGanados + ", partidosPerdidos=" + partidosPerdidos + ", partidosEmpatados=" + partidosEmpatados + ", partidosJugados=" + partidosJugados + ", estadioEquipo=" + estadioEquipo + ", plantillaEquipo="
+				+ plantillaEquipo + "]";
 	}
 
 	@Override
@@ -327,21 +340,35 @@ public class Equipo implements Comparable<Equipo> {
 		}
 
 		if (this.puntos == o.puntos) {
-			if (this.goles != o.goles) {
-				if (this.goles > o.goles) {
+			if ((this.goles - this.golesEncajados) > (o.goles - o.golesEncajados)) {
+				return -1;
+			} else if((this.goles - this.golesEncajados) == (o.goles - o.golesEncajados)) {
+				if(this.goles > o.goles){
 					return -1;
-				} else {
-					return 1;
-				}
-			} else {
-				if (this.golesEncajados < o.golesEncajados) {
-					return -1;
-				} else {
-					return 1;
+				} else if(this.goles == o.goles) {
+					if(this.getTarjetasRojas() < o.getTarjetasRojas()){
+						return -1;
+					} else if(this.getTarjetasRojas() == o.getTarjetasRojas()){
+						if(this.getTarjetasAmarillas() < o.getTarjetasRojas()){
+							return -1;
+						} 
+					}
 				}
 			}
 		}
-		return 0;
+		return 1;
+	}
+	
+	private int getTarjetasAmarillas(){
+		return this.getPlantillaEquipo().stream()
+				.map(Jugador::getTarjetasAmarillas)
+				.reduce(0, (j1, j2) -> j1 + j2);
+	}
+	
+	private int getTarjetasRojas(){
+		return this.getPlantillaEquipo().stream()
+				.map(Jugador::getTarjetasRojas)
+				.reduce(0, (j1, j2) -> j1 + j2);
 	}
 
 }

@@ -12,6 +12,7 @@ import API.Arbitro.Arbitro;
 import API.Equipo.Equipo;
 import API.Incidencia.Incidencia;
 import API.Jugador.Jugador;
+import API.Vistas.VistaGrupo;
 
 @Document(collection = "Acta")
 public class Acta {
@@ -34,6 +35,9 @@ public class Acta {
 
 	@JsonView(ActaAtt.class)
 	private String hora;
+	
+	@JsonView(ActaAtt.class)
+	private VistaGrupo grupo;
 
 	@JsonView(ActaAtt.class)
 	private String idEquipoLocal;
@@ -92,21 +96,24 @@ public class Acta {
 	public Acta() {
 	}
 
-	public Acta(String id, String idPartido, String fecha, String hora, String nombreLocal, String idLocal,
-			String escudoLocal, String nombreVisitante, String idVisitante, String escudoVisitante, String idArbitro,
-			String idCapitanLocal, String idCapitanVisitante, List<String> idsPorterosLocal, List<String> idsPorterosVisitante, String nombreArbitro, List<Jugador> convocadosLocal, List<Jugador> convocadosVisitante, int golesLocal,
-			int golesVisitante, List<Incidencia> incidencias, String observaciones) {
+
+
+	public Acta(String id, String idPartido, boolean aceptada, String fecha, String hora, VistaGrupo grupo, String idEquipoLocal, String nombreEquipoLocal, String escudoEquipoLocal, String idEquipoVisitante, String nombreEquipoVisitante, String escudoEquipoVisitante, String idArbitro,
+			String idCapitanLocal, String idCapitanVisitante, List<String> idsPorterosLocal, List<String> idsPorterosVisitante, String nombreArbitro, List<Jugador> convocadosLocal, List<Jugador> convocadosVisitante, int golesLocal, int golesVisitante, List<Incidencia> incidencias,
+			String observaciones) {
 		super();
 		this.id = id;
 		this.idPartido = idPartido;
+		this.aceptada = aceptada;
 		this.fecha = fecha;
 		this.hora = hora;
-		this.nombreEquipoLocal = nombreLocal;
-		this.idEquipoLocal = idLocal;
-		this.escudoEquipoLocal = escudoLocal;
-		this.nombreEquipoVisitante = nombreVisitante;
-		this.escudoEquipoVisitante = escudoVisitante;
-		this.idEquipoVisitante = idVisitante;
+		this.grupo = grupo;
+		this.idEquipoLocal = idEquipoLocal;
+		this.nombreEquipoLocal = nombreEquipoLocal;
+		this.escudoEquipoLocal = escudoEquipoLocal;
+		this.idEquipoVisitante = idEquipoVisitante;
+		this.nombreEquipoVisitante = nombreEquipoVisitante;
+		this.escudoEquipoVisitante = escudoEquipoVisitante;
 		this.idArbitro = idArbitro;
 		this.idCapitanLocal = idCapitanLocal;
 		this.idCapitanVisitante = idCapitanVisitante;
@@ -120,6 +127,8 @@ public class Acta {
 		this.incidencias = incidencias;
 		this.observaciones = observaciones;
 	}
+
+
 
 	public void setConvocadosLocal(List<Jugador> convocadosLocal) {
 		this.convocadosLocal = convocadosLocal;
@@ -305,6 +314,24 @@ public class Acta {
 	public void setAceptada(boolean aceptada) {
 		this.aceptada = aceptada;
 	}
+
+	public VistaGrupo getGrupo() {
+		return grupo;
+	}
+
+	public void setGrupo(VistaGrupo grupo) {
+		this.grupo = grupo;
+	}
+
+	@Override
+	public String toString() {
+		return "Acta [id=" + id + ", idPartido=" + idPartido + ", aceptada=" + aceptada + ", fecha=" + fecha + ", hora=" + hora + ", grupo=" + grupo + ", idEquipoLocal=" + idEquipoLocal + ", nombreEquipoLocal=" + nombreEquipoLocal + ", escudoEquipoLocal=" + escudoEquipoLocal + ", idEquipoVisitante="
+				+ idEquipoVisitante + ", nombreEquipoVisitante=" + nombreEquipoVisitante + ", escudoEquipoVisitante=" + escudoEquipoVisitante + ", idArbitro=" + idArbitro + ", idCapitanLocal=" + idCapitanLocal + ", idCapitanVisitante=" + idCapitanVisitante + ", idsPorterosLocal=" + idsPorterosLocal
+				+ ", idsPorterosVisitante=" + idsPorterosVisitante + ", nombreArbitro=" + nombreArbitro + ", convocadosLocal=" + convocadosLocal + ", convocadosVisitante=" + convocadosVisitante + ", golesLocal=" + golesLocal + ", golesVisitante=" + golesVisitante + ", incidencias=" + incidencias
+				+ ", observaciones=" + observaciones + "]";
+	}
+
+
 
 	@Override
 	public int hashCode() {

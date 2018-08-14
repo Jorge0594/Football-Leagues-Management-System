@@ -11,9 +11,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Sancion.Sancion;
+import API.Vistas.VistaGrupo;
 
 @Document(collection = "Jugador")
-public class Jugador implements Comparable<Jugador> {
+public class Jugador  {
 
 	public interface EquipoAtt {
 	}
@@ -33,9 +34,6 @@ public class Jugador implements Comparable<Jugador> {
 
 	@JsonView(EquipoAtt.class)
 	private String apellidos;
-	
-	@JsonView(EquipoAtt.class)
-	private int edad;
 	
 	@JsonView(PerfilAtt.class)
 	private boolean aceptado;
@@ -62,7 +60,7 @@ public class Jugador implements Comparable<Jugador> {
 	private String equipo;
 	
 	@JsonView(PerfilAtt.class)
-	private String grupo;
+	private VistaGrupo grupo;
 	
 	@JsonView(PerfilAtt.class)
 	private String liga;
@@ -102,15 +100,14 @@ public class Jugador implements Comparable<Jugador> {
 	};
 
 
-	public Jugador(String id, String nombre, String apellidos, int edad, boolean aceptado, String fechaNacimiento,
+	public Jugador(String id, String nombre, String apellidos, boolean aceptado, String fechaNacimiento,
 			String dni, String nombreUsuario, String clave, String email, String fotoJugador, String equipo,
 			String posicion, String estado, String lugarNacimiento, String nacionalidad, int dorsal, int goles,
-			int tarjetasAmarillas, int tarjetasRojas, boolean delegado, List<Sancion> sanciones, String grupo, String liga) {
+			int tarjetasAmarillas, int tarjetasRojas, boolean delegado, List<Sancion> sanciones, VistaGrupo grupo, String liga) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
-		this.edad = edad;
 		this.aceptado = aceptado;
 		this.fechaNacimiento = fechaNacimiento;
 		this.dni = dni;
@@ -130,6 +127,7 @@ public class Jugador implements Comparable<Jugador> {
 		this.delegado = delegado;
 		this.sanciones = sanciones;
 		this.liga = liga;
+		this.grupo = grupo;
 	}
 	
 	public Jugador(String nombre, String apellidos, String fechaNacimiento, String dni, String email, String fotoJugador, String posicion, String lugarNacimiento, String nacionalidad, int dorsal, boolean delegado) {
@@ -247,12 +245,12 @@ public class Jugador implements Comparable<Jugador> {
 		return tarjetasRojas;
 	}
 
-	public String getGrupo() {
+	public VistaGrupo getGrupo() {
 		return grupo;
 	}
 
 
-	public void setGrupo(String grupo) {
+	public void setGrupo(VistaGrupo grupo) {
 		this.grupo = grupo;
 	}
 
@@ -309,14 +307,6 @@ public class Jugador implements Comparable<Jugador> {
 		this.aceptado = aceptado;
 	}
 
-	public int getEdad() {
-		return edad;
-	}
-
-	public void setEdad(int edad) {
-		this.edad = edad;
-	}
-
 	public String getFechaNacimiento() {
 		return fechaNacimiento;
 	}
@@ -354,7 +344,7 @@ public class Jugador implements Comparable<Jugador> {
 	
 	@Override
 	public String toString() {
-		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", edad=" + edad + ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
+		return "Jugador [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", aceptado=" + aceptado + ", fechaNacimiento=" + fechaNacimiento + ", dni=" + dni + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", email=" + email + ", fotoJugador="
 				+ fotoJugador + ", equipo=" + equipo + ", grupo=" + grupo + ", liga=" + liga + ", posicion=" + posicion + ", estado=" + estado + ", lugarNacimiento=" + lugarNacimiento + ", nacionalidad=" + nacionalidad + ", dorsal=" + dorsal + ", goles=" + goles + ", tarjetasAmarillas="
 				+ tarjetasAmarillas + ", tarjetasRojas=" + tarjetasRojas + ", delegado=" + delegado + ", sanciones=" + sanciones + "]";
 	}
@@ -376,17 +366,6 @@ public class Jugador implements Comparable<Jugador> {
 			return false;
 		
 		return true;
-	}
-
-
-	@Override
-	public int compareTo(Jugador o) {
-		if (this.goles > o.goles) {
-			return -1;
-		} else if (this.goles < o.goles) {
-			return 1;
-		}
-		return 0;
 	}
 
 }

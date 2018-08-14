@@ -34,6 +34,7 @@ import API.Sancion.Sancion;
 import API.Usuario.UsuarioComponent;
 import API.UsuarioTemporal.UsuarioTemporal;
 import API.UsuarioTemporal.UsuarioTemporalRepository;
+import API.Vistas.VistaGrupo;
 
 @RestController
 @CrossOrigin
@@ -41,10 +42,10 @@ import API.UsuarioTemporal.UsuarioTemporalRepository;
 
 public class EquipoController {
 
-	public interface RankView extends Equipo.RankAtt {
+	public interface RankView extends Equipo.RankAtt, VistaGrupo.VistaGrupoAtt {
 	}
 
-	public interface PerfilView extends Equipo.RankAtt, Equipo.PerfilAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Sancion.SancionAtt, Sancion.JugadorAtt {
+	public interface PerfilView extends Equipo.RankAtt, Equipo.PerfilAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Sancion.SancionAtt, Sancion.JugadorAtt, VistaGrupo.VistaGrupoAtt {
 	}
 
 	public interface JugadorView extends Jugador.PerfilAtt, Jugador.EquipoAtt {
@@ -84,7 +85,7 @@ public class EquipoController {
 		equipo.setId(null);
 		equipo.setPlantillaEquipo(new ArrayList<Jugador>());
 
-		Grupo grupoEquipo = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
+		Grupo grupoEquipo = grupoRepository.findById(equipo.getGrupo().getIdGrupo());
 
 		equipo.setPosicion(grupoEquipo.getClasificacion().size() + 1);
 		equipoRepository.save(equipo);
@@ -103,9 +104,9 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.UNAUTHORIZED);
 		}
 		equipo.setId(null);
-		equipo.setGrupo(usuario.getLiga());
 		equipo.setAceptado(false);
 		equipo.setImagenEquipo("shield.png");
+		equipo.setGrupo(new VistaGrupo());
 
 		equipoRepository.save(equipo);
 
@@ -117,7 +118,7 @@ public class EquipoController {
 			jugador.setAceptado(false);
 			jugador.setId(null);
 			jugador.setFotoJugador("defaultProfile.jpg");
-			jugador.setGrupo("");
+			jugador.setGrupo(new VistaGrupo());
 			jugador.setGoles(0);
 			jugador.setTarjetasAmarillas(0);
 			jugador.setTarjetasRojas(0);
@@ -146,9 +147,19 @@ public class EquipoController {
 	}
 
 	@JsonView(RankView.class)
-	@RequestMapping(value = "/grupo/{grupo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Equipo>> verEquiposGrupo(@PathVariable String grupo) {
-		List<Equipo> equipos = equipoRepository.findByGrupoIgnoreCase(grupo);
+	@RequestMapping(value = "/grupo/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Equipo>> verEquiposGrupo(@PathVariable String idGrupo) {
+		List<Equipo> equipos = equipoRepository.findByGrupoIdGrupo(idGrupo);
+		if (equipos.isEmpty()) {
+			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<List<Equipo>>(equipos, HttpStatus.OK);
+	}
+	
+	@JsonView(RankView.class)
+	@RequestMapping(value = "/nombreGrupo/{nombreGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Equipo>> verEquiposGrupoNombre(@PathVariable String nombreGrupo) {
+		List<Equipo> equipos = equipoRepository.findByGrupoNombreIgnoreCase(nombreGrupo);
 		if (equipos.isEmpty()) {
 			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
 		}
@@ -319,7 +330,7 @@ public class EquipoController {
 
 			equipo.getPlantillaEquipo().remove(jugador);
 			jugador.setEquipo("");
-			jugador.setGrupo("");
+			jugador.setGrupo(new VistaGrupo());
 
 			jugadorRepository.save(jugador);
 			equipoRepository.save(equipo);
@@ -338,7 +349,7 @@ public class EquipoController {
 		}
 
 		if (equipo.getGrupo() != null && !equipo.getGrupo().equals("") && equipo.isAceptado()) {
-			Grupo grupo = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
+			Grupo grupo = grupoRepository.findById(equipo.getGrupo().getIdGrupo());
 			grupo.getClasificacion().remove(equipo);
 			grupoRepository.save(grupo);
 		}

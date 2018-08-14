@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,19 +28,21 @@ import API.Grupo.Grupo;
 import API.Grupo.GrupoRepository;
 import API.Images.ImageService;
 import API.Mails.MailService;
+import API.MongoBulk.MongoBulk;
 import API.Partido.PartidoRepository;
 import API.Sancion.Sancion;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
 import API.Utilidades.UsuarioUtils;
+import API.Vistas.VistaGrupo;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/jugadores")
 public class JugadorController {
 
-	public interface ProfileView extends Jugador.PerfilAtt, Jugador.EquipoAtt, Sancion.SancionAtt, Sancion.JugadorAtt {
+	public interface ProfileView extends Jugador.PerfilAtt, Jugador.EquipoAtt, Sancion.SancionAtt, Sancion.JugadorAtt, VistaGrupo.VistaGrupoAtt {
 	}
 	
 	private Object lock = new Object();
@@ -63,6 +67,8 @@ public class JugadorController {
 	private ImageService imageService;
 	@Autowired
 	private UsuarioUtils utils;
+	@Autowired
+	private MongoBulk mongoBullk;
 
 	@JsonView(ProfileView.class)
 	@RequestMapping(method = RequestMethod.POST)
@@ -293,7 +299,6 @@ public class JugadorController {
 			jugador.setNombre(entrada.getNombre());
 			jugador.setApellidos(entrada.getApellidos());
 			jugador.setDelegado(entrada.isDelegado());
-			jugador.setEdad(entrada.getEdad());
 			jugador.setEmail(entrada.getEmail());
 			jugador.setDni(entrada.getDni());
 			jugador.setDorsal(entrada.getDorsal());
@@ -317,7 +322,6 @@ public class JugadorController {
 		case "ROLE_MIEMBROCOMITE":
 			jugador.setNombre(entrada.getNombre());
 			jugador.setApellidos(entrada.getApellidos());
-			jugador.setEdad(entrada.getEdad());
 			jugador.setDelegado(entrada.isDelegado());
 			jugador.setEmail(entrada.getEmail());
 			jugador.setDni(entrada.getDni());
@@ -359,6 +363,20 @@ public class JugadorController {
 		jugador.setEmail(email);
 		jugadorRepository.save(jugador);
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
+	}
+	
+	@JsonView(ProfileView.class)
+	@RequestMapping(value = "/grupo", method = RequestMethod.PUT)
+	public synchronized ResponseEntity<List<Jugador>> cambiarGrupo() {
+		Update update = new Update();
+		update.set("liga", "URJC");
+		update.set("grupo", "GRUPO A");
+		Query query = new Query();
+		
+		mongoBullk.modificarBloque(query, update, "Jugador");
+		
+		return new ResponseEntity<List<Jugador>>(HttpStatus.OK);
+		
 	}
 
 	@JsonView(ProfileView.class)
@@ -433,7 +451,7 @@ public class JugadorController {
 		Equipo equipo = equipoRepository.findById(jugador.getEquipo());
 		if (equipo != null) {
 			equipo.getPlantillaEquipo().remove(jugador);
-			Grupo grupo = grupoRepository.findByNombreIgnoreCase(equipo.getGrupo());
+			Grupo grupo = grupoRepository.findById(equipo.getGrupo().getIdGrupo());
 			if (grupo != null) {
 				equipo.getPlantillaEquipo().remove(jugador);
 				grupoRepository.save(grupo);

@@ -17,14 +17,14 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
-import API.VistaGrupo.VistaGrupo;
+import API.Vistas.VistaGrupo;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/temporadas")
 public class TemporadaController {
 
-	public interface TemporadaAtt extends Temporada.TemporadaAtt, VistaGrupo.VistaGrupoAtt{
+	public interface TemporadaAtt extends Temporada.TemporadaAtt{
 	}
 
 	@Autowired
