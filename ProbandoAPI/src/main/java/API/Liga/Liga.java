@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Temporada.Temporada;
+import API.Vistas.VistaTemporada;
 
 
 @Document(collection = "Liga")
@@ -28,7 +29,7 @@ public class Liga {
 	private List<Temporada> temporadas = new ArrayList<>();
 	
 	@JsonView(LigaAtt.class)
-	private int temporadaActual;
+	private VistaTemporada temporadaActual;
 
 	
 	public Liga(){}
@@ -37,7 +38,7 @@ public class Liga {
 		super();
 		this.temporadas = null;
 		this.nombre = nombre;
-		this.temporadaActual =0;
+		this.temporadaActual = null;
 	}
 
 	
@@ -57,11 +58,11 @@ public class Liga {
 		this.nombre = nombre;
 	}
 	
-	public int getTemporadaActual() {
+	public VistaTemporada getTemporadaActual() {
 		return temporadaActual;
 	}
 
-	public void setTemporadaActual(int temporadaActual) {
+	public void setTemporadaActual(VistaTemporada temporadaActual) {
 		this.temporadaActual = temporadaActual;
 	}
 	

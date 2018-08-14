@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import API.MiembroComite.MiembroComite;
 import API.MiembroComite.MiembroComiteRepository;
 import API.Temporada.Temporada;
+import API.Temporada.TemporadaRepository;
 import API.Vistas.VistaGrupo;
 
 @RestController
@@ -29,8 +30,10 @@ public class LigaController {
 
 	@Autowired
 	private LigaRepository ligaRepository;
-	
+	@Autowired
 	private MiembroComiteRepository miembroComiteRepository;
+	@Autowired
+	private TemporadaRepository temporadaRepository;
 
 	@JsonView(LigaAtt.class)
 	@RequestMapping(method = RequestMethod.GET)
@@ -61,10 +64,9 @@ public class LigaController {
 		if(liga == null){
 			 return new ResponseEntity<List<VistaGrupo>>(HttpStatus.NOT_FOUND);
 		}
-		//Suponiendo que la variable temporada actual sea el indice en elq eu se encuentra dicha jornada en la lista
-		Temporada temporada = liga.getTemporadas().get(liga.getTemporadaActual());
+		Temporada temporadaActual = temporadaRepository.findById(liga.getTemporadaActual().getId());
 		
-		return new ResponseEntity<List<VistaGrupo>>(temporada.getGrupos(), HttpStatus.OK);
+		return new ResponseEntity<List<VistaGrupo>>(temporadaActual.getGrupos(), HttpStatus.OK);
 
 	}
 
