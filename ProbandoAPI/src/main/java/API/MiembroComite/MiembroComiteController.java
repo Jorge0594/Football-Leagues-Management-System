@@ -52,7 +52,7 @@ public class MiembroComiteController {
 	}
 	
 	@JsonView(MiembroComiteView.class)
-	@RequestMapping(value = "/{usuario}", method = RequestMethod.GET)
+	@RequestMapping(value = "usuario/{usuario}", method = RequestMethod.GET)
 	public ResponseEntity<MiembroComite> verMiembroComiteUsuario(@PathVariable String usuario){
 		MiembroComite miembro = miembroComiteRepository.findByUsuarioIgnoreCase(usuario);
 		if(miembro == null) {
@@ -62,7 +62,7 @@ public class MiembroComiteController {
 	}
 	
 	@JsonView(MiembroComiteView.class)
-	@RequestMapping(value = "/{email}", method = RequestMethod.GET)
+	@RequestMapping(value = "email/{email}", method = RequestMethod.GET)
 	public ResponseEntity<MiembroComite> verMiembroComiteEmail(@PathVariable String email){
 		MiembroComite miembro = miembroComiteRepository.findByEmailIgnoreCase(email);
 		if(miembro == null) {
