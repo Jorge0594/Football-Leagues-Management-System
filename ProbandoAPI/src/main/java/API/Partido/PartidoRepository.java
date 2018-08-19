@@ -12,7 +12,7 @@ public interface PartidoRepository extends MongoRepository<Partido, String> {
 
 	List<Partido> findByJornada(int jornada);
 
-	List<Partido> findByJornadaAndLigaIgnoreCase(int jornada, String liga);
+	List<Partido> findByJornadaAndGrupoIdGrupo(int jornada, String idGrupo);
 
 	List<Partido> findByEquipoLocalId(String equipoLocalId);
 

@@ -3,15 +3,17 @@ package API.Historico;
 import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Component;
 
+import API.Vistas.VistaTemporada;
+
 @Component
 public abstract class Historico {
 	@Id
 	private String id;
-	private String temporada;
+	private VistaTemporada temporada;
 	
 	public Historico(){}
 	
-	public Historico(String id, String temporada) {
+	public Historico(String id, VistaTemporada temporada) {
 		super();
 		this.id = id;
 		this.temporada = temporada;
@@ -25,11 +27,11 @@ public abstract class Historico {
 		this.id = id;
 	}
 
-	public String getTemporada() {
+	public VistaTemporada getTemporada() {
 		return temporada;
 	}
 
-	public void setTemporada(String temporada) {
+	public void setTemporada(VistaTemporada temporada) {
 		this.temporada = temporada;
 	}
 
