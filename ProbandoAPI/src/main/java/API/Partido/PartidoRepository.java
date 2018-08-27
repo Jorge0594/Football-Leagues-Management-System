@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import API.Grupo.Grupo;
+
 public interface PartidoRepository extends MongoRepository<Partido, String> {
 	Partido findById(String id);
 
@@ -29,6 +31,8 @@ public interface PartidoRepository extends MongoRepository<Partido, String> {
 	List<Partido> findByIdArbitroAndEquipoLocalIdOrEquipoVisitanteId(String id, String equipoLocalId, String equipoVisitanteId);
 	
 	List<Partido> findByIdArbitroAndEstadoIgnoreCase(String idArbitro, String estado);
+	
+	List<Partido> findByGrupoAndEstadoIgnoreCase(Grupo grupo, String estado);
 	
 	@Query(value = "{'$or':[{'equipoLocalId':?0}, {'equipoVisitanteId':?0}]}", count = true)
 	long getNumeroPartidos(String idEquipo);

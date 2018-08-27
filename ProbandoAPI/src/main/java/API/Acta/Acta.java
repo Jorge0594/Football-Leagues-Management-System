@@ -26,6 +26,9 @@ public class Acta {
 
 	@JsonView(ActaAtt.class)
 	private String idPartido;
+	
+	@JsonView(ActaAtt.class)
+	private int jornada;
 
 	@JsonView(ActaAtt.class)
 	private boolean aceptada;
@@ -100,7 +103,7 @@ public class Acta {
 
 	public Acta(String id, String idPartido, boolean aceptada, String fecha, String hora, VistaGrupo grupo, String idEquipoLocal, String nombreEquipoLocal, String escudoEquipoLocal, String idEquipoVisitante, String nombreEquipoVisitante, String escudoEquipoVisitante, String idArbitro,
 			String idCapitanLocal, String idCapitanVisitante, List<String> idsPorterosLocal, List<String> idsPorterosVisitante, String nombreArbitro, List<Jugador> convocadosLocal, List<Jugador> convocadosVisitante, int golesLocal, int golesVisitante, List<Incidencia> incidencias,
-			String observaciones) {
+			String observaciones, int jornada) {
 		super();
 		this.id = id;
 		this.idPartido = idPartido;
@@ -126,6 +129,7 @@ public class Acta {
 		this.golesVisitante = golesVisitante;
 		this.incidencias = incidencias;
 		this.observaciones = observaciones;
+		this.jornada = jornada;
 	}
 
 
@@ -152,6 +156,14 @@ public class Acta {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public int getJornada() {
+		return jornada;
+	}
+
+	public void setJornada(int jornada) {
+		this.jornada = jornada;
 	}
 
 	public String getIdPartido() {

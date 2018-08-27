@@ -19,13 +19,14 @@ import API.MiembroComite.MiembroComiteRepository;
 import API.Temporada.Temporada;
 import API.Temporada.TemporadaRepository;
 import API.Vistas.VistaGrupo;
+import API.Vistas.VistaTemporada;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/ligas")
 public class LigaController {
 
-	public interface LigaAtt extends Liga.LigaAtt, Temporada.TemporadaAtt {
+	public interface LigaAtt extends Liga.LigaAtt, Temporada.TemporadaAtt, VistaTemporada.VistaTemporadaAtt {
 	}
 
 	@Autowired
@@ -47,7 +48,7 @@ public class LigaController {
 		MiembroComite miembro = miembroComiteRepository.findById(idMiembroComite);
 		if(miembro != null) {
 			Liga liga = ligaRepository.findById(miembro.getIdLiga());
-			if(liga != null) {
+			if(liga == null) {
 				return new ResponseEntity<Liga>(HttpStatus.NOT_FOUND);
 			}else {
 				return new ResponseEntity<Liga>(liga, HttpStatus.OK);
@@ -58,7 +59,7 @@ public class LigaController {
 	}
 	@JsonView(LigaAtt.class)
 	@RequestMapping(value = "{nombre}/grupos", method = RequestMethod.GET)
-	public ResponseEntity<List<VistaGrupo>> verGruposLiga(@PathVariable String nombre) {
+	public ResponseEntity<List<VistaGrupo>> verGruposLigaTemporadaActual(@PathVariable String nombre) {
 		Liga liga = ligaRepository.findByNombreIgnoreCase(nombre);
 		
 		if(liga == null){
