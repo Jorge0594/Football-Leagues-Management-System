@@ -26,13 +26,15 @@ import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
 import API.Jugador.Jugador;
 import API.Sancion.Sancion;
+import API.Vistas.VistaGrupo;
+import API.Vistas.VistaTemporada;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/partidos")
 public class PartidoController {
 
-	public interface PartidoView extends Estadio.BasicoAtt, Estadio.DatosAtt, Partido.InfoAtt, Partido.RestAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Sancion.JugadorAtt, Sancion.SancionAtt {
+	public interface PartidoView extends Estadio.BasicoAtt, Estadio.DatosAtt, Partido.InfoAtt, Partido.RestAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Sancion.JugadorAtt, Sancion.SancionAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt {
 	}
 
 	@Autowired
