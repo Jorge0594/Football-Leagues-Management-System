@@ -308,6 +308,22 @@ public class Partido implements Comparable<Partido> {
 		this.incidencias = incidencias;
 	}
 	
+	public VistaGrupo getGrupo() {
+		return grupo;
+	}
+
+	public void setGrupo(VistaGrupo grupo) {
+		this.grupo = grupo;
+	}
+
+	public VistaTemporada getTemporada() {
+		return temporada;
+	}
+
+	public void setTemporada(VistaTemporada temporada) {
+		this.temporada = temporada;
+	}
+
 	public int compareTo(Partido partido2) {
 		SimpleDateFormat formateador = new SimpleDateFormat("dd-MM-yyyy");
 		try {

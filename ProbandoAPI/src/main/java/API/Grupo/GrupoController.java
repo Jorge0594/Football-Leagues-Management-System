@@ -133,10 +133,10 @@ public class GrupoController {
 	}
 
 	@JsonView(InfoGrupoView.class)
-	@RequestMapping(value = "{nombre}/clasificacion" , method = RequestMethod.GET)
-	public ResponseEntity<List<Equipo>> verClasificacion(@PathVariable String nombre) {
+	@RequestMapping(value = "{idGrupo}/clasificacion" , method = RequestMethod.GET)
+	public ResponseEntity<List<Equipo>> verClasificacion(@PathVariable String idGrupo) {
 		Sort sort = new Sort(Sort.Direction.DESC, "puntos", "goles", "golesEncajados");
-		List<Equipo> equipos = equipoRepository.findCustomClasificacion(nombre.toUpperCase(), sort);
+		List<Equipo> equipos = equipoRepository.findCustomClasificacion(idGrupo, sort);
 		if (equipos == null) {
 			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
 		}
@@ -145,27 +145,27 @@ public class GrupoController {
 	}
 	
 	@JsonView(InfoGrupoView.class)
-	@RequestMapping(value = "/goleadores/{liga}/{idGrupo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Jugador>> obtenerGoleadores(@PathVariable(value = "liga") String liga, @PathVariable(value = "grupo") String idGrupo){
+	@RequestMapping(value = "/goleadores/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> obtenerGoleadores(@PathVariable String idGrupo){
 		PageRequest page = new PageRequest(0, 5, new Sort(Sort.Direction.DESC, "goles"));
 		
-		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(idGrupo, liga.toUpperCase(), page), HttpStatus.OK);
+		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(idGrupo, page), HttpStatus.OK);
 	}
 	
 	@JsonView(InfoGrupoView.class)
-	@RequestMapping(value = "/amarillas/{liga}/{idGrupo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Jugador>> obtenerRankAmarillas(@PathVariable(value = "liga") String liga, @PathVariable(value = "grupo") String idGrupo){
+	@RequestMapping(value = "/amarillas/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> obtenerRankAmarillas(@PathVariable String idGrupo){
 		PageRequest page = new PageRequest(0, 5, new Sort(Sort.Direction.DESC, "tarjetasAmarillas"));
 		
-		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(idGrupo, liga.toUpperCase(), page), HttpStatus.OK);
+		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(idGrupo, page), HttpStatus.OK);
 	}
 	
 	@JsonView(InfoGrupoView.class)
-	@RequestMapping(value = "/rojas/{liga}/{idGrupo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Jugador>> obtenerRankRojas(@PathVariable(value = "liga") String liga, @PathVariable(value = "idGrupo") String idGrupo){
+	@RequestMapping(value = "/rojas/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> obtenerRankRojas(@PathVariable String idGrupo){
 		PageRequest page = new PageRequest(0, 5, new Sort(Sort.Direction.DESC, "tarjetasRojas"));
 		
-		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(idGrupo, liga.toUpperCase(), page), HttpStatus.OK);
+		return new ResponseEntity<List<Jugador>>(jugadorRepository.getRankings(idGrupo, page), HttpStatus.OK);
 	}
 	
 	@JsonView(InfoGrupoView.class)

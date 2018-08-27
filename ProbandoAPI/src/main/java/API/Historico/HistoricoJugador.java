@@ -3,6 +3,7 @@ package API.Historico;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import API.Jugador.Jugador;
+import API.Vistas.VistaTemporada;
 
 @Document(collection = "HistoricoJugador")
 public class HistoricoJugador extends Historico {
@@ -16,7 +17,7 @@ public class HistoricoJugador extends Historico {
 		this.jugador = jugador;
 	}
 
-	public HistoricoJugador(String id, String temporada, Jugador jugador){
+	public HistoricoJugador(String id, VistaTemporada temporada, Jugador jugador){
 		super(id, temporada);
 		this.jugador = jugador;
 	}

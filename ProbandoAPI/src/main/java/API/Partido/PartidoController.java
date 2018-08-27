@@ -26,13 +26,15 @@ import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
 import API.Jugador.Jugador;
 import API.Sancion.Sancion;
+import API.Vistas.VistaGrupo;
+import API.Vistas.VistaTemporada;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/partidos")
 public class PartidoController {
 
-	public interface PartidoView extends Estadio.BasicoAtt, Estadio.DatosAtt, Partido.InfoAtt, Partido.RestAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Sancion.JugadorAtt, Sancion.SancionAtt {
+	public interface PartidoView extends Estadio.BasicoAtt, Estadio.DatosAtt, Partido.InfoAtt, Partido.RestAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Sancion.JugadorAtt, Sancion.SancionAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt {
 	}
 
 	@Autowired
@@ -75,9 +77,9 @@ public class PartidoController {
 	}
 
 	@JsonView(PartidoView.class)
-	@RequestMapping(value = "/jornada/{jornada}/{nombreLiga}", method = RequestMethod.GET)
-	public ResponseEntity<List<Partido>> verPartidosJornada(@PathVariable(value = "jornada") int jornada, @PathVariable(value = "nombreLiga") String nombreLiga) {
-		List<Partido> entrada = partidoRepository.findByJornadaAndLigaIgnoreCase(jornada, nombreLiga);
+	@RequestMapping(value = "/jornada/{jornada}/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> verPartidosJornada(@PathVariable(value = "jornada") int jornada, @PathVariable(value = "idGrupo") String idGrupo) {
+		List<Partido> entrada = partidoRepository.findByJornadaAndGrupoIdGrupo(jornada, idGrupo);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Partido>>(HttpStatus.NO_CONTENT);
 		}
@@ -144,7 +146,7 @@ public class PartidoController {
 
 	/*
 	 * @JsonView(PartidoView.class)
-	 * 
+	 *
 	 * @RequestMapping(value = "/addConvocadoLocal/{id}/{idJugador}", method =
 	 * RequestMethod.PUT) public ResponseEntity<Partido>
 	 * nuevoConvocadoLocal(@PathVariable String id, @PathVariable String
@@ -170,9 +172,9 @@ public class PartidoController {
 	 * entrada.getConvocadosLocal().add(jugadorEntrada); }
 	 * partidoRepository.save(entrada); return new
 	 * ResponseEntity<Partido>(entrada, HttpStatus.OK); } }
-	 * 
+	 *
 	 * @JsonView(PartidoView.class)
-	 * 
+	 *
 	 * @RequestMapping(value = "/addConvocadoVisitante/{id}/{idJugador}", method
 	 * = RequestMethod.PUT) public ResponseEntity<Partido>
 	 * nuevoConvocadoVisitante(@PathVariable String id, @PathVariable String
