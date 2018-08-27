@@ -33,6 +33,16 @@ public class LoginController {
 			return new ResponseEntity<>(loggedUser, HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping("/iniciarSesion")
+	public ResponseEntity<Usuario> logInGlobal() {
+		if (!usuarioComponent.isLoggedUser()) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		} else {
+			Usuario loggedUser = usuarioComponent.getLoggedUser();
+			return new ResponseEntity<>(loggedUser, HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping("/cerrarSesion")
 	public ResponseEntity<Boolean> logOut(HttpSession session) {

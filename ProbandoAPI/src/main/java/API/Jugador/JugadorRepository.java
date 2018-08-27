@@ -38,9 +38,10 @@ public interface JugadorRepository extends MongoRepository<Jugador, String> {
 	
 	Jugador findByNombreUsuarioIgnoreCase(String nombreUsuario);
 	
-	@Query(value = "{'grupo.id':?0, 'liga':?1}")
-	List<Jugador> getRankings(String grupoId, String liga, Pageable page);
+	@Query(value = "{'grupo.idGrupo':?0}")
+	List<Jugador> getRankings(String grupoId, Pageable page);
 	
-	
+	@Query(value = "{'posicion': 'Portero', 'grupo.idGrupo': ?0}", fields = "{'nombre':1, 'equipo':1}")
+	List<Jugador> getPorteros(String idGrupo);
 	
 }

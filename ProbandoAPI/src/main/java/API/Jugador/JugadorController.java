@@ -299,7 +299,6 @@ public class JugadorController {
 			jugador.setNombre(entrada.getNombre());
 			jugador.setApellidos(entrada.getApellidos());
 			jugador.setDelegado(entrada.isDelegado());
-			jugador.setEdad(entrada.getEdad());
 			jugador.setEmail(entrada.getEmail());
 			jugador.setDni(entrada.getDni());
 			jugador.setDorsal(entrada.getDorsal());
@@ -323,7 +322,6 @@ public class JugadorController {
 		case "ROLE_MIEMBROCOMITE":
 			jugador.setNombre(entrada.getNombre());
 			jugador.setApellidos(entrada.getApellidos());
-			jugador.setEdad(entrada.getEdad());
 			jugador.setDelegado(entrada.isDelegado());
 			jugador.setEmail(entrada.getEmail());
 			jugador.setDni(entrada.getDni());
