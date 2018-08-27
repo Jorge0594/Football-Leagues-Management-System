@@ -129,7 +129,7 @@ public class GrupoController {
 	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "{idGrupo}/clasificacion" , method = RequestMethod.GET)
 	public ResponseEntity<List<Equipo>> verClasificacion(@PathVariable String idGrupo) {
-		Sort sort = new Sort(Sort.Direction.DESC, "puntos", "goles", "golesEncajados");
+		Sort sort = new Sort(Sort.Direction.DESC, "puntos", "goles", "golesEncajados:-1");
 		List<Equipo> equipos = equipoRepository.findCustomClasificacion(idGrupo, sort);
 		if (equipos == null) {
 			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
