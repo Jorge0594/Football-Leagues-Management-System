@@ -34,9 +34,9 @@ public class LoginController {
 		}
 	}
 	
-	@RequestMapping("/iniciarSesion")
-	public ResponseEntity<Usuario> logInGlobal() {
-		if (!usuarioComponent.isLoggedUser()) {
+	@RequestMapping("/comite/iniciarSesion")
+	public ResponseEntity<Usuario> logInComite() {
+		if (!usuarioComponent.isLoggedUser() || (usuarioComponent.getLoggedUser().getRol().equals("ROLE_MIEMBROCOMITE") && usuarioComponent.getLoggedUser().getRol().equals("ROLE_ADMIN"))) {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		} else {
 			Usuario loggedUser = usuarioComponent.getLoggedUser();

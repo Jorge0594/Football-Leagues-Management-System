@@ -84,10 +84,32 @@ public class ActaController {
 		}
 		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
 	}
+	
+	@JsonView(ActaView.class)
+	@RequestMapping(value = "/pendientes/grupo/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Acta>> verActasPendientesGrupo(@PathVariable String idGrupo) {
+		List<Acta> entrada = actaRepository.findByAceptadaFalseAndGrupoIdGrupo(idGrupo);
+		if (entrada.isEmpty()) {
+			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
+	}
+	
+	
 	@JsonView(ActaView.class)
 	@RequestMapping(value = "/aceptadas", method = RequestMethod.GET)
 	public ResponseEntity<List<Acta>> verActasAceptadas() {
 		List<Acta> entrada = actaRepository.findByAceptadaTrue();
+		if (entrada.isEmpty()) {
+			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Acta>>(entrada, HttpStatus.OK);
+	}
+	
+	@JsonView(ActaView.class)
+	@RequestMapping(value = "/aceptadas/grupo/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Acta>> verActasAceptadasGrupo(@PathVariable String idGrupo){
+		List<Acta> entrada = actaRepository.findByAceptadaTrueAndGrupoIdGrupo(idGrupo);
 		if (entrada.isEmpty()) {
 			return new ResponseEntity<List<Acta>>(HttpStatus.NOT_FOUND);
 		}
@@ -325,47 +347,61 @@ public class ActaController {
 
 		Equipo local = equipoRepository.findById(acta.getIdEquipoLocal());
 		Equipo visitante = equipoRepository.findById(acta.getIdEquipoVisitante());
-
-		if (acta.getGolesLocal() > acta.getGolesVisitante()) {
-			local.setPartidosGanados(local.getPartidosGanados() + 1);
-			local.setGoles(local.getGoles() + acta.getGolesLocal());
-			local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
-			local.setPuntos();
-			local.setPartidosJugados();
-			
-			visitante.setPartidosPerdidos(visitante.getPartidosPerdidos() + 1);
-			visitante.setGoles(visitante.getGoles() + acta.getGolesVisitante());
-			visitante.setGolesEncajados(visitante.getGolesEncajados() + acta.getGolesLocal());
-			visitante.setPartidosJugados();
-
-		} else if (acta.getGolesLocal() < acta.getGolesVisitante()) {
-
-			visitante.setPartidosGanados(visitante.getPartidosGanados() + 1);
-			visitante.setGoles(visitante.getGoles() + acta.getGolesVisitante());
-			visitante.setGolesEncajados(visitante.getGolesEncajados() + acta.getGolesLocal());
-			visitante.setPuntos();
-			visitante.setPartidosJugados();
-			
-			local.setPartidosPerdidos(local.getPartidosPerdidos() + 1);
-			local.setGoles(local.getGoles() + acta.getGolesLocal());
-			local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
-			local.setPartidosJugados();
-
-		} else {
-
-			local.setPartidosEmpatados(local.getPartidosEmpatados() + 1);
-			local.setGoles(local.getGoles() + acta.getGolesLocal());
-			local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
-			local.setPuntos();
-			local.setPartidosJugados();
-
-			visitante.setPartidosEmpatados(visitante.getPartidosEmpatados() + 1);
-			visitante.setGoles(visitante.getGoles() + acta.getGolesVisitante());
-			visitante.setGolesEncajados(visitante.getGolesEncajados() + acta.getGolesLocal());
-			visitante.setPuntos();
-			visitante.setPartidosJugados();
-		}
 		
+		if(acta.getObservaciones().contains("No presentado equipo local")) {
+			visitante.setPartidosGanados(visitante.getPartidosGanados() + 1);
+			local.setPartidosPerdidos(local.getPartidosPerdidos() + 1);
+			visitante.setPuntos();
+			visitante.setPartidosJugados();
+			local.setPartidosJugados();
+		} else if (acta.getObservaciones().contains("No presentado equipo visitante")) {
+			local.setPartidosGanados(local.getPartidosGanados() + 1);
+			visitante.setPartidosPerdidos(visitante.getPartidosPerdidos() + 1);
+			local.setPuntos();
+			local.setPartidosJugados();
+			visitante.setPartidosJugados();
+		}else {
+
+			if (acta.getGolesLocal() > acta.getGolesVisitante()) {
+				local.setPartidosGanados(local.getPartidosGanados() + 1);
+				local.setGoles(local.getGoles() + acta.getGolesLocal());
+				local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
+				local.setPuntos();
+				local.setPartidosJugados();
+				
+				visitante.setPartidosPerdidos(visitante.getPartidosPerdidos() + 1);
+				visitante.setGoles(visitante.getGoles() + acta.getGolesVisitante());
+				visitante.setGolesEncajados(visitante.getGolesEncajados() + acta.getGolesLocal());
+				visitante.setPartidosJugados();
+	
+			} else if (acta.getGolesLocal() < acta.getGolesVisitante()) {
+	
+				visitante.setPartidosGanados(visitante.getPartidosGanados() + 1);
+				visitante.setGoles(visitante.getGoles() + acta.getGolesVisitante());
+				visitante.setGolesEncajados(visitante.getGolesEncajados() + acta.getGolesLocal());
+				visitante.setPuntos();
+				visitante.setPartidosJugados();
+				
+				local.setPartidosPerdidos(local.getPartidosPerdidos() + 1);
+				local.setGoles(local.getGoles() + acta.getGolesLocal());
+				local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
+				local.setPartidosJugados();
+	
+			} else {
+	
+				local.setPartidosEmpatados(local.getPartidosEmpatados() + 1);
+				local.setGoles(local.getGoles() + acta.getGolesLocal());
+				local.setGolesEncajados(local.getGolesEncajados() + acta.getGolesVisitante());
+				local.setPuntos();
+				local.setPartidosJugados();
+	
+				visitante.setPartidosEmpatados(visitante.getPartidosEmpatados() + 1);
+				visitante.setGoles(visitante.getGoles() + acta.getGolesVisitante());
+				visitante.setGolesEncajados(visitante.getGolesEncajados() + acta.getGolesLocal());
+				visitante.setPuntos();
+				visitante.setPartidosJugados();
+			}
+		}
 		equipoRepository.save(local);
 		equipoRepository.save(visitante);
 	}
@@ -373,16 +409,18 @@ public class ActaController {
 	private void actualizarJugadores(Acta acta, Grupo grupo) {
 	
 		for(Incidencia incidencia: acta.getIncidencias()) {
-			Jugador jugador = jugadorRepository.findById(incidencia.getIdJugador());
-			if (incidencia.getTipo().equals("GOL")) {
-				jugador.setGoles(jugador.getGoles()+1);
-			}else if (incidencia.getTipo().equals("AMARILLA")) {
-				jugador.setTarjetasAmarillas(jugador.getTarjetasAmarillas()+1);
-			}else {
-				jugador.setTarjetasRojas(jugador.getTarjetasRojas()+1);
+			if(!incidencia.getIdJugador().equals("000")) {
+				Jugador jugador = jugadorRepository.findById(incidencia.getIdJugador());
+				if (incidencia.getTipo().equals("GOL")) {
+					jugador.setGoles(jugador.getGoles()+1);
+				}else if (incidencia.getTipo().equals("AMARILLA")) {
+					jugador.setTarjetasAmarillas(jugador.getTarjetasAmarillas()+1);
+				}else {
+					jugador.setTarjetasRojas(jugador.getTarjetasRojas()+1);
+				}
+				incidenciaRepository.save(incidencia);
+				jugadorRepository.save(jugador);
 			}
-			incidenciaRepository.save(incidencia);
-			jugadorRepository.save(jugador);
 		}
 		
 		grupoRepository.save(grupo);
