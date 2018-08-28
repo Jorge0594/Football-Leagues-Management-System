@@ -38,7 +38,7 @@ public class Equipo implements Comparable<Equipo> {
 	@JsonView(PerfilAtt.class)
 	private String ciudad;
 	
-	@JsonView(PerfilAtt.class)
+	@JsonView(RankAtt.class)
 	private String delegado;
 
 	@JsonView(RankAtt.class)
