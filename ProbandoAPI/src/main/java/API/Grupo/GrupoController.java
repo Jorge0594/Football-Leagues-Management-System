@@ -121,15 +121,21 @@ public class GrupoController {
 	}
 
 	@JsonView(InfoGrupoView.class)
-	@RequestMapping(value = "/{nombre}", method = RequestMethod.GET)
+	@RequestMapping(value = "nombre/{nombre}", method = RequestMethod.GET)
 	public ResponseEntity<Grupo> verGrupoNombre(@PathVariable String nombre) {
 		return new ResponseEntity<Grupo>(grupoRepository.findByNombreIgnoreCase(nombre), HttpStatus.OK);
+	}
+	
+	@JsonView(InfoGrupoView.class)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Grupo> verGrupoId(@PathVariable String id) {
+		return new ResponseEntity<Grupo>(grupoRepository.findById(id), HttpStatus.OK);
 	}
 
 	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "{idGrupo}/clasificacion" , method = RequestMethod.GET)
 	public ResponseEntity<List<Equipo>> verClasificacion(@PathVariable String idGrupo) {
-		Sort sort = new Sort(Sort.Direction.DESC, "puntos", "goles", "golesEncajados");
+		Sort sort = new Sort(Sort.Direction.DESC, "puntos", "goles", "golesEncajados:-1");
 		List<Equipo> equipos = equipoRepository.findCustomClasificacion(idGrupo, sort);
 		if (equipos == null) {
 			return new ResponseEntity<List<Equipo>>(HttpStatus.NO_CONTENT);
