@@ -30,8 +30,11 @@ public class Liga {
 	
 	@JsonView(LigaAtt.class)
 	private VistaTemporada temporadaActual;
-
 	
+	@JsonView(LigaAtt.class)
+	private String imagenLiga;
+
+
 	public Liga(){}
 	
 	public Liga(String nombre) {
@@ -74,7 +77,13 @@ public class Liga {
 		this.temporadas = temporadas;
 	}
 
+	public String getImagenLiga() {
+		return imagenLiga;
+	}
 
+	public void setImagenLiga(String imagenLiga) {
+		this.imagenLiga = imagenLiga;
+	}
 
 	
 	@Override

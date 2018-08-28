@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.Acta.Acta;
+import API.Acta.ActaController.ActaView;
 import API.MiembroComite.MiembroComite;
 import API.MiembroComite.MiembroComiteRepository;
 import API.Temporada.Temporada;
@@ -42,6 +44,17 @@ public class LigaController {
 		return new ResponseEntity<List<Liga>>(ligaRepository.findAll(), HttpStatus.OK);
 
 	}
+	
+	@JsonView(LigaAtt.class)
+	@RequestMapping(value = "/nombre/{nombreLiga}")
+	public ResponseEntity<Liga> verLigaPorNombre(@PathVariable String nombreLiga) {
+		Liga entrada = ligaRepository.findByNombreIgnoreCase(nombreLiga);
+		if (entrada == null) {
+			return new ResponseEntity<Liga>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Liga>(entrada, HttpStatus.OK);
+	}
+	
 	@JsonView(LigaAtt.class)
 	@RequestMapping(value="asignada/{idMiembroComite}", method = RequestMethod.GET)
 	public ResponseEntity<Liga> verLigaComite(@PathVariable String idMiembroComite) {
