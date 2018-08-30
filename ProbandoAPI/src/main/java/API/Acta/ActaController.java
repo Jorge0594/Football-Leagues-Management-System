@@ -244,7 +244,7 @@ public class ActaController {
 			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		Partido partido = partidoRepository.findById(acta.getIdPartido());
-		Grupo grupo = grupoRepository.findByNombreIgnoreCase(partido.getLiga());
+		Grupo grupo = grupoRepository.findById(partido.getGrupo().getIdGrupo());
 		if (grupo == null){
 			return new ResponseEntity<Acta>(HttpStatus.BAD_GATEWAY);
 		}
