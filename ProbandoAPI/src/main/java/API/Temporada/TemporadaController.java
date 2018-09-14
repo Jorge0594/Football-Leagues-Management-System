@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.Arbitro.Arbitro;
 import API.Liga.Liga;
 import API.Liga.LigaRepository;
 import API.Vistas.VistaGrupo;
@@ -24,7 +25,7 @@ import API.Vistas.VistaGrupo;
 @RequestMapping("/temporadas")
 public class TemporadaController {
 
-	public interface TemporadaAtt extends Temporada.TemporadaAtt, VistaGrupo.VistaGrupoAtt{
+	public interface TemporadaAtt extends Temporada.TemporadaAtt, VistaGrupo.VistaGrupoAtt, Arbitro.PerfilAtt, Arbitro.ActaAtt, Arbitro.ClaveAtt{
 	}
  
 	@Autowired

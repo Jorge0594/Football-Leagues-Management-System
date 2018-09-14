@@ -31,11 +31,12 @@ public class MiembroComite {
 	private String email;
 	@JsonView(PerfilMCAtt.class)
 	private String idLiga;
-	
+	@JsonView(PerfilMCAtt.class)
+	private boolean esSupervisor;
 
 	public MiembroComite() {}
 	
-	public MiembroComite(String id, String nombre, String apellidos, String usuario, String clave, String comite, String email, String idLiga) {
+	public MiembroComite(String id, String nombre, String apellidos, String usuario, String clave, String comite, String email, String idLiga, boolean esSupervisor) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -45,6 +46,7 @@ public class MiembroComite {
 		this.comite = comite;
 		this.email = email;
 		this.idLiga = idLiga;
+		this.esSupervisor = esSupervisor;
 	}
 	
 	public String getIdLiga() {
@@ -126,7 +128,13 @@ public class MiembroComite {
 		this.comite = comite;
 	}
 	
-	
+	public boolean getEsSupervisor() {
+		return esSupervisor;
+	}
+
+	public void setEsSupervisor(boolean esSupervisor) {
+		this.esSupervisor = esSupervisor;
+	}
 	
 	@Override
 	public String toString() {

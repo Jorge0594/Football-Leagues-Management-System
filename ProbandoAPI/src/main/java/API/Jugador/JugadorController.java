@@ -128,6 +128,16 @@ public class JugadorController {
 	}
 
 	@JsonView(ProfileView.class)
+	@RequestMapping(value = "/grupo/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Jugador>> verJugadoresPorGrupo(@PathVariable(value = "idGrupo") String idGrupo) {
+		List<Jugador> jugadores = jugadorRepository.findByGrupoIdGrupo(idGrupo);
+		if (jugadores.isEmpty()) {
+			return new ResponseEntity<List<Jugador>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Jugador>>(jugadores, HttpStatus.OK);
+	}
+	
+	@JsonView(ProfileView.class)
 	@RequestMapping(value = "/{nombre}", method = RequestMethod.GET)
 	public ResponseEntity<List<Jugador>> verJugador(@PathVariable(value = "nombre") String nombre) {
 		List<Jugador> jugadores = jugadorRepository.findByNombreIgnoreCase(nombre);

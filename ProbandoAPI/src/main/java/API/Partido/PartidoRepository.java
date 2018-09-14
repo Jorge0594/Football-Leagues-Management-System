@@ -36,5 +36,7 @@ public interface PartidoRepository extends MongoRepository<Partido, String> {
 	
 	@Query(value = "{'$or':[{'equipoLocalId':?0}, {'equipoVisitanteId':?0}]}", count = true)
 	long getNumeroPartidos(String idEquipo);
+
+	List<Partido> findByGrupoIdGrupo(String idGrupo);
 	
 }
