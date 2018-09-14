@@ -22,7 +22,7 @@ import API.Vistas.VistaJugador;
 @RequestMapping("/incidencias")
 public class IncidenciaController {
 
-	public interface IncidenciaView extends Incidencia.IncidenciaAtt, VistaJugador.VistaJugadorAtt {
+	public interface IncidenciaView extends Incidencia.IncidenciaAtt, VistaJugador.VistaJugadorAtt{
 	}
 
 	@Autowired

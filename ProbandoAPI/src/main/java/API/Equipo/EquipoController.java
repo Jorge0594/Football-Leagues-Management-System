@@ -103,6 +103,7 @@ public class EquipoController {
 		if (usuario == null) {
 			return new ResponseEntity<Equipo>(HttpStatus.UNAUTHORIZED);
 		}
+		
 		equipo.setId(null);
 		equipo.setAceptado(false);
 		equipo.setImagenEquipo("shield.png");
@@ -413,7 +414,7 @@ public class EquipoController {
 		for (int i = 0; i < jugadores.size(); i++) {
 			jsonJugador = (JSONObject) jugadores.get(i);
 			jugador = new Jugador((String) jsonJugador.get("nombre"), (String) jsonJugador.get("apellidos"), (String) jsonJugador.get("fechaNacimiento"), (String) jsonJugador.get("dni"), (String) jsonJugador.get("email"), (String) jsonJugador.get("fotoJugador"), (String) jsonJugador.get("posicion"),
-					(String) jsonJugador.get("lugarNacimiento"), (String) jsonJugador.get("nacionalidad"), (int) (long) jsonJugador.get("dorsal"), (boolean) jsonJugador.get("capitan"));
+					(String) jsonJugador.get("lugarNacimiento"), (String) jsonJugador.get("nacionalidad"), (int) (long) jsonJugador.get("dorsal"), (boolean) jsonJugador.get("delegado"));
 
 			jugador.setEquipo(equipo.getId());
 			jugadorRepository.save(jugador);
@@ -435,7 +436,7 @@ public class EquipoController {
 		jugador.setNacionalidad((String) jsonJugador.get("nacionalidad"));
 		jugador.setDorsal((int) (long) jsonJugador.get("dorsal"));
 		jugador.setFotoJugador((String) jsonJugador.get("fotoJugador"));
-		jugador.setDelegado((boolean) jsonJugador.get("capitan"));
+		jugador.setDelegado((boolean) jsonJugador.get("delegado"));
 		jugadorRepository.save(jugador);
 	}
 }

@@ -39,6 +39,7 @@ import API.Partido.PartidoRepository;
 import API.Pdfs.PdfCreator;
 import API.Usuario.UsuarioComponent;
 import API.Vistas.VistaGrupo;
+import API.Vistas.VistaJugador;
 import API.Vistas.VistaTemporada;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
@@ -51,7 +52,7 @@ import API.Sancion.SancionRepository;
 public class ActaController {
 
 	public interface ActaView
-			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Jugador.ClaveAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt, Equipo.PerfilAtt, Sancion.JugadorAtt, Sancion.SancionAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt {
+			extends Acta.ActaAtt, Equipo.RankAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Jugador.ClaveAtt, Estadio.BasicoAtt, Arbitro.ActaAtt, Incidencia.IncidenciaAtt, Equipo.PerfilAtt, Sancion.JugadorAtt, Sancion.SancionAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt, VistaJugador.VistaJugadorAtt {
 	}
 
 	@Autowired
@@ -231,6 +232,9 @@ public class ActaController {
 		acta.setGolesLocal(actaEntrada.getGolesLocal());
 		acta.setGolesVisitante(actaEntrada.getGolesVisitante());
 		acta.setIncidencias(actaEntrada.getIncidencias());
+		if(acta.getIncidencias() != null && !acta.getIncidencias().isEmpty()){
+			Collections.sort(acta.getIncidencias());	
+		}
 		acta.setObservaciones(actaEntrada.getObservaciones());
 		actaRepository.save(acta);
 		return new ResponseEntity<Acta>(acta, HttpStatus.OK);
@@ -268,6 +272,11 @@ public class ActaController {
 		if (partidoDelActa == null) {
 			return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
 		} else {
+			
+			if(entrada.getIncidencias() != null && !entrada.getIncidencias().isEmpty()){
+				Collections.sort(entrada.getIncidencias());
+			}
+			
 			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
 				Arbitro arbitroConectado = arbitroRepository.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
 				// Si un árbitro intenta crear un acta que no sea de un partido
@@ -308,6 +317,9 @@ public class ActaController {
 			Arbitro arbitroConectado = arbitroRepository
 					.findByNombreUsuario(usuarioComponent.getLoggedUser().getNombreUsuario());
 			// Si el usuario conectado es un árbitro
+			if(entrada.getIncidencias() != null && !entrada.getIncidencias().isEmpty()){
+				Collections.sort(entrada.getIncidencias());
+			}
 			if (usuarioComponent.getLoggedUser().getRol().equals("ROLE_ARBITRO")) {
 				if (!arbitroConectado.getId().equals(acta.getIdArbitro())) {
 					return new ResponseEntity<Acta>(HttpStatus.NOT_ACCEPTABLE);
