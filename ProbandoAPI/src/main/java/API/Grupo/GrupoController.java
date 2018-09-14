@@ -141,6 +141,12 @@ public class GrupoController {
 	public ResponseEntity<Grupo> verGrupoId(@PathVariable String id) {
 		return new ResponseEntity<Grupo>(grupoRepository.findById(id), HttpStatus.OK);
 	}
+	
+	@JsonView(InfoGrupoView.class)
+	@RequestMapping(value = "/perfil/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Grupo> verPerfilGrupo(@PathVariable String id) {
+		return new ResponseEntity<Grupo>(grupoRepository.findCustomPerfilTemporada(id), HttpStatus.OK);
+	}
 
 	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "{idGrupo}/clasificacion" , method = RequestMethod.GET)

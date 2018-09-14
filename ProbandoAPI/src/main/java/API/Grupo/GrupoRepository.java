@@ -19,4 +19,7 @@ public interface GrupoRepository extends MongoRepository<Grupo, String> {
 	
 	@Query(value = "{'id':?0}", fields = "{'temporada': 1, 'nombre':1}")
 	Grupo findCustomTemporada(String id);
+	
+	@Query(value = "{'id': ?0}", fields = "{'temporada':1, 'nombre':1, 'jornadaActual':1}")
+	Grupo findCustomPerfilTemporada(String id);
 }

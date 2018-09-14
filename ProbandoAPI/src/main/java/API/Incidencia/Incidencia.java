@@ -122,9 +122,20 @@ public class Incidencia implements Comparable <Incidencia>{
 
 	@Override
 	public int compareTo(Incidencia o) {
+		String minuto1;
+		String minuto2;
 		
-		String minuto1 = "00:" + this.minuto + ":00";
-		String minuto2 = "00:" + o.minuto + ":00";
+		if(Integer.parseInt(this.minuto ) < 10){
+			minuto1 = "00:0" + this.minuto + ":00";
+		} else {
+			minuto1 = "00:" + this.minuto + ":00";
+		}
+		
+		if(Integer.parseInt(o.minuto) < 10){
+			minuto2 = "00:0" + o.minuto + ":00";
+		} else {
+			minuto2 = "00:" + o.minuto + ":00";
+		}
 		
 		LocalTime hora1 = LocalTime.parse(minuto1);
 		LocalTime hora2 = LocalTime.parse(minuto2);
