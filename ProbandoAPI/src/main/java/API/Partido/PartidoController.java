@@ -25,6 +25,7 @@ import API.Grupo.GrupoRepository;
 import API.Incidencia.Incidencia;
 import API.Incidencia.IncidenciaRepository;
 import API.Jugador.Jugador;
+import API.Jugador.JugadorController.ProfileView;
 import API.Sancion.Sancion;
 import API.Vistas.VistaGrupo;
 import API.Vistas.VistaTemporada;
@@ -85,6 +86,16 @@ public class PartidoController {
 		}
 		Collections.sort(entrada);
 		return new ResponseEntity<List<Partido>>(entrada, HttpStatus.OK);
+	}
+	
+	@JsonView(PartidoView.class)
+	@RequestMapping(value = "/grupo/{idGrupo}", method = RequestMethod.GET)
+	public ResponseEntity<List<Partido>> verPartidosPorGrupo(@PathVariable(value = "idGrupo") String idGrupo) {
+		List<Partido> partidos = partidoRepository.findByGrupoIdGrupo(idGrupo);
+		if (partidos.isEmpty()) {
+			return new ResponseEntity<List<Partido>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Partido>>(partidos, HttpStatus.OK);
 	}
 
 	@JsonView(PartidoView.class)

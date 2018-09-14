@@ -9,6 +9,8 @@ public interface GrupoRepository extends MongoRepository<Grupo, String> {
 	
 	Grupo findById(String id);
 	
+	List<Grupo> findByTemporadaIdTemporada(String idTemporada);
+	
 	@Query(value = "{}", fields = "{'nombre':1}")
 	List<Grupo> findCustomNombresGrupo();
 	

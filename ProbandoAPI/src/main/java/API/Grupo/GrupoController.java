@@ -127,6 +127,16 @@ public class GrupoController {
 	}
 	
 	@JsonView(InfoGrupoView.class)
+	@RequestMapping(value = "temporada/{idTemporada}", method = RequestMethod.GET)
+	public ResponseEntity<List<Grupo>> verGruposTemporada(@PathVariable String idTemporada) {
+		Temporada temporada = temporadaRepository.findById(idTemporada);
+		if(temporada == null) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		} 
+		return new ResponseEntity<List<Grupo>>(grupoRepository.findByTemporadaIdTemporada(idTemporada), HttpStatus.OK);
+	}
+	
+	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Grupo> verGrupoId(@PathVariable String id) {
 		return new ResponseEntity<Grupo>(grupoRepository.findById(id), HttpStatus.OK);
