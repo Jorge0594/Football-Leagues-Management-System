@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import API.Estadio.Estadio;
 import API.Grupo.Grupo;
 import API.Grupo.GrupoRepository;
 import API.Images.ImageService;
@@ -45,7 +46,7 @@ public class EquipoController {
 	public interface RankView extends Equipo.RankAtt, VistaGrupo.VistaGrupoAtt {
 	}
 
-	public interface PerfilView extends Equipo.RankAtt, Equipo.PerfilAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Sancion.SancionAtt, Sancion.JugadorAtt, VistaGrupo.VistaGrupoAtt {
+	public interface PerfilView extends  Equipo.RankAtt, Equipo.PerfilAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Sancion.SancionAtt, Sancion.JugadorAtt, VistaGrupo.VistaGrupoAtt, Estadio.BasicoAtt, Estadio.DatosAtt {
 	}
 
 	public interface JugadorView extends Jugador.PerfilAtt, Jugador.EquipoAtt {
@@ -147,7 +148,7 @@ public class EquipoController {
 		return new ResponseEntity<List<Equipo>>(equipoRepository.findAll(), HttpStatus.OK);
 	}
 
-	@JsonView(RankView.class)
+	@JsonView(PerfilView.class)
 	@RequestMapping(value = "/grupo/{idGrupo}", method = RequestMethod.GET)
 	public ResponseEntity<List<Equipo>> verEquiposGrupo(@PathVariable String idGrupo) {
 		List<Equipo> equipos = equipoRepository.findByGrupoIdGrupo(idGrupo);

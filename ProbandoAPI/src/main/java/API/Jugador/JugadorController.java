@@ -91,9 +91,6 @@ public class JugadorController {
 			usuarioRepository.save(usuario);
 		}
 
-		Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
-		usuarioRepository.save(usuario);
-
 		if (jugador.getEquipo() != null && !jugador.getEquipo().equals("")) {
 
 			Equipo equipo = equipoRepository.findById(jugador.getEquipo());
@@ -107,12 +104,14 @@ public class JugadorController {
 			}
 
 			equipo.getPlantillaEquipo().add(jugador);
+			
+			jugadorRepository.save(jugador);
 			equipoRepository.save(equipo);
-
+			
+		} else {
+			jugadorRepository.save(jugador);
 		}
-
-		jugadorRepository.save(jugador);
-
+	
 		String texto = jugador.getNombre() + ";" + jugador.getNombreUsuario() + ";" + clave;
 		/*
 		 * mailService.getMail().mandarEmail(jugador.getEmail()
@@ -240,7 +239,6 @@ public class JugadorController {
 			usuarioRepository.save(usuario);
 			jugadorRepository.save(jugador);
 			String credenciales = jugador.getNombreUsuario() + ";" + clave;
-			// Deshabilitado de momento
 			mailService.getMail().mandarEmail(jugador.getEmail(), "Nueva contraseña", credenciales, "claveusuario");
 			return new ResponseEntity<Jugador>(jugador, HttpStatus.OK);
 		}

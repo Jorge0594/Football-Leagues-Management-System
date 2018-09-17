@@ -24,6 +24,8 @@ import API.Partido.Partido;
 import API.Partido.PartidoRepository;
 import API.Sancion.Sancion;
 import API.Sancion.SancionRepository;
+import API.Temporada.Temporada;
+import API.Temporada.TemporadaRepository;
 import API.Usuario.Usuario;
 import API.Usuario.UsuarioComponent;
 import API.Usuario.UsuarioRepository;
@@ -43,6 +45,8 @@ public class ArbitroController {
 	ArbitroRepository arbitroRepository;
 	@Autowired
 	UsuarioRepository usuarioRepository;
+	@Autowired
+	TemporadaRepository temporadaRepository;
 	@Autowired
 	UsuarioComponent usuarioComponent;
 	@Autowired
@@ -75,6 +79,35 @@ public class ArbitroController {
 		Usuario usuario = new Usuario(arbitro.getNombreUsuario(), arbitro.getClave(), "ROLE_ARBITRO");
 		usuarioRepository.save(usuario);
 		arbitroRepository.save(arbitro);
+		
+		String texto = arbitro.getNombre() + ";" + arbitro.getNombreUsuario() + ";" + clave;
+		/*mailService.getMail().mandarEmail(arbitro.getEmail(),"Nombre de usuario y contraseña",texto, "jugador");*/
+		
+		return new ResponseEntity<Arbitro>(arbitro, HttpStatus.CREATED);
+	}
+	
+	@JsonView(ArbitroView.class)
+	@RequestMapping(value = "/temporada/{idTemporada}", method = RequestMethod.POST)
+	public ResponseEntity<Arbitro> creaArbitroTemporada(@RequestBody Arbitro arbitro, @PathVariable String idTemporada) {
+		if (arbitroRepository.findByDniIgnoreCase(arbitro.getDni()) != null) {
+			return new ResponseEntity<Arbitro>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		Temporada temporada = temporadaRepository.findById(idTemporada);
+		if (temporada == null) {
+			return new ResponseEntity<Arbitro>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		
+		String clave = utils.generarClave();
+		arbitro.setClaveEncriptada(clave);
+		arbitro.setNombreUsuario(utils.generarNombreUsuario(arbitro.getNombre(), arbitro.getApellidos()));
+		arbitro.setId(null);
+		arbitro.setPartidosArbitrados(new ArrayList<Partido>());
+
+		Usuario usuario = new Usuario(arbitro.getNombreUsuario(), arbitro.getClave(), "ROLE_ARBITRO");
+		usuarioRepository.save(usuario);		
+		arbitroRepository.save(arbitro);
+		temporada.getArbitros().add(arbitro);
+		//temporadaRepository.save(temporada);
 		
 		String texto = arbitro.getNombre() + ";" + arbitro.getNombreUsuario() + ";" + clave;
 		/*mailService.getMail().mandarEmail(arbitro.getEmail(),"Nombre de usuario y contraseña",texto, "jugador");*/
