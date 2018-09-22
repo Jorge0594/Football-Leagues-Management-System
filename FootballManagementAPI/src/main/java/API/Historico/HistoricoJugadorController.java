@@ -26,7 +26,7 @@ public class HistoricoJugadorController {
 	public ResponseEntity<HistoricoJugador> añadirHistorico(@RequestBody HistoricoJugador historico){
 		
 		historico.setId(null);
-		
+				
 		historicoJugadorRepository.save(historico);
 		
 		return new ResponseEntity<HistoricoJugador>(historico, HttpStatus.OK);
@@ -44,7 +44,7 @@ public class HistoricoJugadorController {
 	
 	@RequestMapping(value = "/jugador/{id}", method = RequestMethod.GET)
 	public ResponseEntity<List<HistoricoJugador>> obtenerHistoricosJugador(@PathVariable String id){
-		return new ResponseEntity<List<HistoricoJugador>>(historicoJugadorRepository.findByJugadorId(new ObjectId(id)), HttpStatus.OK);
+		return new ResponseEntity<List<HistoricoJugador>>(historicoJugadorRepository.findCustomHisotoricoJugador(new ObjectId(id)), HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
