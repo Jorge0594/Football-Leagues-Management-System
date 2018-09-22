@@ -44,7 +44,7 @@ public class HistoricoEquipoController {
 	
 	@RequestMapping(value = "/equipo/{id}", method = RequestMethod.GET)
 	public ResponseEntity<List<HistoricoEquipo>>obtenerHistoricosEquipo(@PathVariable String id){		
-		return new ResponseEntity<List<HistoricoEquipo>>(historicoEquipoRepository.findByEquipoId(new ObjectId(id)), HttpStatus.OK);
+		return new ResponseEntity<List<HistoricoEquipo>>(historicoEquipoRepository.findCustomHistorico(new ObjectId(id)), HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)

@@ -247,7 +247,7 @@ public class EquipoController {
 		}
 
 		synchronized (lock) {
-			if (imageService.getImg().cambiarFoto(equipo.getNombre() + equipo.getGrupo(), file)) {
+			if (imageService.getImg().cambiarFoto(equipo.getNombre() + equipo.getLiga() + equipo.getGrupo().getNombre(), file)) {
 				equipo.setImagenEquipo(imageService.getImg().getNombreFichero());
 
 				equipoRepository.save(equipo);
