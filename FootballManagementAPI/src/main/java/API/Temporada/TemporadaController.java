@@ -25,7 +25,7 @@ import API.Vistas.VistaGrupo;
 @RequestMapping("/temporadas")
 public class TemporadaController {
 
-	public interface TemporadaAtt extends Temporada.TemporadaAtt, VistaGrupo.VistaGrupoAtt, Arbitro.PerfilAtt, Arbitro.ActaAtt, Arbitro.ClaveAtt{
+	public interface TemporadaAtt extends Arbitro.PerfilAtt, Arbitro.ActaAtt, Arbitro.ClaveAtt, Temporada.TemporadaAtt, VistaGrupo.VistaGrupoAtt{
 	}
  
 	@Autowired
@@ -52,14 +52,10 @@ public class TemporadaController {
 
 	@JsonView(TemporadaAtt.class)
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Temporada> crearTemporada(@RequestBody Temporada entrada) {
-		if (temporadaRepository.findByNombre(entrada.getNombre()) != null) {
-			return new ResponseEntity<Temporada>(HttpStatus.NOT_ACCEPTABLE);
-		} else {
-			entrada.setId(null);
-			entrada.setGrupos(new ArrayList<VistaGrupo>());
-			temporadaRepository.save(entrada);
-		}
+	public ResponseEntity<Temporada> crearTemporada(@RequestBody Temporada entrada) {	
+		entrada.setId(null);
+		entrada.setGrupos(new ArrayList<VistaGrupo>());
+		temporadaRepository.save(entrada);		
 		return new ResponseEntity<Temporada>(entrada, HttpStatus.OK);
 	}
 	

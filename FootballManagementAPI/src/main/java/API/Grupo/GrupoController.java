@@ -11,6 +11,7 @@ import API.Utilidades.UsuarioUtils;
 import API.Vistas.*;
 import API.Acta.Acta;
 import API.Acta.ActaRepository;
+import API.Arbitro.Arbitro;
 import API.Equipo.*;
 import API.Grupo.Grupo.GrupoAtt;
 import API.Temporada.*;
@@ -48,7 +49,7 @@ public class GrupoController {
 	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt {
 	}
 
-	public interface InfoGrupoView extends GrupoAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Partido.InfoAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt{
+	public interface InfoGrupoView extends Arbitro.ActaAtt, Arbitro.ClaveAtt, Arbitro.PerfilAtt, Grupo.GrupoAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Partido.InfoAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt{
 	}
 
 	@Autowired

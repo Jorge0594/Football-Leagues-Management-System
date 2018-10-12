@@ -277,6 +277,7 @@ public class EquipoController {
 		equipo.setPartidosGanados(auxEquipo.getPartidosGanados());
 		equipo.setPartidosPerdidos(auxEquipo.getPartidosPerdidos());
 		equipo.setPartidosEmpatados(auxEquipo.getPartidosEmpatados());
+		equipo.setEstadioEquipo(auxEquipo.getEstadioEquipo());
 
 		equipoRepository.save(equipo);
 

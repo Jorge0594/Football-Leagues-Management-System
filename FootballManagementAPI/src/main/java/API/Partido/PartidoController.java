@@ -282,22 +282,12 @@ public class PartidoController {
 		}
 
 		partido.setId(null);
-		// Se asegura que el nombre del equipo y el ID pertenezcan al mismo
-		// equipo
 		partido.setEquipoLocalNombre(equipoLocal.getNombre());
 		partido.setEquipoVisitanteNombre(equipoVisitante.getNombre());
 		partido.setEquipoLocalEscudo(equipoLocal.getImagenEquipo());
 		partido.setEquipoVisitanteEscudo(equipoVisitante.getImagenEquipo());
-		if (grupoRepository.findByNombreIgnoreCase(partido.getLiga()) == null) {
-			partido.setLiga("");
-		}
 		partido.setJornada(0);
-		/*
-		 * Falta asignar la jornada según la fecha del partido, eso se hará una
-		 * vez hayamos hecho los métodos para crear el calendario, aunque hay
-		 * que tener en cuenta que este método nos se va usar casi nunca es por
-		 * dar la opción de añadir un partido desde la app
-		 */
+
 		partidoRepository.save(partido);
 		if (arbitroDelPartido != null) {
 			arbitroDelPartido.getPartidosArbitrados().add(partido);
