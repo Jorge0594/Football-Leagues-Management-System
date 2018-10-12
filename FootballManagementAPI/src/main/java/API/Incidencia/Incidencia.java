@@ -1,9 +1,5 @@
 package API.Incidencia;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -122,7 +118,7 @@ public class Incidencia implements Comparable <Incidencia>{
 
 	@Override
 	public int compareTo(Incidencia o) {
-		String minuto1;
+		/*String minuto1;
 		String minuto2;
 		
 		if(Integer.parseInt(this.minuto ) < 10){
@@ -142,9 +138,17 @@ public class Incidencia implements Comparable <Incidencia>{
 		
 		if(hora1.isAfter(hora2)){
 			return -1;
+		}*/
+		int minuto1 = Integer.parseInt(this.getMinuto());
+		int minuto2 = Integer.parseInt(o.getMinuto());
+		
+		if(minuto1 > minuto2){
+			return 1;
+		} else if (minuto1 < minuto2){
+			return -1;
 		}
 		
-		return 1;
+		return 0;
 	
 	}
 	

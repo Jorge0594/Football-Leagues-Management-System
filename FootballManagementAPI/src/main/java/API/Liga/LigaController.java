@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import API.Acta.Acta;
 import API.Acta.ActaController.ActaView;
+import API.Grupo.Grupo;
 import API.MiembroComite.MiembroComite;
 import API.MiembroComite.MiembroComiteRepository;
 import API.Temporada.Temporada;
@@ -109,6 +110,11 @@ public class LigaController {
 		ligaRepository.delete(liga);
 
 		return new ResponseEntity<>(liga, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/nombres", method = RequestMethod.GET)
+	public ResponseEntity<List<Liga>> verNombresLigas() {
+		return new ResponseEntity<List<Liga>>(ligaRepository.findCustomNombresLiga(), HttpStatus.OK);
 	}
 
 }
