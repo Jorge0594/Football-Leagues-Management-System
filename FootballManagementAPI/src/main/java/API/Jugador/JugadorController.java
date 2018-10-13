@@ -44,8 +44,6 @@ public class JugadorController {
 
 	public interface ProfileView extends Jugador.PerfilAtt, Jugador.EquipoAtt, Sancion.SancionAtt, Sancion.JugadorAtt, VistaGrupo.VistaGrupoAtt {
 	}
-	
-	private Object lock = new Object();
 
 	@Autowired
 	private JugadorRepository jugadorRepository;
@@ -395,7 +393,7 @@ public class JugadorController {
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_FOUND);
 		}
 		
-		synchronized (lock) {
+		synchronized (imageService.getImg().getLock()) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
 				jugador.setFotoJugador(imageService.getImg().getNombreFichero());
@@ -416,7 +414,7 @@ public class JugadorController {
 			return new ResponseEntity<Jugador>(HttpStatus.NOT_FOUND);
 		}
 		
-		synchronized (lock) {
+		synchronized (imageService.getImg().getLock()) {
 			boolean cambioFoto = imageService.getImg().cambiarFoto(jugador.getDni(), file);
 			if (cambioFoto) {
 				jugador.setFotoJugador(imageService.getImg().getNombreFichero());

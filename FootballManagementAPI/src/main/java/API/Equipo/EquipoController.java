@@ -52,8 +52,6 @@ public class EquipoController {
 	public interface JugadorView extends Jugador.PerfilAtt, Jugador.EquipoAtt {
 	}
 
-	private Object lock = new Object();
-
 	@Autowired
 	private EquipoRepository equipoRepository;
 	@Autowired
@@ -108,6 +106,7 @@ public class EquipoController {
 		equipo.setId(null);
 		equipo.setAceptado(false);
 		equipo.setImagenEquipo("shield.png");
+		equipo.setLiga(usuario.getLiga());
 		equipo.setGrupo(new VistaGrupo());
 
 		equipoRepository.save(equipo);
@@ -119,6 +118,7 @@ public class EquipoController {
 			jugador.setEquipo(equipo.getId());
 			jugador.setAceptado(false);
 			jugador.setId(null);
+			jugador.setLiga(usuario.getLiga());
 			jugador.setFotoJugador("defaultProfile.jpg");
 			jugador.setGrupo(new VistaGrupo());
 			jugador.setGoles(0);
@@ -246,7 +246,7 @@ public class EquipoController {
 			return new ResponseEntity<Equipo>(HttpStatus.NO_CONTENT);
 		}
 
-		synchronized (lock) {
+		synchronized (imageService.getImg().getLock()) {
 			if (imageService.getImg().cambiarFoto(equipo.getNombre() + equipo.getLiga() + equipo.getGrupo().getNombre(), file)) {
 				equipo.setImagenEquipo(imageService.getImg().getNombreFichero());
 

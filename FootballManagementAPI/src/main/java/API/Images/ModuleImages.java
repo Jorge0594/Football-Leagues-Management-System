@@ -21,6 +21,7 @@ public class ModuleImages {
 	@Autowired
 	private AmazonBucket amazonBucket;
 	private String nombreFichero;
+	private Object lock = new Object();
 
 	public ModuleImages() {
 
@@ -65,6 +66,14 @@ public class ModuleImages {
 
 	public void setNombreFichero(String nombreFichero) {
 		this.nombreFichero = nombreFichero;
+	}
+
+	public Object getLock() {
+		return lock;
+	}
+
+	public void setLock(Object lock) {
+		this.lock = lock;
 	}
 
 	private BufferedImage toBufferedImage(Image image) {
