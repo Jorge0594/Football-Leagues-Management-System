@@ -2,11 +2,10 @@ package API.Historico;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Component;
-
 import API.Vistas.VistaTemporada;
 
 @Component
-public abstract class Historico {
+public abstract class Historico implements Comparable<Historico> {
 	@Id
 	private String id;
 	private VistaTemporada temporada;
@@ -69,6 +68,30 @@ public abstract class Historico {
 		} else if (!temporada.equals(other.temporada))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public int compareTo(Historico o) {
+		
+		int firstYear1 = añoNumericoTemporadas(this.getTemporada().getNombre());
+		int firstYear2 = añoNumericoTemporadas(o.getTemporada().getNombre());
+		
+		if(firstYear1 > firstYear2){
+			return -1;
+		} else if(firstYear1 < firstYear2){
+			return 1;
+		}
+		
+		return 0;
+	}
+	
+	private int añoNumericoTemporadas(String fecha){
+		if(fecha.contains("-")){
+			return Integer.parseInt(fecha.split("-")[0]);
+		} else if(fecha.contains("/")){
+			return Integer.parseInt(fecha.split("/")[0]);
+		}
+		return 0;
 	}
 
 }

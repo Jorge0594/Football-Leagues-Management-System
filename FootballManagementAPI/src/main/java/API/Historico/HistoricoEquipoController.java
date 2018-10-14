@@ -1,6 +1,8 @@
 package API.Historico;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,47 +19,59 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RequestMapping("histEquipos")
 public class HistoricoEquipoController {
-	
+
 	@Autowired
 	private HistoricoEquipoRepository historicoEquipoRepository;
-	
-	
+
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<HistoricoEquipo>crearHistorico(@RequestBody HistoricoEquipo historico){
-		
+	public ResponseEntity<HistoricoEquipo> crearHistorico(@RequestBody HistoricoEquipo historico) {
+
 		historico.setId(null);
-		
+
 		historicoEquipoRepository.save(historico);
-		
+
 		return new ResponseEntity<HistoricoEquipo>(historico, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<HistoricoEquipo>>obtenerHistoricos(){		
+	public ResponseEntity<List<HistoricoEquipo>> obtenerHistoricos() {
 		return new ResponseEntity<List<HistoricoEquipo>>(historicoEquipoRepository.findAll(), HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public ResponseEntity<HistoricoEquipo>obtenerHistorico(@PathVariable String id){		
+	public ResponseEntity<HistoricoEquipo> obtenerHistorico(@PathVariable String id) {
 		return new ResponseEntity<HistoricoEquipo>(historicoEquipoRepository.findById(id), HttpStatus.OK);
-	}	
-	
-	@RequestMapping(value = "/equipo/{id}", method = RequestMethod.GET)
-	public ResponseEntity<List<HistoricoEquipo>>obtenerHistoricosEquipo(@PathVariable String id){		
-		return new ResponseEntity<List<HistoricoEquipo>>(historicoEquipoRepository.findCustomHistorico(new ObjectId(id)), HttpStatus.OK);
 	}
-	
-	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<HistoricoEquipo>eliminarHistorico(@PathVariable String id){
-		HistoricoEquipo historico = historicoEquipoRepository.findById(id);
+
+	@RequestMapping(value = "/equipo/{id}", method = RequestMethod.GET)
+	public ResponseEntity<List<HistoricoEquipo>>obtenerHistoricosEquipo(@PathVariable String id){
 		
-		if(historico == null){
-			 return new ResponseEntity<HistoricoEquipo>(HttpStatus.NOT_FOUND);
+		List<HistoricoEquipo>historicos = historicoEquipoRepository.findCustomHistorico(new ObjectId(id));
+		
+		if(historicos == null || historicos.isEmpty()){
+			return new ResponseEntity<List<HistoricoEquipo>>(HttpStatus.NO_CONTENT);
 		}
 		
-		historicoEquipoRepository.delete(historico);
+		historicos.stream()
+				.filter(Objects::nonNull)
+				.limit(4)
+				.sorted()
+				.collect(Collectors.toList());
 		
+		return new ResponseEntity<List<HistoricoEquipo>>(historicos, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<HistoricoEquipo> eliminarHistorico(@PathVariable String id) {
+		HistoricoEquipo historico = historicoEquipoRepository.findById(id);
+
+		if (historico == null) {
+			return new ResponseEntity<HistoricoEquipo>(HttpStatus.NOT_FOUND);
+		}
+
+		historicoEquipoRepository.delete(historico);
+
 		return new ResponseEntity<HistoricoEquipo>(historico, HttpStatus.OK);
-	}	
+	}
 
 }

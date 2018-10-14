@@ -67,7 +67,6 @@ public class GrupoController {
 	private ActaRepository actaRepository;
 	@Autowired
 	private PartidoRepository partidoRepository;
-
 	@Autowired
 	private MailService mailService;
 	@Autowired

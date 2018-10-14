@@ -96,7 +96,7 @@ public class ModuleImages {
 
 			return file;
 		} catch (IOException e) {
-			throw new IOException("No se ha podido realziar la conversion de MultipartFile a File: ", e);
+			throw new IOException("No se ha podido realizar la conversion de MultipartFile a File: ", e);
 		}
 	}
 

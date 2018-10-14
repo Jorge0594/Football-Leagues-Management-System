@@ -10,7 +10,7 @@ import API.Usuario.UsuarioRepository;
 public class UsuarioUtils {
 	
 	@Autowired
-	UsuarioRepository usuarioRepository;
+	private UsuarioRepository usuarioRepository;
 	
 	public String generarNombreUsuario(String nombre, String apellidos){
 		String apellido[] = apellidos.split(" ");
@@ -39,6 +39,5 @@ public class UsuarioUtils {
 		}
 		return clave;
 	}
-	
 	
 }

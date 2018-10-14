@@ -60,7 +60,4 @@ public class HistoricoJugador extends Historico {
 		return true;
 	}
 
-	
-	
-
 }

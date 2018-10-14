@@ -1,6 +1,8 @@
 package API.Historico;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,22 @@ public class HistoricoJugadorController {
 	
 	@RequestMapping(value = "/jugador/{id}", method = RequestMethod.GET)
 	public ResponseEntity<List<HistoricoJugador>> obtenerHistoricosJugador(@PathVariable String id){
-		return new ResponseEntity<List<HistoricoJugador>>(historicoJugadorRepository.findCustomHisotoricoJugador(new ObjectId(id)), HttpStatus.OK);
+		
+		List<HistoricoJugador> historicos = historicoJugadorRepository.findCustomHisotoricoJugador(new ObjectId(id));
+		
+		if(historicos == null || historicos.isEmpty()){
+			return new ResponseEntity<List<HistoricoJugador>>(HttpStatus.NO_CONTENT);
+		}
+		
+		historicos.stream()
+			.filter(Objects::nonNull)
+			.limit(4)
+			.sorted()
+			.collect(Collectors.toList());
+		
+		return new ResponseEntity<List<HistoricoJugador>>(historicos, HttpStatus.OK);
+		
+		
 	}
 	
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
