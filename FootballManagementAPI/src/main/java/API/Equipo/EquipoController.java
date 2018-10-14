@@ -295,6 +295,11 @@ public class EquipoController {
 		if (!equipo.getGrupo().equals("") && equipo.isAceptado()) {
 			jugador.setGrupo(equipo.getGrupo());
 		}
+		
+		if(equipo.getLiga() != null && equipo.isAceptado()){
+			jugador.setLiga(equipo.getLiga());
+		}
+		
 		if (!jugador.getEquipo().equals("")) {
 			if (!equipo.getPlantillaEquipo().contains(jugador)) {
 				Equipo aux = equipoRepository.findById(jugador.getEquipo());

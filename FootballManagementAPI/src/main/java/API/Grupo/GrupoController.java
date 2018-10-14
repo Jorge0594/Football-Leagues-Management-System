@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +47,10 @@ import com.tournament.generator.TournamentCalendar;
 public class GrupoController {
 
 
-	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt {
+	public interface ClasificacionView extends Equipo.RankAtt, Equipo.PerfilAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt{
 	}
 
-	public interface InfoGrupoView extends Arbitro.ActaAtt, Arbitro.ClaveAtt, Arbitro.PerfilAtt, Grupo.GrupoAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Partido.InfoAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt{
+	public interface InfoGrupoView extends Arbitro.ActaAtt, Arbitro.ClaveAtt, Arbitro.PerfilAtt, Grupo.GrupoAtt, Jugador.EquipoAtt, Jugador.PerfilAtt, Equipo.RankAtt, Partido.InfoAtt, VistaGrupo.VistaGrupoAtt, VistaTemporada.VistaTemporadaAtt, VistaClasificacionPorteros.VistaPorterosAtt{
 	}
 
 	@Autowired
@@ -187,28 +188,29 @@ public class GrupoController {
 	
 	@JsonView(InfoGrupoView.class)
 	@RequestMapping(value = "/porteros/{idGrupo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Jugador>> obtenerRankPorteros(@PathVariable String idGrupo){
+	public ResponseEntity<List<VistaClasificacionPorteros>> obtenerRankPorteros(@PathVariable String idGrupo){
 		List<Jugador> porteros = jugadorRepository.getPorteros(idGrupo);
 		
 		if(porteros == null || porteros.isEmpty()){
-			return new ResponseEntity<List<Jugador>>(HttpStatus.NOT_ACCEPTABLE);
+			return new ResponseEntity<List<VistaClasificacionPorteros>>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		
-		Long partidos = actaRepository.getNumeroPartidosPortero("5abf51f35118d22d0022b528");
-		System.out.println("PARTIDOS: " + partidos );
 		Map<Jugador, Integer> mapaPorteroGoles = porteros.stream()
 				.filter(p -> p.getEquipo() != null && actaRepository.getNumeroPartidosPortero(p.getId()) > 0 && actaRepository.getNumeroPartidosPortero(p.getId()) >= (this.partidosJugadosEquipo(p.getEquipo()) * 0.8))
 				.collect(Collectors.toMap(Function.identity(), this::calcularGolesEncajadosPortero));
 		
 		mapaPorteroGoles = mapaPorteroGoles.entrySet().stream()
-				.sorted(Map.Entry.<Jugador, Integer>comparingByValue().reversed())
 				.limit(5)
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		
-		porteros = new ArrayList<>();
-		porteros.addAll(mapaPorteroGoles.keySet());
+		List<VistaClasificacionPorteros> clasificacion = mapaPorteroGoles.entrySet().stream()
+				.map(entry -> {
+					return new VistaClasificacionPorteros(entry.getKey().getId(), entry.getKey().getEquipo(), entry.getKey().getNombre(), entry.getKey().getFotoJugador(), entry.getValue());
+				})
+				.sorted()
+				.collect(Collectors.toList());
 		
-		return new ResponseEntity<List<Jugador>>(porteros, HttpStatus.OK);
+		return new ResponseEntity<List<VistaClasificacionPorteros>>(clasificacion, HttpStatus.OK);
 	}
 	
 	
