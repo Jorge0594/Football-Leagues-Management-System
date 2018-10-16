@@ -18,13 +18,6 @@ public class EnvioEmail {
 	private final String credencialesTexto = "Su usuario y contraseña de acceso es:\n";
 	
 	public void mandarEmail (String destinatario, String asunto, String texto, String tipo){
-		
-		/*String credenciales [] = texto.split(";");
-		
-		String cuerpoCorreo = "Hola " + credenciales[0] + "\n\n" + bienvenida + "\n" + "USUARIO: " + credenciales[1] +
-				"\n\n" + "CONTRASEÑA: " + credenciales[2] +
-				"\n\n Le recomendamos que cambie su contraseña por una más segura una vez haya accedido a la aplicación.\n"
-				+ "\n¡Buena suerte en sus partidos!"; */
 		String credenciales [] = texto.split(";");
 		String cuerpoCorreo = generarCuerpoMensaje(tipo, credenciales);
 		

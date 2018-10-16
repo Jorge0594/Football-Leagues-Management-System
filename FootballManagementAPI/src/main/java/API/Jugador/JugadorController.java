@@ -87,6 +87,10 @@ public class JugadorController {
 		if (jugador.isAceptado()) {
 			Usuario usuario = new Usuario(jugador.getNombreUsuario(), jugador.getClave(), "ROLE_JUGADOR");
 			usuarioRepository.save(usuario);
+			
+			String texto = jugador.getNombre() + ";" + jugador.getNombreUsuario() + ";" + clave;
+			
+			mailService.getMail().mandarEmail(jugador.getEmail(),"Nombre de usuario y contraseña", texto, "jugador");
 		}
 
 		if (jugador.getEquipo() != null && !jugador.getEquipo().equals("")) {
@@ -110,11 +114,6 @@ public class JugadorController {
 			jugadorRepository.save(jugador);
 		}
 	
-		String texto = jugador.getNombre() + ";" + jugador.getNombreUsuario() + ";" + clave;
-		/*
-		 * mailService.getMail().mandarEmail(jugador.getEmail()
-		 * ,"Nombre de usuario y contraseña",texto, "jugador");
-		 */
 		return new ResponseEntity<Jugador>(jugador, HttpStatus.CREATED);
 	}
 

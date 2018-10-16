@@ -290,12 +290,11 @@ public class GrupoController {
 				j.setNombreUsuario(utils.generarNombreUsuario(j.getNombre(), j.getApellidos()));
 				j.setClaveEncriptada(clave);
 
-				String texto = j.getNombre() + ";" + j.getNombreUsuario() + ";" + clave;
-				// mailService.getMail().mandarEmail(j.getEmail(), "Nombre de
-				// usuario y contraseña ", texto, "jugador");
-
 				Usuario usuario = new Usuario(j.getNombreUsuario(), j.getClave(), "ROLE_JUGADOR");
 				usuarioRepository.save(usuario);
+				
+				String texto = j.getNombre() + ";" + j.getNombreUsuario() + ";" + clave;
+				mailService.getMail().mandarEmail(j.getEmail(), "Nombre de usuario y contraseña ", texto, "jugador");
 
 				jugadorRepository.save(j);
 

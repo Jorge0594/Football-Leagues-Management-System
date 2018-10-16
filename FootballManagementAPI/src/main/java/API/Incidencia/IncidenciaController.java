@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import API.Jugador.JugadorRepository;
 import API.Vistas.VistaJugador;
 
 @RestController
